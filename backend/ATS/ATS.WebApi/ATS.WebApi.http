@@ -1,0 +1,6 @@
+@ATS.WebApi_HostAddress = http://localhost:5179
+
+GET {{ATS.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
