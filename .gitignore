@@ -1,0 +1,37 @@
+# =========================
+# .NET / Visual Studio
+# =========================
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.cache
+*.dll
+*.exe
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.*
+
+# =========================
+# Node.js / Frontend
+# =========================
+node_modules/
+dist/
+build/
+
+# Vite
+.vite/
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
