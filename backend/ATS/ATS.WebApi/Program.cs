@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ATS.Infrastructure.Persistence;
+using ATS.Infrastructure.Helpers;
 
 namespace ATS.WebApi
 {
@@ -11,9 +12,7 @@ namespace ATS.WebApi
 
             builder.Services.AddControllers();
             builder.Services.AddOpenApi();
-            builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(
-                    builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddInfrastructure(builder.Configuration);
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -30,7 +29,6 @@ namespace ATS.WebApi
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
