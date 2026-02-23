@@ -1,9 +1,13 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router";
 import Home from "./pages/Home";
+import { AllCommunityModule } from "ag-grid-community";
+import { AgGridProvider } from "ag-grid-react";
+
+const modules = [AllCommunityModule];
 
 const RootLayout = () => (
   <div className="flex min-h-screen">
-    <main>
+    <main className="min-w-360 m-auto">
       <Outlet />
     </main>
   </div>
@@ -27,5 +31,9 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <AgGridProvider modules={modules}>
+      <RouterProvider router={router} />
+    </AgGridProvider>
+  );
 }
