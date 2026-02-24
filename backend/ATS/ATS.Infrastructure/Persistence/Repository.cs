@@ -22,11 +22,13 @@ namespace ATS.Infrastructure.Persistence
         public async Task AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
         public void Delete(T entity)
         {
             _dbSet.Remove(entity);
+            _context.SaveChanges();
         }
 
         public async Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate)
@@ -47,6 +49,7 @@ namespace ATS.Infrastructure.Persistence
         public void Update(T entity)
         {
             _dbSet.Update(entity);
+            _context.SaveChanges();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using ATS.Domain.Entities;
 using ATS.Domain.Interfaces;
@@ -39,6 +40,36 @@ namespace ATS.Infrastructure.Persistence
                 .Include(a => a.Histories)
                 .Include(a => a.Communications)
                 .FirstOrDefaultAsync(a => a.Id == id);
+        }
+
+        public void Update(Domain.Entities.Application entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<Domain.Entities.Application>> IRepository<Domain.Entities.Application>.GetAllAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<Domain.Entities.Application>> IApplicationRepository.GetByCandidateAsync(Guid candidateId)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Domain.Entities.Application> IRepository<Domain.Entities.Application>.GetByIdAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<Domain.Entities.Application>> IApplicationRepository.GetByVacancyAsync(Guid vacancyId)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Domain.Entities.Application?> IApplicationRepository.GetWithDetailsAsync(Guid id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
