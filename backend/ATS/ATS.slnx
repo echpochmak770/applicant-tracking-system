@@ -1,6 +1,7 @@
 <Solution>
-  <Project Path="ATS.Application/ATS.Application.csproj" />
+  <Project Path="ATS.Application/ATS.Core.csproj" />
   <Project Path="ATS.Domain/ATS.Domain.csproj" />
   <Project Path="ATS.Infrastructure/ATS.Infrastructure.csproj" />
   <Project Path="ATS.WebApi/ATS.WebApi.csproj" />
+  <Project Path="Shared/Shared.csproj" Id="1a846290-cdcf-4195-adf4-6c3926e51d1b" />
 </Solution>

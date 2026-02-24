@@ -3,6 +3,8 @@ using ATS.Infrastructure.Persistence;
 using ATS.Infrastructure.Helpers;
 using ATS.WebApi.Middlewares;
 using ATS.WebApi.Helpers;
+using ATS.Core.Exceptions;
+using ATS.Core.Helpers;
 
 namespace ATS.WebApi
 {
@@ -15,16 +17,18 @@ namespace ATS.WebApi
             builder.Services.AddControllers();
             builder.Services.AddOpenApi();
             builder.Services.AddInfrastructureServices(builder.Configuration);
-            builder.Services.AddApiServices();
+            builder.Services.AddCoreServices();
+            builder.Services.AddApiServices(builder.Configuration);
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+            
+            app.UseMiddleware<ExceptionMiddleware>();
 
             if (app.Environment.IsDevelopment())
             {
-                app.UseMiddleware<ExceptionMiddleware>();
                 app.MapOpenApi();
                 app.UseSwagger();
                 app.UseSwaggerUI();
@@ -32,6 +36,9 @@ namespace ATS.WebApi
 
             app.UseHttpsRedirection();
 
+            app.UseCors();
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

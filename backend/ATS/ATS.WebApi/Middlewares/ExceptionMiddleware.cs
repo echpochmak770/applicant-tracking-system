@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using ATS.Core.Exceptions;
+using System.Net;
 using System.Text.Json;
 
 namespace ATS.WebApi.Middlewares
@@ -28,6 +29,7 @@ namespace ATS.WebApi.Middlewares
         {
             var statusCode = exception switch
             {
+                AuthException => HttpStatusCode.Unauthorized,
                 KeyNotFoundException => HttpStatusCode.NotFound,
                 ArgumentException => HttpStatusCode.BadRequest,
                 _ => HttpStatusCode.InternalServerError
