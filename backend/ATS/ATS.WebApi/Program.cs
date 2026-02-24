@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using ATS.Infrastructure.Persistence;
 using ATS.Infrastructure.Helpers;
+using ATS.WebApi.Middlewares;
+using ATS.WebApi.Helpers;
 
 namespace ATS.WebApi
 {
@@ -12,7 +14,8 @@ namespace ATS.WebApi
 
             builder.Services.AddControllers();
             builder.Services.AddOpenApi();
-            builder.Services.AddInfrastructure(builder.Configuration);
+            builder.Services.AddInfrastructureServices(builder.Configuration);
+            builder.Services.AddApiServices();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -21,6 +24,7 @@ namespace ATS.WebApi
 
             if (app.Environment.IsDevelopment())
             {
+                app.UseMiddleware<ExceptionMiddleware>();
                 app.MapOpenApi();
                 app.UseSwagger();
                 app.UseSwaggerUI();
