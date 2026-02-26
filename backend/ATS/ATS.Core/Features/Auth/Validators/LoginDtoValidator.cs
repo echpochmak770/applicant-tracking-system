@@ -1,10 +1,10 @@
-﻿using ATS.Core.DTOs.Auth;
+﻿using ATS.Core.Features.Auth.DTOs;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ATS.Core.Validators
+namespace ATS.Core.Features.Auth.Validators
 {
     public class LoginDtoValidator : AbstractValidator<LoginDto>
     {
