@@ -3,22 +3,25 @@ import { useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import type { ColDef } from "ag-grid-community";
 import { Plus } from "lucide-react"; // Опционально для иконки
-import { mock } from "./mock";
+import { vacancies } from "./mock";
+import { useNavigate } from "react-router";
+import type { CustomCellRendererProps } from "ag-grid-react";
 
-// Типизация для вакансии
-interface Vacancy {
+interface IVacancy {
   id: number;
   title: string;
-  position: string;
-  applications: number;
+  description: string;
+  status: string;
+  createdById: number;
+  createdAt: string;
 }
 
 export default function Home() {
-  // Моки
-  const [rowData] = useState<Vacancy[]>(mock);
+  const navigate = useNavigate();
 
-  // Определение колонок
-  const [colDefs] = useState<ColDef<Vacancy>[]>([
+  const [rowData] = useState<IVacancy[]>(vacancies);
+
+  const [colDefs] = useState<ColDef<IVacancy>[]>([
     {
       field: "id",
       headerName: "ID",
@@ -26,28 +29,35 @@ export default function Home() {
     },
     {
       field: "title",
-      headerName: "Название проекта",
+      headerName: "Название вакансии",
       flex: 1,
       filter: true,
+      cellRenderer: (params: CustomCellRendererProps<IVacancy>) => {
+        return (
+          <span className="cursor-pointer hover:text-primary hover:underline font-medium">
+            {params.value}
+          </span>
+        );
+      },
+      onCellClicked: (params) => navigate(`/applications/${params?.data?.id}`),
     },
     {
-      field: "position",
-      headerName: "Должность",
+      field: "description",
+      headerName: "Описание",
       flex: 1.2,
       filter: true,
     },
     {
-      field: "applications",
-      headerName: "Отклики",
+      field: "status",
+      headerName: "Статус",
       width: 150,
-      cellClass: "font-medium text-primary", // Используем наш фиолетовый для акцента
+      cellClass: "font-medium text-primary",
       filter: true,
     },
   ]);
 
   return (
     <div className="flex flex-col gap-6 p-6">
-      {/* Заголовок и Действия */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
@@ -64,9 +74,8 @@ export default function Home() {
         </Button>
       </div>
 
-      {/* Контейнер таблицы */}
       <div className="rounded-xl border border-border bg-card p-2 shadow-sm">
-        <div className="ag-theme-quartz" style={{ height: 500, width: "100%" }}>
+        <div className="ag-theme-quartz" style={{ height: 700, width: "100%" }}>
           <AgGridReact
             rowData={rowData}
             columnDefs={colDefs}
@@ -74,7 +83,6 @@ export default function Home() {
               sortable: true,
               resizable: true,
             }}
-            // Включаем пагинацию для красоты
             pagination={true}
             paginationPageSize={10}
             paginationPageSizeSelector={[10, 20]}
