@@ -33,7 +33,7 @@ namespace ATS.WebApi
 
             app.UseHttpsRedirection();
 
-            app.UseCors();
+            app.UseCors("AllowFrontend");
 
             app.UseAuthentication();
             app.UseAuthorization();
