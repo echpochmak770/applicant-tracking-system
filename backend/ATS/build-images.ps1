@@ -1,9 +1,8 @@
-$projects = @("ATS.WebApi") 
+$projects = @("ATS.Core") 
 
 foreach ($proj in $projects) {
     Write-Host "Building image for $proj..." -ForegroundColor Cyan
     
-    # Проверяем, существует ли папка, чтобы не было ошибок
     if (Test-Path "./$proj/$proj.csproj") {
         dotnet publish "./$proj/$proj.csproj" `
             /t:PublishContainer `
