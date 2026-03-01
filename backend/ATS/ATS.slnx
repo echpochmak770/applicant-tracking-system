@@ -1,4 +1,5 @@
 <Solution>
+  <Folder Name="/docker/" />
   <Project Path="ATS.Core/ATS.Core.csproj" />
   <Project Path="ATS.Domain/ATS.Domain.csproj" />
   <Project Path="ATS.Infrastructure/ATS.Infrastructure.csproj" />
