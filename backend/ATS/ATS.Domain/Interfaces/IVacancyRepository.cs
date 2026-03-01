@@ -9,5 +9,12 @@ namespace ATS.Domain.Interfaces
     {
         Task<Vacancy?> GetWithStagesAsync(Guid id);
         Task<Vacancy?> GetFullAsync(Guid id);
+        Task<(List<Vacancy> Items, int TotalCount)> GetAllPagedAsync(
+            string? search,
+            string? sortBy,
+            string? sortDirection,
+            int page,
+            int pageSize,
+            CancellationToken ct);
     }
 }

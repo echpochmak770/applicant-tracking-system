@@ -1,6 +1,5 @@
-﻿using ATS.Core.DTOs.Auth;
-using ATS.Core.Interfaces;
-using Microsoft.AspNetCore.Http;
+﻿using ATS.Core.Features.Auth.DTOs;
+using ATS.Core.Features.Auth.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ATS.WebApi.Controllers

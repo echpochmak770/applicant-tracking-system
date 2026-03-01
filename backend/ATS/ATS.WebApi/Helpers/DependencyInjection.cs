@@ -1,13 +1,9 @@
-﻿using ATS.Domain.Interfaces;
-using ATS.Infrastructure.Persistence;
-using ATS.Shared.Classes;
+﻿using ATS.Shared.Classes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using ATS.Core.Interfaces;
 using ATS.Infrastructure.Authentication;
+using ATS.Core.Features.Auth.Interfaces;
 
 namespace ATS.WebApi.Helpers
 {

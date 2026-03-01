@@ -1,12 +1,7 @@
-﻿using ATS.Core.Validators;
-using ATS.Domain.Interfaces;
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using ATS.Core.Features.Auth.Validators;
 
 namespace ATS.Core.Helpers
 {
@@ -16,6 +11,9 @@ namespace ATS.Core.Helpers
         {
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
+
+            services.AddMediatR(cfg =>
+                cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
             return services;
         }

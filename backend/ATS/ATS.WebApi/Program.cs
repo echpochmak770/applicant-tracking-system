@@ -1,9 +1,6 @@
-using Microsoft.EntityFrameworkCore;
-using ATS.Infrastructure.Persistence;
 using ATS.Infrastructure.Helpers;
 using ATS.WebApi.Middlewares;
 using ATS.WebApi.Helpers;
-using ATS.Core.Exceptions;
 using ATS.Core.Helpers;
 
 namespace ATS.WebApi

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ATS.Core.DTOs.Auth;
+using ATS.Core.Features.Auth.DTOs;
 using FluentValidation;
 
-namespace ATS.Core.Validators
+namespace ATS.Core.Features.Auth.Validators
 {
     public class RegisterDtoValidator : AbstractValidator<RegisterDto>
     {

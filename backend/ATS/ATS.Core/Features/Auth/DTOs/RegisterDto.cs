@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ATS.Core.DTOs.Auth
+namespace ATS.Core.Features.Auth.DTOs
 {
     public class RegisterDto
     {

@@ -1,6 +1,6 @@
-﻿using ATS.Core.DTOs.Auth;
-using ATS.Core.Exceptions;
-using ATS.Core.Interfaces;
+﻿using ATS.Core.Features.Auth.DTOs;
+using ATS.Core.Features.Auth.Exceptions;
+using ATS.Core.Features.Auth.Interfaces;
 using ATS.Domain.Entities;
 using ATS.Domain.Enums;
 using ATS.Domain.Interfaces;
@@ -8,8 +8,6 @@ using ATS.Shared.Classes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;

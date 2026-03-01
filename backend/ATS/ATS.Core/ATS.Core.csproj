@@ -7,11 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Features\Новая папка\**" />
+    <EmbeddedResource Remove="Features\Новая папка\**" />
+    <None Remove="Features\Новая папка\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ATS.Domain\ATS.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
+    <PackageReference Include="MediatR" Version="14.0.0" />
   </ItemGroup>
 
 </Project>

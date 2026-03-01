@@ -46,6 +46,11 @@ namespace ATS.Infrastructure.Persistence
             return await _dbSet.FirstOrDefaultAsync(e => e.Id == id);
         }
 
+        public IQueryable<T> Query()
+        {
+            return _dbSet.AsQueryable();
+        }
+
         public void Update(T entity)
         {
             _dbSet.Update(entity);

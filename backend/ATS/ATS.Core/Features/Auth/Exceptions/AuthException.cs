@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ATS.Core.Exceptions
+namespace ATS.Core.Features.Auth.Exceptions
 {
     public class AuthException : Exception
     {
