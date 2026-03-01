@@ -1,0 +1,18 @@
+New-Item -ItemType Directory -Force -Path "./dist-images"
+
+$projects = @("ATS.Application", "ATS.Core", "ATS.Infrastructure", "ATS.Domain", "ATS.Shared")
+
+foreach ($proj in $projects) {
+    Write-Host "Building image for $proj..." -ForegroundColor Cyan
+    
+    # Публикация напрямую в .tar архив
+    dotnet publish ./$proj/$proj.csproj `
+        /t:PublishContainer `
+        -c Release `
+        --os linux `
+        --arch x64 `
+        -p:ContainerArchiveOutputPath="./dist-images/$($proj.ToLower()).tar" `
+        -p:ContainerImageName="$($proj.ToLower())"
+}
+
+Write-Host "Done! All images are in ./dist-images" -ForegroundColor Green

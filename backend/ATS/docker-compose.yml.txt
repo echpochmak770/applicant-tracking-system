@@ -1,0 +1,12 @@
+services:
+  api-gateway:
+    image: apigateway:latest
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  identity-service:
+    image: identityservice:latest
+    ports:
+      - "5001:8080"
