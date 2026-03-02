@@ -1,10 +1,11 @@
-﻿using System;
+﻿using ATS.Domain.Common;
+using ATS.Domain.Entities;
+using ATS.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
-using ATS.Domain.Common;
-using ATS.Domain.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace ATS.Infrastructure.Persistence
 {
@@ -55,6 +56,16 @@ namespace ATS.Infrastructure.Persistence
         {
             _dbSet.Update(entity);
             _context.SaveChanges();
+        }
+
+        protected IQueryable<TEntity> ApplySort<TEntity, TKey>(
+            IQueryable<TEntity> query,
+            Expression<Func<TEntity, TKey>> keySelector,
+            string? direction)
+        {
+            return direction?.ToLower() == "asc"
+                ? query.OrderBy(keySelector)
+                : query.OrderByDescending(keySelector);
         }
     }
 }

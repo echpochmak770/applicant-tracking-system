@@ -21,5 +21,6 @@ namespace ATS.Domain.Entities
         public List<Vacancy> Vacancies { get; set; } = new List<Vacancy>();
         public List<ApplicationHistory> Changes { get; set; } = new List<ApplicationHistory>();
         public List<Communication> Communications { get; set; } = new List<Communication>();
+        public List<Application> CreatedApplications { get; set; } = new List<Application>();
     }
 }

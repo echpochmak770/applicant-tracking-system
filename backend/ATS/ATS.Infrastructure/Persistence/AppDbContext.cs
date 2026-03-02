@@ -1,6 +1,8 @@
 ﻿using ATS.Domain.Common;
 using ATS.Domain.Entities;
+using ATS.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
@@ -11,7 +13,15 @@ namespace ATS.Infrastructure.Persistence
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        private readonly ICurrentUserService _currentUserService;
+
+        public AppDbContext(
+            DbContextOptions<AppDbContext> options,
+            ICurrentUserService currentUserService) 
+            : base(options)
+        {
+            _currentUserService = currentUserService;
+        }
 
         public DbSet<Application> Applications { get; set; }
         public DbSet<ApplicationHistory> ApplicationHistories { get; set; }
@@ -60,6 +70,11 @@ namespace ATS.Infrastructure.Persistence
                 entity.HasOne(a => a.Resume)
                     .WithMany(r => r.Applications)
                     .HasForeignKey(a => a.ResumeId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(a => a.CreatedBy)
+                    .WithMany(u => u.CreatedApplications)
+                    .HasForeignKey(a => a.CreatedById)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.Property(a => a.RejectionReason)
@@ -237,54 +252,63 @@ namespace ATS.Infrastructure.Persistence
             });
         }
 
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            ApplyEntityAuditLogic();
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
         public override int SaveChanges()
         {
-            foreach (var entry in ChangeTracker.Entries<BaseEntity>())
-            {
-                switch (entry.State)
-                {
-                    case EntityState.Added:
-                        entry.Entity.CreatedAt = DateTime.UtcNow;
-                        break;
-                    case EntityState.Modified:
-                        if (entry.Entity.IsDeleted)
-                        {
-                            entry.State = EntityState.Unchanged;
-                        }
-                        break;
-                    case EntityState.Deleted:
-                        entry.State = EntityState.Modified;
-                        entry.Entity.IsDeleted = true;
-                        break;
-                }
-            }
-
+            ApplyEntityAuditLogic();
             return base.SaveChanges();
         }
 
-        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        private void ApplyEntityAuditLogic()
         {
-            foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+            var entries = ChangeTracker.Entries<BaseEntity>();
+
+            foreach (var entry in entries)
             {
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedAt = DateTime.UtcNow;
+                        HandleAddedEntity(entry);
                         break;
+
                     case EntityState.Modified:
-                        if (entry.Entity.IsDeleted)
-                        {
-                            entry.State = EntityState.Unchanged;
-                        }
+                        HandleModifiedEntity(entry);
                         break;
+
                     case EntityState.Deleted:
-                        entry.State = EntityState.Modified;
-                        entry.Entity.IsDeleted = true;
+                        HandleSoftDelete(entry);
                         break;
                 }
             }
+        }
 
-            return await base.SaveChangesAsync(cancellationToken);
+        private void HandleAddedEntity(EntityEntry<BaseEntity> entry)
+        {
+            entry.Entity.CreatedAt = DateTime.UtcNow;
+
+            if (entry.Entity is Application app && _currentUserService.UserId.HasValue)
+            {
+                app.CreatedById = _currentUserService.UserId.Value;
+            }
+        }
+
+        private void HandleModifiedEntity(EntityEntry<BaseEntity> entry)
+        {
+            if (entry.Entity.IsDeleted)
+            {
+                entry.State = EntityState.Unchanged;
+            }
+        }
+
+        private void HandleSoftDelete(EntityEntry<BaseEntity> entry)
+        {
+            entry.State = EntityState.Modified;
+            entry.Entity.IsDeleted = true;
         }
 
         private void ApplySoftDeleteFilter(ModelBuilder modelBuilder)
