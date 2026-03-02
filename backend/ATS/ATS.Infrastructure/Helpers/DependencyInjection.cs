@@ -1,5 +1,6 @@
 ﻿using ATS.Domain.Interfaces;
 using ATS.Infrastructure.Persistence;
+using ATS.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,10 @@ namespace ATS.Infrastructure.Helpers
             services.AddScoped<IStageRepository, StageRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IVacancyRepository, VacancyRepository>();
+
+            services.AddHttpContextAccessor();
+
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             return services;
         }
