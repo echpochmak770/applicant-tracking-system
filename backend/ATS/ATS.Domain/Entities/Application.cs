@@ -13,6 +13,7 @@ namespace ATS.Domain.Entities
         public Guid VacancyId { get; set; }
         public Guid CurrentStageId { get; set; }
         public Guid ResumeId { get; set; }
+        public Guid CreatedById { get; set; }
 
         public List<ApplicationHistory> Histories { get; set; } = new List<ApplicationHistory>();
         public List<Communication> Communications { get; set; } = new List<Communication>();
@@ -20,5 +21,6 @@ namespace ATS.Domain.Entities
         public Vacancy Vacancy { get; set; }
         public Stage CurrentStage { get; set; }
         public Resume Resume { get; set; }
+        public User CreatedBy { get; set; }
     }
 }

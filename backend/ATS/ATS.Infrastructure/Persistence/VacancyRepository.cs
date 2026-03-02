@@ -41,7 +41,7 @@ namespace ATS.Infrastructure.Persistence
                 _ => query.OrderByDescending(v => v.CreatedAt)
             };
 
-            var totalCount = await query.CountAsync();
+            var totalCount = await query.CountAsync(ct);
 
             var items = await query
                 .Skip((page - 1) * pageSize)
@@ -65,16 +65,6 @@ namespace ATS.Infrastructure.Persistence
             return await _dbSet
                 .Include(v => v.Stages)
                 .FirstOrDefaultAsync(v => v.Id == id);
-        }
-
-        private IQueryable<Vacancy> ApplySort<T>(
-            IQueryable<Vacancy> query,
-            Expression<Func<Vacancy, T>> keySelector,
-            string? direction)
-        {
-            return direction?.ToLower() == "asc"
-                ? query.OrderBy(keySelector)
-                : query.OrderByDescending(keySelector);
         }
     }
 }

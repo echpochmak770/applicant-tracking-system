@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using ATS.Infrastructure.Persistence.Mocks;
 
 namespace ATS.Infrastructure.Persistence
 {
@@ -21,7 +22,9 @@ namespace ATS.Infrastructure.Persistence
 
             optionsBuilder.UseSqlServer(connectionString);
 
-            return new AppDbContext(optionsBuilder.Options);
+            var userServiceMock = new DesignTimeUserService();
+
+            return new AppDbContext(optionsBuilder.Options, userServiceMock);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace ATS.Infrastructure.Persistence
         public async Task<List<Application>> GetByCandidateAsync(Guid candidateId)
         {
             return await _dbSet
-                .Where(a => a.CandidateId == candidateId)
+                .Where(a => a.CandidateId == candidateId && !a.IsDeleted)
                 .Include(a => a.Vacancy)
                 .Include(a => a.CurrentStage)
                 .ToListAsync();
@@ -24,10 +24,52 @@ namespace ATS.Infrastructure.Persistence
         public async Task<List<Application>> GetByVacancyAsync(Guid vacancyId)
         {
             return await _dbSet
-                .Where(a => a.VacancyId == vacancyId)
+                .Where(a => a.VacancyId == vacancyId && !a.IsDeleted)
                 .Include(a => a.Candidate)
                 .Include(a => a.CurrentStage)
                 .ToListAsync();
+        }
+
+        public async Task<(List<Application> Items, int TotalCount)> GetByVacancyPagedAsync(
+            Guid vacancyId,
+            string? search,
+            string? sortBy,
+            string? sortDirection,
+            int page,
+            int pageSize,
+            CancellationToken ct)
+        {
+            var query = _dbSet
+                .Include(a => a.Candidate)
+                .Include(a => a.CurrentStage)
+                .Include(a => a.CreatedBy)
+                .Include(a => a.Resume)
+                .Where(a => a.VacancyId == vacancyId && !a.IsDeleted)
+                .AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(a =>
+                    EF.Functions.Like(a.Candidate.FirstName + " " + a.Candidate.LastName, $"%{search}%") ||
+                    EF.Functions.Like(a.Candidate.Email, $"%{search}%"));
+            }
+
+            query = sortBy?.ToLower() switch
+            {
+                "name" => ApplySort(query, a => a.Candidate.FirstName + " " + a.Candidate.LastName, sortDirection),
+                "email" => ApplySort(query, a => a.Candidate.Email, sortDirection),
+                "stage" => ApplySort(query, a => a.CurrentStage.Order, sortDirection),
+                _ => query.OrderByDescending(a => a.CreatedAt)
+            };
+
+            var totalCount = await query.CountAsync(ct);
+
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(ct);
+
+            return (items, totalCount);
         }
 
         public async Task<Application?> GetWithDetailsAsync(Guid id)
@@ -40,36 +82,6 @@ namespace ATS.Infrastructure.Persistence
                 .Include(a => a.Histories)
                 .Include(a => a.Communications)
                 .FirstOrDefaultAsync(a => a.Id == id);
-        }
-
-        public void Update(Domain.Entities.Application entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<List<Domain.Entities.Application>> IRepository<Domain.Entities.Application>.GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<List<Domain.Entities.Application>> IApplicationRepository.GetByCandidateAsync(Guid candidateId)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<Domain.Entities.Application> IRepository<Domain.Entities.Application>.GetByIdAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<List<Domain.Entities.Application>> IApplicationRepository.GetByVacancyAsync(Guid vacancyId)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<Domain.Entities.Application?> IApplicationRepository.GetWithDetailsAsync(Guid id)
-        {
-            throw new NotImplementedException();
         }
     }
 }

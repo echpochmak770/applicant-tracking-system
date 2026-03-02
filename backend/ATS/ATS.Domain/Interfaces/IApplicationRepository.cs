@@ -10,5 +10,13 @@ namespace ATS.Domain.Interfaces
         Task<Application?> GetWithDetailsAsync(Guid id);
         Task<List<Application>> GetByVacancyAsync(Guid vacancyId);
         Task<List<Application>> GetByCandidateAsync(Guid candidateId);
+        Task<(List<Application> Items, int TotalCount)> GetByVacancyPagedAsync(
+        Guid vacancyId,
+        string? search,
+        string? sortBy,
+        string? sortDirection,
+        int page,
+        int pageSize,
+        CancellationToken ct);
     }
 }
