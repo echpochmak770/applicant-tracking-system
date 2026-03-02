@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ATS.Application\ATS.Core.csproj" />
     <ProjectReference Include="..\ATS.Core\ATS.Core.csproj" />
     <ProjectReference Include="..\ATS.Domain\ATS.Domain.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />

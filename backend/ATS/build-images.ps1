@@ -1,4 +1,4 @@
-$projects = @("ATS.Core") 
+$projects = @("ATS.WebApi") 
 
 foreach ($proj in $projects) {
     Write-Host "Building image for $proj..." -ForegroundColor Cyan
