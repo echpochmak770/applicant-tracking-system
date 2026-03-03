@@ -21,6 +21,8 @@ namespace ATS.WebApi
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            app.ApplyMigrations();
             
             app.UseMiddleware<ExceptionMiddleware>();
 

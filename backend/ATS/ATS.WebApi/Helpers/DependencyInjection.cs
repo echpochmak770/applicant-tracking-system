@@ -4,6 +4,8 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using ATS.Infrastructure.Authentication;
 using ATS.Core.Features.Auth.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using ATS.Infrastructure.Persistence;
 
 namespace ATS.WebApi.Helpers
 {
@@ -16,6 +18,28 @@ namespace ATS.WebApi.Helpers
             services.AddAuthorization();
             services.AddScoped<IAuthService, AuthService>();
             return services;
+        }
+
+        public static void ApplyMigrations(this IApplicationBuilder app)
+        {
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<AppDbContext>();
+
+                    if (context.Database.GetPendingMigrations().Any() || !context.Database.CanConnect())
+                    {
+                        context.Database.Migrate();
+                        Console.WriteLine("--> Database migration applied successfully.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"--> Could not run migrations: {ex.Message}");
+                }
+            }
         }
 
         private static void AddCorsPolicy(IServiceCollection services)
