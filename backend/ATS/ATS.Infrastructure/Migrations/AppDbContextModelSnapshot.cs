@@ -34,6 +34,9 @@ namespace ATS.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("CurrentStageId")
                         .HasColumnType("uniqueidentifier");
 
@@ -53,6 +56,8 @@ namespace ATS.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CandidateId");
+
+                    b.HasIndex("CreatedById");
 
                     b.HasIndex("CurrentStageId");
 
@@ -351,6 +356,12 @@ namespace ATS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("ATS.Domain.Entities.User", "CreatedBy")
+                        .WithMany("CreatedApplications")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("ATS.Domain.Entities.Stage", "CurrentStage")
                         .WithMany("Applications")
                         .HasForeignKey("CurrentStageId")
@@ -370,6 +381,8 @@ namespace ATS.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Candidate");
+
+                    b.Navigation("CreatedBy");
 
                     b.Navigation("CurrentStage");
 
@@ -492,6 +505,8 @@ namespace ATS.Infrastructure.Migrations
                     b.Navigation("Changes");
 
                     b.Navigation("Communications");
+
+                    b.Navigation("CreatedApplications");
 
                     b.Navigation("Vacancies");
                 });
