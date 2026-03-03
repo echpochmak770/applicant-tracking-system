@@ -25,7 +25,7 @@ namespace ATS.WebApi.Helpers
                 options.AddPolicy("AllowFrontend",
                     policy =>
                     {
-                        policy.WithOrigins("https://localhost:5173")
+                        policy.WithOrigins("https://localhost:5173", "http://localhost:5173")
                             .AllowAnyHeader()
                             .AllowAnyMethod();
                     });
