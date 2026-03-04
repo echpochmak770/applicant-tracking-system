@@ -25,8 +25,18 @@ namespace ATS.WebApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
-            var result = await _authService.LoginAsync(dto);
-            return Ok(result);
+            var authResult = await _authService.LoginAsync(dto);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = authResult.ExpiresAt
+            };
+
+            Response.Cookies.Append("accessToken", authResult.AccessToken, cookieOptions);
+
+            return Ok(new { message = "Logged in successfully" });
         }
     }
 }

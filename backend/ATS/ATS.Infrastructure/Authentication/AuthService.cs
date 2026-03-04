@@ -85,6 +85,8 @@ namespace ATS.Infrastructure.Authentication
             var expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes);
 
             var token = new JwtSecurityToken(
+                issuer: _jwtSettings.Issuer,
+                audience: _jwtSettings.Audience,
                 claims: claims,
                 expires: expires,
                 signingCredentials: creds
