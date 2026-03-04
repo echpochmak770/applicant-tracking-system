@@ -3,6 +3,9 @@ import Home from "./pages/Home";
 import Applications from "./pages/Applications";
 import { AllCommunityModule } from "ag-grid-community";
 import { AgGridProvider } from "ag-grid-react";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./api/query";
+import { useState } from "react";
 
 const modules = [AllCommunityModule];
 
@@ -32,9 +35,12 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
+  const [stateQueryClient] = useState(() => queryClient);
   return (
     <AgGridProvider modules={modules}>
-      <RouterProvider router={router} />
+      <QueryClientProvider client={stateQueryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
     </AgGridProvider>
   );
 }
