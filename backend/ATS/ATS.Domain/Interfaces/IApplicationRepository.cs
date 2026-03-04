@@ -18,5 +18,14 @@ namespace ATS.Domain.Interfaces
         int page,
         int pageSize,
         CancellationToken ct);
+
+        Task<(List<ApplicationHistory> Items, int TotalCount)> GetStageHistoryPagedAsync(
+            Guid vacancyId,
+            Guid applicationId,
+            string? sortBy,
+            string? sortDirection,
+            int page,
+            int pageSize,
+            CancellationToken ct);
     }
 }

@@ -83,5 +83,39 @@ namespace ATS.Infrastructure.Persistence
                 .Include(a => a.Communications)
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
+
+        public async Task<(List<ApplicationHistory> Items, int TotalCount)> GetStageHistoryPagedAsync(
+            Guid vacancyId,
+            Guid applicationId,
+            string? sortBy,
+            string? sortDirection,
+            int page,
+            int pageSize,
+            CancellationToken ct)
+        {
+            var historyQuery = _dbSet
+                .Where(a => a.Id == applicationId && a.VacancyId == vacancyId)
+                .SelectMany(a => a.Histories)
+                .Include(h => h.FromStage)
+                .Include(h => h.ToStage)
+                .Include(h => h.ChangedBy)
+                .AsNoTracking();
+
+            historyQuery = sortBy?.ToLower() switch
+            {
+                "order" => ApplySort(historyQuery, h => h.ToStage.Order, sortDirection),
+                "changedat" => ApplySort(historyQuery, h => h.ChangedAt, sortDirection),
+                _ => historyQuery.OrderByDescending(h => h.ChangedAt)
+            };
+
+            var totalCount = await historyQuery.CountAsync(ct);
+
+            var items = await historyQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(ct);
+
+            return (items, totalCount);
+        }
     }
 }
