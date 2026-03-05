@@ -186,7 +186,7 @@ namespace ATS.Infrastructure.Persistence
                     .OnDelete(DeleteBehavior.Cascade);
 
                 entity.Property(s => s.Name)
-                    .HasMaxLength(64)
+                    .HasMaxLength(128)
                     .IsRequired();
 
                 entity.Property(s => s.Order)

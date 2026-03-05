@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ATS.Core.Features.Vacancies.DTOs
 {
-    public class VacancyDto
+    public record VacancyDto
     {
         public Guid Id { get; set; }
         public string Title { get; set; }

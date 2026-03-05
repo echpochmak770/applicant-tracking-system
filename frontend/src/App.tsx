@@ -1,14 +1,29 @@
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router";
+import { createBrowserRouter, RouterProvider, Outlet, Navigate } from "react-router";
 import Home from "./pages/Home";
 import Applications from "./pages/Applications";
+import LoginPage from "./pages/landing/Auth";
+import RegisterPage from "./pages/landing/Register";
 import { AllCommunityModule } from "ag-grid-community";
 import { AgGridProvider } from "ag-grid-react";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./api/query";
+import { useState } from "react";
 
 const modules = [AllCommunityModule];
 
+const ProtectedRoute = () => {
+  const isAuthenticated = localStorage.getItem("auth_token") === "true"; 
+
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  return <Outlet />;
+};
+
 const RootLayout = () => (
-  <div className="flex min-h-screen">
-    <main className="w-full max-w-360 m-auto">
+  <div className="flex min-h-screen bg-background">
+    <main className="w-full max-w-[1440px] m-auto p-6"> 
       <Outlet />
     </main>
   </div>
@@ -16,25 +31,49 @@ const RootLayout = () => (
 
 const router = createBrowserRouter([
   {
+    path: "auth",
+    element: <LoginPage />,
+  },
+    {
+    path: "register",
+    element: <RegisterPage />,
+  },
+  {
     path: "/",
-    element: <RootLayout />,
+    element: <ProtectedRoute />, 
     children: [
       {
-        index: true,
-        element: <Home />,
-      },
-      {
-        path: "applications/:id",
-        element: <Applications />,
+        element: <RootLayout />,
+        children: [
+          {
+            index: true, 
+            element: <Navigate to="/vacancies" replace />,
+          },
+          {
+            path: "vacancies",
+            element: <Home />,
+          },
+          {
+            path: "applications/:id",
+            element: <Applications />,
+          },
+        ],
       },
     ],
+  },
+  {
+    path: "*",
+    element: <Navigate to="/" replace />,
   },
 ]);
 
 export default function App() {
+  const [stateQueryClient] = useState(() => queryClient);
   return (
     <AgGridProvider modules={modules}>
-      <RouterProvider router={router} />
+      <QueryClientProvider client={stateQueryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
     </AgGridProvider>
   );
 }
