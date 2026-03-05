@@ -6,6 +6,5 @@ namespace ATS.Core.Features.Vacancies.Queries
 {
     public class GetAllVacanciesQuery : PagedQuery, IRequest<PagedResult<VacancyDto>>
     {
-        public Guid Id { get; set; }
     }
 }
