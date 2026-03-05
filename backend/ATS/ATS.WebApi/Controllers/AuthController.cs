@@ -1,5 +1,7 @@
 ﻿using ATS.Core.Features.Auth.DTOs;
 using ATS.Core.Features.Auth.Interfaces;
+using ATS.Domain.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ATS.WebApi.Controllers
@@ -9,6 +11,7 @@ namespace ATS.WebApi.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly ICurrentUserService _currentUserService;
 
         public AuthController(IAuthService authService)
         {
@@ -37,6 +40,21 @@ namespace ATS.WebApi.Controllers
             Response.Cookies.Append("accessToken", authResult.AccessToken, cookieOptions);
 
             return Ok(new { message = "Logged in successfully" });
+        }
+
+        [HttpGet("me")]
+        [Authorize]
+        public ActionResult<UserMeDto> GetMe()
+        {
+            var result = new UserMeDto
+            {
+                Id = _currentUserService.RequiredUserId,
+                Email = _currentUserService.Email,
+                FullName = _currentUserService.FullName,
+                Role = _currentUserService.Role
+            };
+
+            return Ok(result);
         }
     }
 }
