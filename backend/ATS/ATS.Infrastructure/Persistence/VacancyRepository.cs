@@ -60,6 +60,13 @@ namespace ATS.Infrastructure.Persistence
                 .FirstOrDefaultAsync(v => v.Id == id);
         }
 
+        public async Task<Vacancy?> GetWithAuthorByIdAsync(Guid id)
+        {
+            return await _dbSet
+                .Include(v => v.CreatedBy)
+                .FirstOrDefaultAsync(v => v.Id == id);
+        }
+
         public async Task<Vacancy?> GetWithStagesAsync(Guid id)
         {
             return await _dbSet

@@ -24,5 +24,8 @@ namespace ATS.Infrastructure.Services
                 return Guid.TryParse(id, out var guid) ? guid : null;
             }
         }
+
+        public Guid RequiredUserId => UserId
+            ?? throw new UnauthorizedAccessException("User is not authenticated or ID is missing in claims.");
     }
 }

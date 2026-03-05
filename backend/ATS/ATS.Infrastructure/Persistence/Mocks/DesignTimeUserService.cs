@@ -9,5 +9,6 @@ namespace ATS.Infrastructure.Persistence.Mocks
     public class DesignTimeUserService : ICurrentUserService
     {
         public Guid? UserId => Guid.Empty;
+        public Guid RequiredUserId => Guid.Empty;
     }
 }

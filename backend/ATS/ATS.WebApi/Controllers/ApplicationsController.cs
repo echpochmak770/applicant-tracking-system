@@ -1,11 +1,13 @@
 ﻿using ATS.Core.Features.Applications.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ATS.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ApplicationsController : ControllerBase
     {
         private readonly IMediator _mediator;
