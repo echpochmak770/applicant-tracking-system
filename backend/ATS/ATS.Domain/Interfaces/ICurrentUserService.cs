@@ -7,5 +7,6 @@ namespace ATS.Domain.Interfaces
     public interface ICurrentUserService
     {
         Guid? UserId { get; }
+        Guid RequiredUserId { get; }
     }
 }

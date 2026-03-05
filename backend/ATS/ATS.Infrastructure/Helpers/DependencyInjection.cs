@@ -17,6 +17,18 @@ namespace ATS.Infrastructure.Helpers
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
+            AddRepositories(services);
+
+            services.AddHttpContextAccessor();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+            return services;
+        }
+
+        private static void AddRepositories(IServiceCollection services)
+        {
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IApplicationHistoryRepository, ApplicationHistoryRepository>();
             services.AddScoped<IApplicationRepository, ApplicationRepository>();
@@ -26,12 +38,6 @@ namespace ATS.Infrastructure.Helpers
             services.AddScoped<IStageRepository, StageRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IVacancyRepository, VacancyRepository>();
-
-            services.AddHttpContextAccessor();
-
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
-
-            return services;
         }
     }
 }

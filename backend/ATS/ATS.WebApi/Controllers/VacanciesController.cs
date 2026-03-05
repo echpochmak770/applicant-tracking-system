@@ -1,12 +1,15 @@
 ﻿using ATS.Core.Features.Applications.Queries;
+using ATS.Core.Features.Vacancies.Commands;
 using ATS.Core.Features.Vacancies.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ATS.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class VacanciesController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -36,6 +39,25 @@ namespace ATS.WebApi.Controllers
             query.VacancyId = vacancyId;
 
             var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(
+            [FromBody] CreateVacancyCommand command)
+        {
+            var id = await _mediator.Send(command);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id },
+                new { message = "Vacancy created successfully", id });
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var result = await _mediator.Send(new GetVacancyByIdQuery { Id = id });
             return Ok(result);
         }
     }
