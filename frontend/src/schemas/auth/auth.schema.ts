@@ -7,7 +7,7 @@ const EmailSchema = z
   .email('Некорректный email');
 
 // Схема для имени
-const NameSchema = z
+const FirstNameSchema = z
   .string()
   .min(1, { message: 'Имя обязательно' })
   .max(50, { message: 'Имя не должно превышать 50 символов' })
@@ -17,7 +17,7 @@ const NameSchema = z
   .transform((val) => val.trim());
 
 // Схема для фамилии
-const SurnameSchema = z
+const LastNameSchema = z
   .string()
   .max(50, { message: 'Фамилия не должна превышать 50 символов' })
   .regex(/^[a-zA-Zа-яА-ЯёЁ\s-]+$/, {
@@ -29,8 +29,8 @@ const SurnameSchema = z
 const PasswordSchema = z
   .string()
   .min(1, { message: 'Пароль обязателен' })
-  .regex(/^(?=.*[A-ZА-Я])(?=.*[a-zа-я])(?=.*\d)(?=.*[$!%*?@&]).{8,}$/, {
-    message: 'Пароль должен содержать минимум 8 символов: заглавную букву, строчную букву, цифру и специальный символ ($!%*?@&)',
+  .regex(/^(?=.*[A-ZА-Я])(?=.*[a-zа-я])(?=.*\d)(?=.*[!?*.]).{8,}$/, {
+    message: 'Пароль должен содержать минимум 8 символов: заглавную букву, строчную букву, цифру и специальный символ (!?*.)',
   });
 
 // Схема для пароля
@@ -59,8 +59,8 @@ export const LoginSchema = z.object({
 
 // Схема для формы регистрации
 export const RegisterSchema = z.object({
-  name: NameSchema,
-  surname: SurnameSchema,
+  firstName: FirstNameSchema,
+  lastName: LastNameSchema,
   email: EmailSchema,
   phone: SimpleOptionalPhoneSchema,
   password: PasswordSchema,

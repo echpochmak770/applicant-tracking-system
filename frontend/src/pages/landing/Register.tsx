@@ -10,11 +10,12 @@ import { Mail, LockKeyhole, User, Eye, EyeOff, Phone } from "lucide-react";
 import { useNavigate } from "react-router";
 import { RegisterSchema, type RegisterSchemaType } from "@/schemas/auth/auth.schema";
 import { cn } from "@/lib/utils";
+import { useRegisterMutation } from "@/api/auth/model/mutations";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
+  const { mutate, isPending } = useRegisterMutation();
 
   const {
     control,
@@ -27,16 +28,8 @@ export default function RegisterPage() {
 
   const isButtonDisabled = isSubmitted && !isValid;
 
-  const handleRegister = (data: RegisterSchemaType) => {
-    if (isLoading) return;
-    console.log('Данные формы:', data);
-
-    setIsLoading(true);
-    setTimeout(() => {
-      localStorage.setItem("auth_token", "true");
-      navigate("/vacancies");
-      setIsLoading(false);
-    }, 1000);
+const handleRegister = (formData: RegisterSchemaType) => {
+    mutate(formData);
   };
 
   return (
@@ -54,51 +47,48 @@ export default function RegisterPage() {
         <CardContent className="pt-0">
           <form onSubmit={handleSubmit(handleRegister)} noValidate className="space-y-3">
               
-            {/* Поле Имя */}
             <div>
-              <FieldLabel htmlFor="name" className="text-foreground/90 font-medium text-sm">
+              <FieldLabel htmlFor="firstName" className="text-foreground/90 font-medium text-sm">
                 Имя <span className="text-red-500">*</span>
               </FieldLabel>
               <div className="relative mt-1">
                 <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input 
-                  {...register('name')}
-                  id="name"
+                  {...register('firstName')}
+                  id="firstName"
                   placeholder="Иван" 
                   className={`pl-10 border-border focus-visible:ring-primary h-9 ${
-                    errors.name ? 'border-red-500 focus-visible:ring-red-500' : ''
+                    errors.firstName ? 'border-red-500 focus-visible:ring-red-500' : ''
                   }`}
-                  aria-invalid={errors.name ? 'true' : 'false'}
+                  aria-invalid={errors.firstName ? 'true' : 'false'}
                 />
               </div>
               <div className="h-5 text-xs text-red-500 mt-0.5">
-                {errors.name ? errors.name.message : ''}
+                {errors.firstName ? errors.firstName.message : ''}
               </div>
             </div>
 
-            {/* Поле Фамилия */}
             <div>
-              <FieldLabel htmlFor="surname" className="text-foreground/90 font-medium text-sm">
+              <FieldLabel htmlFor="lastName" className="text-foreground/90 font-medium text-sm">
                 Фамилия
               </FieldLabel>
               <div className="relative mt-1">
                 <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input 
-                  {...register('surname')}
-                  id="surname"
+                  {...register('lastName')}
+                  id="lastName"
                   placeholder="Иванов" 
                   className={`pl-10 border-border focus-visible:ring-primary h-9 ${
-                    errors.surname ? 'border-red-500 focus-visible:ring-red-500' : ''
+                    errors.lastName ? 'border-red-500 focus-visible:ring-red-500' : ''
                   }`}
-                  aria-invalid={errors.surname ? 'true' : 'false'}
+                  aria-invalid={errors.lastName ? 'true' : 'false'}
                 />
               </div>
               <div className="h-5 text-xs text-red-500 mt-0.5">
-                {errors.surname ? errors.surname.message : ''}
+                {errors.lastName ? errors.lastName.message : ''}
               </div>
             </div>
 
-            {/* Поле Email */}
             <div>
               <FieldLabel htmlFor="email" className="text-foreground/90 font-medium text-sm">
                 Электронная почта <span className="text-red-500">*</span>
@@ -132,14 +122,13 @@ export default function RegisterPage() {
                   control={control}
                   render={({ field: { onChange, value, onBlur, ref } }) => (
                     <IMaskInput
-                      // Маска позволяет ввести "+" и до 15 цифр (максимум по стандарту)
                       mask="+000000000000000"
                       definitions={{
                         '0': /[0-9]/,
                       }}
-                      lazy={true} // Маска (плюс) появится только при фокусе или вводе
+                      lazy={true}
                       value={value || ''}
-                      unmask={false} // Сохраняем "+" в react-hook-form для соответствия схеме
+                      unmask={false}
                       onAccept={(val) => onChange(val)}
                       onBlur={onBlur}
                       inputRef={ref}
@@ -159,7 +148,6 @@ export default function RegisterPage() {
               </p>
             </div>
 
-            {/* Поле Пароль */}
             <div>
               <FieldLabel htmlFor="password" className="text-foreground/90 font-medium text-sm">
                 Пароль <span className="text-red-500">*</span>
@@ -190,14 +178,13 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Кнопка отправки */}
             <div className="pt-4">
               <Button 
                 type="submit" 
                 className="w-full h-10 bg-primary text-primary-foreground shadow-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={isButtonDisabled || isLoading}
+                disabled={isButtonDisabled || isPending}
               >
-                {isLoading ? 'Создание...' : 'Создать аккаунт'}
+                {isPending ? 'Создание...' : 'Создать аккаунт'}
               </Button>
               
               <p className="text-center text-sm text-muted-foreground mt-3">
