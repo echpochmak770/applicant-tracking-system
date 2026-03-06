@@ -1,4 +1,4 @@
-﻿using ATS.Core.Features.Auth.Exceptions;
+﻿using ATS.UseCases.Features.Auth.Exceptions;
 using System.Net;
 using System.Text.Json;
 

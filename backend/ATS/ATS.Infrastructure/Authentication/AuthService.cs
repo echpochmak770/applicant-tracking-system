@@ -1,6 +1,6 @@
-﻿using ATS.Core.Features.Auth.DTOs;
-using ATS.Core.Features.Auth.Exceptions;
-using ATS.Core.Features.Auth.Interfaces;
+﻿using ATS.UseCases.Features.Auth.DTOs;
+using ATS.UseCases.Features.Auth.Exceptions;
+using ATS.UseCases.Features.Auth.Interfaces;
 using ATS.Domain.Entities;
 using ATS.Domain.Enums;
 using ATS.Domain.Interfaces;

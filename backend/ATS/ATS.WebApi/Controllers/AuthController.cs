@@ -1,5 +1,5 @@
-﻿using ATS.Core.Features.Auth.DTOs;
-using ATS.Core.Features.Auth.Interfaces;
+﻿using ATS.UseCases.Features.Auth.DTOs;
+using ATS.UseCases.Features.Auth.Interfaces;
 using ATS.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

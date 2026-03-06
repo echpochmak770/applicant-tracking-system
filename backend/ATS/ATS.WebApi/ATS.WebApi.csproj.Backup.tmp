@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ATS.UseCases\ATS.UseCases.csproj" />
+    <ProjectReference Include="..\ATS.Core\ATS.UseCases.csproj" />
     <ProjectReference Include="..\ATS.Infrastructure\ATS.Infrastructure.csproj" />
   </ItemGroup>
 

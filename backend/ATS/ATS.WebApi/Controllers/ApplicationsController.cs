@@ -1,4 +1,4 @@
-﻿using ATS.Core.Features.Applications.Queries;
+﻿using ATS.UseCases.Features.Applications.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

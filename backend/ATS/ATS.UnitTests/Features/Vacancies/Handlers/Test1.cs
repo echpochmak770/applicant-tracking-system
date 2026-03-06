@@ -1,5 +1,5 @@
-using ATS.Core.Features.Vacancies.Handlers;
-using ATS.Core.Features.Vacancies.Queries;
+using ATS.UseCases.Features.Vacancies.Handlers;
+using ATS.UseCases.Features.Vacancies.Queries;
 using ATS.Domain.Entities;
 using ATS.Domain.Interfaces;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
