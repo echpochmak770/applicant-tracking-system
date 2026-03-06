@@ -1,4 +1,7 @@
-﻿using Microsoft.OpenApi;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi;
+using System.Reflection;
 
 namespace ATS.WebApi.Helpers
 {
@@ -14,42 +17,33 @@ namespace ATS.WebApi.Helpers
                 {
                     Title = "ATS API",
                     Version = "v1",
-                    Description = "Applicant Tracking System API",
-                    Contact = new OpenApiContact
-                    {
-                        Name = "Your Name",
-                        Email = "your.email@example.com"
-                    }
+                    Description = "Applicant Tracking System API"
                 });
 
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                const string securitySchemeId = "Bearer";
+
+                options.AddSecurityDefinition(securitySchemeId, new OpenApiSecurityScheme
                 {
-                    Name = "Authorization",
                     Type = SecuritySchemeType.Http,
                     Scheme = "bearer",
                     BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "Enter JWT token. Example: 'eyJhbGciOiJIUzI1NiIs...'"
+                    Description = "Введите JWT токен."
                 });
 
-                //TODO: Fix
-                //options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                //{
-                //    {
-                //        new OpenApiSecurityScheme
-                //        {
-                //            Reference = new OpenApiReference
-                //            {
-                //                Type = ReferenceType.SecurityScheme,
-                //                Id = "Bearer"
-                //            }
-                //        },
-                //        Array.Empty<string>()
-                //    }
-                //});
+                options.AddSecurityRequirement(document =>
+                {
+                    var securitySchemeRef =
+                        new OpenApiSecuritySchemeReference(securitySchemeId, document);
 
-                var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                    return new OpenApiSecurityRequirement
+                    {
+                        [securitySchemeRef] = new List<string>()
+                    };
+                });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
                 if (File.Exists(xmlPath))
                 {
                     options.IncludeXmlComments(xmlPath);
@@ -62,15 +56,12 @@ namespace ATS.WebApi.Helpers
         public static IApplicationBuilder UseSwaggerWithUI(this IApplicationBuilder app)
         {
             app.UseSwagger();
+
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "ATS API v1");
                 options.RoutePrefix = string.Empty;
                 options.DocumentTitle = "ATS API Documentation";
-
-                options.DefaultModelsExpandDepth(-1);
-                options.DisplayRequestDuration();
-                options.EnableDeepLinking();
             });
 
             return app;
