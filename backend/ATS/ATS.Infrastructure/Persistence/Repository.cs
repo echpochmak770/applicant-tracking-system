@@ -1,6 +1,8 @@
 ﻿using ATS.Domain.Common;
 using ATS.Domain.Entities;
 using ATS.Domain.Interfaces;
+using ATS.UseCases.Common.Models;
+using ATS.UseCases.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -23,13 +25,11 @@ namespace ATS.Infrastructure.Persistence
         public async Task AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
         }
 
         public void Delete(T entity)
         {
             _dbSet.Remove(entity);
-            _context.SaveChanges();
         }
 
         public async Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate)
@@ -55,17 +55,46 @@ namespace ATS.Infrastructure.Persistence
         public void Update(T entity)
         {
             _dbSet.Update(entity);
-            _context.SaveChanges();
         }
 
-        protected IQueryable<TEntity> ApplySort<TEntity, TKey>(
+        protected async Task<(List<TEntity> Items, int TotalCount)> GetPagedDataAsync<TEntity>(
             IQueryable<TEntity> query,
-            Expression<Func<TEntity, TKey>> keySelector,
-            string? direction)
+            int page,
+            int pageSize,
+            CancellationToken ct)
         {
-            return direction?.ToLower() == "asc"
-                ? query.OrderBy(keySelector)
-                : query.OrderByDescending(keySelector);
+            var totalCount = await query.CountAsync(ct);
+
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(ct);
+
+            return (items, totalCount);
         }
+
+        protected IQueryable<TEntity> ApplyUniversalSorting<TEntity>(
+        IQueryable<TEntity> query,
+        string? sortBy,
+        string? direction,
+        string defaultField)
+        {
+            if (string.IsNullOrWhiteSpace(sortBy))
+            {
+                return query.ApplySorting(new List<SortModel>
+                {
+                    new() { Field = defaultField, Direction = "desc" }
+                });
+            }
+
+            var field = MapSortField(sortBy.ToLower());
+
+            return query.ApplySorting(new List<SortModel>
+            {
+                new() { Field = field, Direction = direction ?? "asc" }
+            });
+        }
+
+        protected virtual string MapSortField(string sortBy) => sortBy;
     }
 }
