@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import type { ColDef } from "ag-grid-community";
-import { Plus } from "lucide-react"; // Опционально для иконки
+import type { ColDef, RowClickedEvent } from "ag-grid-community";
+import { Plus } from "lucide-react";
 import { vacancies } from "./mock";
 import { useNavigate } from "react-router";
-import type { CustomCellRendererProps } from "ag-grid-react";
 
 interface IVacancy {
   id: number;
@@ -18,8 +17,16 @@ interface IVacancy {
 
 export default function Home() {
   const navigate = useNavigate();
-
   const [rowData] = useState<IVacancy[]>(vacancies);
+
+  // Обработчик клика по всей строке
+  const onRowClicked = (event: RowClickedEvent<IVacancy>) => {
+    const vacancyId = event.data?.id;
+    if (vacancyId) {
+      // Переходим на список откликов для этой вакансии
+      navigate(`/vacancies/${vacancyId}/applications`);
+    }
+  };
 
   const [colDefs] = useState<ColDef<IVacancy>[]>([
     {
@@ -32,14 +39,7 @@ export default function Home() {
       headerName: "Название вакансии",
       flex: 1,
       filter: true,
-      cellRenderer: (params: CustomCellRendererProps<IVacancy>) => {
-        return (
-          <span className="cursor-pointer hover:text-primary hover:underline font-medium">
-            {params.value}
-          </span>
-        );
-      },
-      onCellClicked: (params) => navigate(`/applications/${params?.data?.id}`),
+      cellClass: "font-medium text-primary underline-offset-4 hover:underline",
     },
     {
       field: "description",
@@ -51,20 +51,28 @@ export default function Home() {
       field: "status",
       headerName: "Статус",
       width: 150,
-      cellClass: "font-medium text-primary",
       filter: true,
+      cellRenderer: (params: { value: string }) => {
+        // Пример простой стилизации статуса
+        const isClosed = params.value === "Closed";
+        return (
+          <span className={`px-2 py-1 rounded-full text-xs ${isClosed ? 'bg-secondary' : 'bg-primary/10 text-primary'}`}>
+            {params.value}
+          </span>
+        );
+      }
     },
   ]);
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Вакансии
           </h1>
           <p className="text-muted-foreground">
-            Управление текущими позициями и откликами
+            Управление текущими позициями и просмотр откликов
           </p>
         </div>
 
@@ -79,13 +87,15 @@ export default function Home() {
           <AgGridReact
             rowData={rowData}
             columnDefs={colDefs}
+            onRowClicked={onRowClicked} // Клик по строке
+            rowClass="cursor-pointer" // Указатель при наведении
             defaultColDef={{
               sortable: true,
               resizable: true,
             }}
             pagination={true}
             paginationPageSize={10}
-            paginationPageSizeSelector={[10, 20]}
+            paginationPageSizeSelector={[10, 20, 50]}
           />
         </div>
       </div>

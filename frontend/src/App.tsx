@@ -8,17 +8,13 @@ import { AgGridProvider } from "ag-grid-react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./api/query";
 import { useState } from "react";
+import ApplicationHistory from "./pages/ApplicationHistory";
 
 const modules = [AllCommunityModule];
 
 const ProtectedRoute = () => {
   const isAuthenticated = localStorage.getItem("auth_token") === "true"; 
-
-  if (!isAuthenticated) {
-    return <Navigate to="/auth" replace />;
-  }
-
-  return <Outlet />;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/auth" replace />;
 };
 
 const RootLayout = () => (
@@ -30,14 +26,8 @@ const RootLayout = () => (
 );
 
 const router = createBrowserRouter([
-  {
-    path: "auth",
-    element: <LoginPage />,
-  },
-    {
-    path: "register",
-    element: <RegisterPage />,
-  },
+  { path: "auth", element: <LoginPage /> },
+  { path: "register", element: <RegisterPage /> },
   {
     path: "/",
     element: <ProtectedRoute />, 
@@ -45,26 +35,21 @@ const router = createBrowserRouter([
       {
         element: <RootLayout />,
         children: [
-          {
-            index: true, 
-            element: <Navigate to="/vacancies" replace />,
+          { index: true, element: <Navigate to="/vacancies" replace /> },
+          { path: "vacancies", element: <Home /> },
+          { 
+            path: "vacancies/:vacancyId/applications", 
+            element: <Applications /> 
           },
-          {
-            path: "vacancies",
-            element: <Home />,
-          },
-          {
-            path: "applications/:id",
-            element: <Applications />,
+          { 
+            path: "vacancies/:vacancyId/applications/:applicationId/history", 
+            element: <ApplicationHistory /> 
           },
         ],
       },
     ],
   },
-  {
-    path: "*",
-    element: <Navigate to="/" replace />,
-  },
+  { path: "*", element: <Navigate to="/" replace /> },
 ]);
 
 export default function App() {

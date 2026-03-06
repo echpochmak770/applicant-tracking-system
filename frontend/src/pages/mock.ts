@@ -159,7 +159,7 @@ export const vacancyApplications = {
       lastName: "Козлов",
       email: "d.kozlov@example.com",
       phone: "+7 (925) 234-56-78",
-      stage: "Телефонное интервью",
+      stage: "Интервью", // было "Телефонное интервью"
       createdBy: "Елена Петрова",
       resumeFileUrl: "",
       resumeName: "Козлов_Дмитрий_резюме.pdf",
@@ -171,7 +171,7 @@ export const vacancyApplications = {
       lastName: "Морозов",
       email: "i.morozov@example.com",
       phone: null,
-      stage: "Отказ",
+      stage: "Отказ", // не в списке, может быть удален или другая логика
       createdBy: "Михаил Сидоров",
       resumeFileUrl: "",
       resumeName: "Морозов_Иван_резюме.pdf",
@@ -186,7 +186,7 @@ export const vacancyApplications = {
       lastName: "Волкова",
       email: "e.volkova@example.com",
       phone: "+7 (903) 345-67-89",
-      stage: "Техническое собеседование",
+      stage: "Тех. задание", // было "Техническое собеседование"
       createdBy: "Анна Иванова",
       resumeFileUrl: "",
       resumeName: "Волкова_Екатерина_резюме.pdf",
@@ -210,7 +210,7 @@ export const vacancyApplications = {
       lastName: "Михайлов",
       email: "a.mikhailov@example.com",
       phone: "+7 (926) 567-89-01",
-      stage: "Тестовое задание",
+      stage: "Тех. задание", // было "Тестовое задание"
       createdBy: "Дмитрий Орлов",
       resumeFileUrl: "",
       resumeName: "Михайлов_Артем_резюме.pdf",
@@ -237,7 +237,7 @@ export const vacancyApplications = {
       lastName: "Федорова",
       email: "n.fedorova@example.com",
       phone: "+7 (916) 789-01-23",
-      stage: "Оценка",
+      stage: "Интервью", // было "Оценка"
       createdBy: "Светлана Козлова",
       resumeFileUrl: "",
       resumeName: "Федорова_Наталья_резюме.pdf",
@@ -264,7 +264,7 @@ export const vacancyApplications = {
       lastName: "Лебедев",
       email: "m.lebedev@example.com",
       phone: "+7 (903) 890-12-34",
-      stage: "Техническое собеседование",
+      stage: "Тех. задание", // было "Техническое собеседование"
       createdBy: "Константин Смирнов",
       resumeFileUrl: "",
       resumeName: "Лебедев_Максим_резюме.pdf",
@@ -315,7 +315,7 @@ export const vacancyApplications = {
       lastName: "Зайцева",
       email: "y.zaytseva@example.com",
       phone: "+7 (985) 234-56-78",
-      stage: "Портфолио",
+      stage: "Тех. задание", // было "Портфолио"
       createdBy: "Анастасия Григорьева",
       resumeFileUrl: "",
       resumeName: "Зайцева_Юлия_резюме.pdf",
@@ -327,7 +327,7 @@ export const vacancyApplications = {
       lastName: "Белова",
       email: "a.belova@example.com",
       phone: "+7 (916) 345-67-89",
-      stage: "Тестовое задание",
+      stage: "Тех. задание", // было "Тестовое задание"
       createdBy: "Максим Тарасов",
       resumeFileUrl: "",
       resumeName: "Белова_Алина_резюме.pdf",
@@ -354,7 +354,7 @@ export const vacancyApplications = {
       lastName: "Григорьев",
       email: "a.grigoriev@example.com",
       phone: "+7 (925) 567-89-01",
-      stage: "Собеседование",
+      stage: "Интервью", // было "Собеседование"
       createdBy: "Николай Федоров",
       resumeFileUrl: "",
       resumeName: "Григорьев_Александр_резюме.pdf",
@@ -381,7 +381,7 @@ export const vacancyApplications = {
       lastName: "Орлов",
       email: "i.orlov@example.com",
       phone: "+7 (926) 789-01-23",
-      stage: "Техническое собеседование",
+      stage: "Тех. задание", // было "Техническое собеседование"
       createdBy: "Татьяна Морозова",
       resumeFileUrl: "",
       resumeName: "Орлов_Илья_резюме.pdf",
@@ -405,7 +405,7 @@ export const vacancyApplications = {
       lastName: "Никитин",
       email: "g.nikitin@example.com",
       phone: "+7 (916) 901-23-45",
-      stage: "Финальное интервью",
+      stage: "Интервью", // было "Финальное интервью"
       createdBy: "Алексей Воробьев",
       resumeFileUrl: "",
       resumeName: "Никитин_Глеб_резюме.pdf",
@@ -432,7 +432,7 @@ export const vacancyApplications = {
       lastName: "Ильина",
       email: "m.ilina@example.com",
       phone: "+7 (925) 123-45-67",
-      stage: "Собеседование",
+      stage: "Интервью", // было "Собеседование"
       createdBy: "Екатерина Белова",
       resumeFileUrl: "",
       resumeName: "Ильина_Марина_резюме.pdf",
@@ -471,7 +471,7 @@ export const vacancyApplications = {
       lastName: "Сидоров",
       email: "r.sidorov@example.com",
       phone: "+7 (926) 345-67-89",
-      stage: "Оценка",
+      stage: "Интервью", // было "Оценка"
       createdBy: "Александр Крылов",
       resumeFileUrl: "",
       resumeName: "Сидоров_Роман_резюме.pdf",
@@ -510,7 +510,7 @@ export const vacancyApplications = {
       lastName: "Андреева",
       email: "s.andreeva@example.com",
       phone: "+7 (903) 678-90-12",
-      stage: "Собеседование",
+      stage: "Интервью", // было "Собеседование"
       createdBy: "Вера Николаева",
       resumeFileUrl: "",
       resumeName: "Андреева_Светлана_резюме.pdf",
@@ -537,7 +537,7 @@ export const vacancyApplications = {
       lastName: "Зуев",
       email: "v.zuev@example.com",
       phone: "+7 (915) 890-12-34",
-      stage: "Портфолио",
+      stage: "Тех. задание", // было "Портфолио"
       createdBy: "Мария Титова",
       resumeFileUrl: "",
       resumeName: "Зуев_Владислав_резюме.pdf",
@@ -561,7 +561,7 @@ export const vacancyApplications = {
       lastName: "Фомин",
       email: "o.fomin@example.com",
       phone: null,
-      stage: "Тестовое задание",
+      stage: "Тех. задание", // было "Тестовое задание"
       createdBy: "Антон Кузнецов",
       resumeFileUrl: "",
       resumeName: "Фомин_Олег_резюме.pdf",
@@ -588,7 +588,7 @@ export const vacancyApplications = {
       lastName: "Денисов",
       email: "a.denisov@example.com",
       phone: "+7 (916) 123-45-67",
-      stage: "Собеседование",
+      stage: "Интервью", // было "Собеседование"
       createdBy: "Надежда Сорокина",
       resumeFileUrl: "",
       resumeName: "Денисов_Арсений_резюме.pdf",
@@ -627,7 +627,7 @@ export const vacancyApplications = {
       lastName: "Харитонов",
       email: "r.kharitonov@example.com",
       phone: "+7 (915) 456-78-90",
-      stage: "Техническое собеседование",
+      stage: "Тех. задание", // было "Техническое собеседование"
       createdBy: "Лариса Ершова",
       resumeFileUrl: "",
       resumeName: "Харитонов_Руслан_резюме.pdf",
@@ -639,7 +639,7 @@ export const vacancyApplications = {
       lastName: "Шестаков",
       email: "b.shestakov@example.com",
       phone: "+7 (926) 567-89-01",
-      stage: "Оценка",
+      stage: "Интервью", // было "Оценка"
       createdBy: "Валентин Романов",
       resumeFileUrl: "",
       resumeName: "Шестаков_Борис_резюме.pdf",
@@ -666,7 +666,7 @@ export const vacancyApplications = {
       lastName: "Мельникова",
       email: "g.melnikova@example.com",
       phone: "+7 (916) 789-01-23",
-      stage: "Собеседование",
+      stage: "Интервью", // было "Собеседование"
       createdBy: "Зоя Филиппова",
       resumeFileUrl: "",
       resumeName: "Мельникова_Галина_резюме.pdf",
@@ -705,7 +705,7 @@ export const vacancyApplications = {
       lastName: "Сергеева",
       email: "z.sergeeva@example.com",
       phone: "+7 (925) 901-23-45",
-      stage: "Оценка",
+      stage: "Интервью", // было "Оценка"
       createdBy: "Раиса Гусева",
       resumeFileUrl: "",
       resumeName: "Сергеева_Зинаида_резюме.pdf",
@@ -725,3 +725,11 @@ export const vacancyApplications = {
     },
   ],
 };
+
+export const applicationStages = [
+  { id: 1, name: "Новый", order: 1 },
+  { id: 2, name: "Интервью", order: 2 },
+  { id: 3, name: "Тех. задание", order: 3 },
+  { id: 4, name: "Оффер", order: 4 },
+  { id: 5, name: "Принят", order: 5 },
+];
