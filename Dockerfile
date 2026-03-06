@@ -8,7 +8,7 @@ WORKDIR /src
 COPY ["backend/ATS/ATS.WebApi/ATS.WebApi.csproj", "backend/ATS/ATS.WebApi/"]
 COPY ["backend/ATS/ATS.Infrastructure/ATS.Infrastructure.csproj", "backend/ATS/ATS.Infrastructure/"]
 COPY ["backend/ATS/ATS.Domain/ATS.Domain.csproj", "backend/ATS/ATS.Domain/"]
-COPY ["backend/ATS/ATS.UseCases/ATS.UseCases.csproj", "backend/ATS/ATS.Core/"]
+COPY ["backend/ATS/ATS.UseCases/ATS.UseCases.csproj", "backend/ATS/ATS.UseCases/"]
 COPY ["backend/ATS/Shared/Shared.csproj", "backend/ATS/Shared/"]
 
 RUN dotnet restore "backend/ATS/ATS.WebApi/ATS.WebApi.csproj"
