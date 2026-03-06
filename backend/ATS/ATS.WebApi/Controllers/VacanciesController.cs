@@ -1,6 +1,6 @@
-﻿using ATS.Core.Features.Applications.Queries;
-using ATS.Core.Features.Vacancies.Commands;
-using ATS.Core.Features.Vacancies.Queries;
+﻿using ATS.UseCases.Features.Applications.Queries;
+using ATS.UseCases.Features.Vacancies.Commands;
+using ATS.UseCases.Features.Vacancies.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

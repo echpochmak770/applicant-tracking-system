@@ -1,7 +1,7 @@
 using ATS.Infrastructure.Helpers;
 using ATS.WebApi.Middlewares;
 using ATS.WebApi.Helpers;
-using ATS.Core.Helpers;
+using ATS.UseCases.Helpers;
 
 namespace ATS.WebApi
 {

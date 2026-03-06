@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using ATS.Infrastructure.Authentication;
-using ATS.Core.Features.Auth.Interfaces;
+using ATS.UseCases.Features.Auth.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using ATS.Infrastructure.Persistence;
 

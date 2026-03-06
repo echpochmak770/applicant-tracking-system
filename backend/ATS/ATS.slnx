@@ -1,6 +1,6 @@
 <Solution>
   <Folder Name="/docker/" />
-  <Project Path="ATS.Core/ATS.Core.csproj" />
+  <Project Path="ATS.UseCases/ATS.UseCases.csproj" />
   <Project Path="ATS.Domain/ATS.Domain.csproj" />
   <Project Path="ATS.Infrastructure/ATS.Infrastructure.csproj" />
   <Project Path="ATS.UnitTests/ATS.UnitTests.csproj" Id="a364a80a-52e1-4d95-8766-7c601db4a97d" />
