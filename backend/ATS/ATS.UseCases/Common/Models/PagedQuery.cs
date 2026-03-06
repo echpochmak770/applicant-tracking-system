@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using ATS.UseCases.Common.Models;
 
-namespace ATS.UseCases.Common.Models
+public class PagedQuery
 {
-    public class PagedQuery
-    {
-        public string? Search { get; set; }
+    public string? Search { get; set; }
+    public int Page { get; set; } = 1;
+    public int PageSize { get; set; } = 10;
 
-        public string? SortBy { get; set; } = "CreatedAt";
-        public string? SortDirection { get; set; } = "desc";
+    public string? SortBy { get; set; }
+    public string? SortDirection { get; set; }
 
-        public int Page { get; set; } = 1;
-        public int PageSize { get; set; } = 10;
-    }
+    public List<SortModel> Sorts { get; set; } = new();
 }
