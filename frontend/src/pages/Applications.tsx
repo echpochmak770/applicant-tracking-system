@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router";
 import { AgGridReact } from "ag-grid-react";
-import { vacancyApplications } from "./mock";
+//import { vacancyApplications } from "./mock";
 import type { ColDef } from "ag-grid-community";
 import { Button } from "@/components/ui/button";
 import { Plus, ArrowLeft } from "lucide-react";
@@ -19,6 +19,46 @@ interface IApplication {
   resumeName: string;
   isDeleted: boolean;
 }
+
+const vacancyApplications =   {
+  1: [
+    {
+      id: 101,
+      firstName: "Алексей",
+      lastName: "Смирнов",
+      email: "a.smirnov@example.com",
+      phone: "+7 (916) 123-45-67",
+      stage: "Новый",
+      createdBy: "Елена Петрова",
+      resumeFileUrl: "",
+      resumeName: "Смирнов_Алексей_резюме.pdf",
+      isDeleted: false,
+    },
+    {
+      id: 102,
+      firstName: "Дмитрий",
+      lastName: "Козлов",
+      email: "d.kozlov@example.com",
+      phone: "+7 (925) 234-56-78",
+      stage: "Телефонное интервью",
+      createdBy: "Елена Петрова",
+      resumeFileUrl: "",
+      resumeName: "Козлов_Дмитрий_резюме.pdf",
+      isDeleted: false,
+    },
+    {
+      id: 103,
+      firstName: "Иван",
+      lastName: "Морозов",
+      email: "i.morozov@example.com",
+      phone: null,
+      stage: "Отказ",
+      createdBy: "Михаил Сидоров",
+      resumeFileUrl: "",
+      resumeName: "Морозов_Иван_резюме.pdf",
+      isDeleted: true,
+    },
+  ]}
 
 export default function Applications() {
   const navigate = useNavigate();
