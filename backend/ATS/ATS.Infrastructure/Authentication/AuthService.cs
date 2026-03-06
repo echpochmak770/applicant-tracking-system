@@ -19,12 +19,14 @@ namespace ATS.Infrastructure.Authentication
         private readonly IUserRepository _userRepository;
         private readonly PasswordHasher<User> _passwordHasher;
         private readonly JwtSettings _jwtSettings;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public AuthService(IUserRepository userRepository, IOptions<JwtSettings> jwtOptions)
+        public AuthService(IUserRepository userRepository, IOptions<JwtSettings> jwtOptions, IUnitOfWork unitOfWork)
         {
             _userRepository = userRepository;
             _passwordHasher = new PasswordHasher<User>();
             _jwtSettings = jwtOptions.Value;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
@@ -65,6 +67,7 @@ namespace ATS.Infrastructure.Authentication
             user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
 
             await _userRepository.AddAsync(user);
+            await _unitOfWork.SaveChangesAsync();
 
             return GenerateToken(user);
         }
