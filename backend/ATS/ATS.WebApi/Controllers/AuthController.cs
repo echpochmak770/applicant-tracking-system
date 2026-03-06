@@ -13,9 +13,10 @@ namespace ATS.WebApi.Controllers
         private readonly IAuthService _authService;
         private readonly ICurrentUserService _currentUserService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, ICurrentUserService currentUserService)
         {
             _authService = authService;
+            _currentUserService = currentUserService;
         }
 
         [HttpPost("register")]
