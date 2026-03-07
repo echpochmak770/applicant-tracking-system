@@ -15,19 +15,17 @@ const modules = [AllCommunityModule];
 
 const ProtectedRoute = () => {
   const { data: user, isLoading, isError } = useMeQuery();
-  
-  // ВРЕМЕННО: проверяем localStorage, пока CORS не починят
-  const fakeAuth = localStorage.getItem("auth_token") === "true";
 
-  if (isLoading && !fakeAuth) {
-    return <div className="flex h-screen w-full items-center justify-center">Загрузка...</div>;
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background text-foreground">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-primary"></div>
+      </div>
+    );
   }
-
-  // Если есть "фейковый" токен — пускаем, даже если /me выдал ошибку
-  if (!fakeAuth && (isError || !user)) {
+  if (isError || !user) {
     return <Navigate to="/auth" replace />;
   }
-
   return <Outlet />;
 };
 
@@ -46,11 +44,11 @@ const RootLayout = () => {
 
 const router = createBrowserRouter([
   {
-    path: "auth",
+    path: "/auth",
     element: <LoginPage />,
   },
   {
-    path: "register",
+    path: "/register",
     element: <RegisterPage />,
   },
   {

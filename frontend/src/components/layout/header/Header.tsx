@@ -2,6 +2,7 @@ import { type UserDto } from "@/api/auth/model/types";
 import { Button } from "@/components/ui/button";
 import { LogOut, LayoutDashboard } from "lucide-react";
 import { useNavigate } from "react-router";
+import { queryClient } from "@/api/query";
 
 interface HeaderProps {
   user?: UserDto;
@@ -11,7 +12,7 @@ export function Header({ user }: HeaderProps) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("auth_token");
+    queryClient.clear();
     navigate("/auth");
   };
 
