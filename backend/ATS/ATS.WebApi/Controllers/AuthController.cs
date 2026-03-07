@@ -22,40 +22,32 @@ namespace ATS.WebApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            var result = await _authService.RegisterAsync(dto);
-            return Ok(result);
+            var authResult = await _authService.RegisterAsync(dto);
+            SetTokenCookie(authResult.AccessToken, authResult.ExpiresAt);
+
+            return Ok(new { message = "User registered and logged in successfully" });
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
             var authResult = await _authService.LoginAsync(dto);
-
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = authResult.ExpiresAt
-            };
-
-            Response.Cookies.Append("accessToken", authResult.AccessToken, cookieOptions);
+            SetTokenCookie(authResult.AccessToken, authResult.ExpiresAt);
 
             return Ok(new { message = "Logged in successfully" });
         }
 
-        [HttpGet("me")]
-        [Authorize]
-        public ActionResult<UserMeDto> GetMe()
+        private void SetTokenCookie(string token, DateTime expiresAt)
         {
-            var result = new UserMeDto
+            var cookieOptions = new CookieOptions
             {
-                Id = _currentUserService.RequiredUserId,
-                Email = _currentUserService.Email,
-                FullName = _currentUserService.FullName,
-                Role = _currentUserService.Role
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
+                Secure = false,
+                Expires = expiresAt
             };
 
-            return Ok(result);
+            Response.Cookies.Append("accessToken", token, cookieOptions);
         }
     }
 }
