@@ -5,71 +5,76 @@ import type { ColDef } from "ag-grid-community";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useVacanciesQuery } from "@/api/vacancies/model/queries";
-import { type VacanciesParamsDto, type VacancyItemDto, type VacancyStatus } from "@/api/vacancies/model/types";
-import { StatusVacancyFilter } from "@/components/filters/statusVacancyFilter";
+import { type VacancyItemDto } from "@/api/vacancies/model/types";
+import { SortDropdown } from "@/components/sorters/ColumnSortHeader";
 
 export default function Home() {
   const navigate = useNavigate();
 
-  const [filters, setFilters] = useState<VacanciesParamsDto>({
+  const [filters, setFilters] = useState({
     page: 1,
     pageSize: 10,
     search: "",
-    status: undefined
+    sortBy: undefined as string | undefined,
+    sortDirection: undefined as "asc" | "desc" | undefined,
   });
 
   const { data, isLoading, isError } = useVacanciesQuery(filters);
 
-  const colDefs = useMemo<ColDef<VacancyItemDto>[]>(() => [
+  const handleSort = (field: string, direction: "asc" | "desc" | undefined) => {
+    setFilters((prev) => ({
+      ...prev,
+      sortBy: direction ? field : undefined,
+      sortDirection: direction,
+      page: 1,
+    }));
+  };
+
+  const HeaderWithActions = ({ title, field }: { title: string; field: string }) => (
+    <div className="flex items-center justify-between w-full group">
+      <span className="font-semibold">{title}</span>
+      <div className="flex items-center gap-0.5">
+        <SortDropdown 
+          field={field} 
+          currentSortBy={filters.sortBy} 
+          currentDirection={filters.sortDirection} 
+          onSort={handleSort} 
+        />
+      </div>
+    </div>
+  );
+
+const colDefs = useMemo<ColDef<VacancyItemDto>[]>(() => [
     {
       headerName: "#",
-      width: 70,
-      valueGetter: (params) => {
-        const index = params.node?.rowIndex ?? 0;
-        return (filters.page - 1) * filters.pageSize + index + 1;
-      },
-      sortable: false,
-      filter: false,
+      width: 60,
+      valueGetter: (params) => (filters.page - 1) * filters.pageSize + (params.node?.rowIndex ?? 0) + 1,
     },
     {
       field: "title",
-      headerName: "Название вакансии",
+      headerComponent: () => <HeaderWithActions title="Название" field="title" />,
       flex: 1,
       onCellClicked: (params) => navigate(`/applications/${params.data?.id}`),
       cellClass: "cursor-pointer hover:text-primary hover:underline font-medium",
     },
     {
       field: "description",
-      headerName: "Описание",
+      headerComponent: () => <HeaderWithActions title="Описание" field="description" />,
       flex: 1.2,
-      filter: true,   
     },
     {
       field: "status",
-      headerName: "Статус",
+      headerComponent: () => <HeaderWithActions title="Статус" field="status" />,
       width: 150,
       cellClass: "font-medium text-primary",
-      headerComponent: () => (
-        <StatusVacancyFilter 
-          value={filters.status || "all"} 
-          onValueChange={(val: VacancyStatus) => setFilters(prev => ({ 
-            ...prev, 
-            status: val ?? undefined, 
-            page: 1 
-          }))} 
-        />
-      )
     },
     {
       field: "createdAt",
-      headerName: "Дата создания",
-      width: 130,
-      valueFormatter: (params) => {
-        if (!params.value) return "";
-        return new Intl.DateTimeFormat("ru-RU").format(new Date(params.value));
-      },
+      headerComponent: () => <HeaderWithActions title="Создана" field="createdAt" />,
+      width: 160,
+      valueFormatter: (params) => params.value ? new Intl.DateTimeFormat("ru-RU").format(new Date(params.value)) : "",
     },
-  ], [filters.page, filters.pageSize, navigate]);
+  ], [filters, navigate]);
 
   if (isError) return <div className="p-6">Ошибка загрузки...</div>;
 
@@ -78,7 +83,6 @@ export default function Home() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Вакансии</h1>
-          <p className="text-muted-foreground">Найдено всего: {data?.totalCount ?? 0}</p>
         </div>
         <Button className="gap-2 h-full">
           <Plus className="h-4 w-4" /> Добавить
@@ -91,12 +95,14 @@ export default function Home() {
             rowData={data?.items ?? []}
             columnDefs={colDefs}
             loading={isLoading}
-            pagination={false} 
+            pagination={false}
+            suppressMenuHide={true}
+            enableCellTextSelection={true}
             overlayNoRowsTemplate="Вакансий не найдено"
           />
         </div>
 
-        <div className="flex items-center justify-end space-x-2 pt-2 px-2 ">
+        <div className="flex items-center justify-end space-x-2 pt-2 px-2">
             <Button
               variant="outline"
               size="sm"
