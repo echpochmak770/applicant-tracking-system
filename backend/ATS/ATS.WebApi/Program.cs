@@ -1,7 +1,7 @@
 using ATS.Infrastructure.Helpers;
 using ATS.WebApi.Middlewares;
 using ATS.WebApi.Helpers;
-using ATS.Core.Helpers;
+using ATS.UseCases.Helpers;
 
 namespace ATS.WebApi
 {
@@ -12,13 +12,13 @@ namespace ATS.WebApi
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllers();
-            builder.Services.AddOpenApi();
             builder.Services.AddInfrastructureServices(builder.Configuration);
             builder.Services.AddCoreServices();
             builder.Services.AddApiServices(builder.Configuration);
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerWithJwt();
 
             var app = builder.Build();
 
@@ -28,7 +28,6 @@ namespace ATS.WebApi
 
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }

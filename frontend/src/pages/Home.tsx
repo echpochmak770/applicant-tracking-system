@@ -74,8 +74,8 @@ export default function Home() {
   if (isError) return <div className="p-6">Ошибка загрузки...</div>;
 
   return (
-    <div className="flex flex-col gap-3 p-6">
-      <div className="flex items-start justify-between">
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Вакансии</h1>
           <p className="text-muted-foreground">Найдено всего: {data?.totalCount ?? 0}</p>

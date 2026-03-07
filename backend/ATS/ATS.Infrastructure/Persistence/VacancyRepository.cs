@@ -1,5 +1,7 @@
 ﻿using ATS.Domain.Entities;
 using ATS.Domain.Interfaces;
+using ATS.UseCases.Common.Models;
+using ATS.UseCases.Helpers;
 using Azure.Core;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -12,6 +14,14 @@ namespace ATS.Infrastructure.Persistence
     public class VacancyRepository : Repository<Vacancy>, IVacancyRepository
     {
         public VacancyRepository(AppDbContext dbContext) : base(dbContext) { }
+
+        protected override string MapSortField(string sortBy) => sortBy switch
+        {
+            "author" => "CreatedBy.FirstName",
+            "status" => "Status",
+            "title" => "Title",
+            _ => sortBy
+        };
 
         public async Task<(List<Vacancy> Items, int TotalCount)> GetAllPagedAsync(
             string? search,
@@ -33,22 +43,9 @@ namespace ATS.Infrastructure.Persistence
                     EF.Functions.Like(v.CreatedBy.FirstName + " " + v.CreatedBy.LastName, $"%{search}%"));
             }
 
-            query = sortBy?.ToLower() switch
-            {
-                "title" => ApplySort(query, v => v.Title, sortDirection),
-                "createdat" => ApplySort(query, v => v.CreatedAt, sortDirection),
-                "status" => ApplySort(query, v => v.Status, sortDirection),
-                _ => query.OrderByDescending(v => v.CreatedAt)
-            };
+            query = ApplyUniversalSorting(query, sortBy, sortDirection, "CreatedAt");
 
-            var totalCount = await query.CountAsync(ct);
-
-            var items = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync(ct);
-
-            return (items, totalCount);
+            return await GetPagedDataAsync(query, page, pageSize, ct);
         }
 
         public async Task<Vacancy?> GetFullAsync(Guid id)

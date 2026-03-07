@@ -15,3 +15,15 @@ export type RegisterResponse = {
     accessToken: string,
     expiresAt: string
 }
+
+export type LoginResponse = {
+    message: string,
+    statusCode?: number
+}
+
+export interface UserDto {
+  id: string;
+  email: string;
+  fullName: string;
+  role: 'Recruiter' | 'Admin'; 
+}

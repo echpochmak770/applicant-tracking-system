@@ -8,11 +8,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Mail, LockKeyhole, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router";
 import { LoginSchema, type LoginSchemaType } from "@/schemas/auth/auth.schema";
+import { useLoginMutation } from "@/api/auth/model/mutations";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { mutate, isPending } = useLoginMutation();
 
   const {
     register,
@@ -20,20 +21,12 @@ export default function LoginPage() {
     formState: { errors, isValid, isSubmitted },
   } = useForm<LoginSchemaType>({
     resolver: zodResolver(LoginSchema),
-    mode: 'onBlur',
   });
 
   const isButtonDisabled = isSubmitted && !isValid;
 
   const handleAuth = (data: LoginSchemaType) => {
-    console.log(data)
-    if (isLoading) return;
-    setIsLoading(true);
-    setTimeout(() => {
-      localStorage.setItem("auth_token", "true");
-      navigate("/");
-      setIsLoading(false);
-    }, 1000);
+    mutate(data);
   };
 
   return (
@@ -98,15 +91,13 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Кнопки */}
             <div className="pt-1">
-              <Button 
-                type="submit" 
+              <Button        
                 className="w-full h-8 text-sm"
-                size="sm"
-                disabled={isButtonDisabled || isLoading}
-              >
-                {isLoading ? 'Вход...' : 'Войти'}
+                size="sm" 
+                type="submit" 
+                disabled={isButtonDisabled || isPending}>
+                {isPending ? 'Вход...' : 'Войти'}
               </Button>
               
               <div className="relative my-2">

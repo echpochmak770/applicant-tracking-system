@@ -135,8 +135,8 @@ export default function Applications() {
   ]);
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div className="flex items-center justify-between mb-5">
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between mb-2">
         <div className="flex gap-2 items-center">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="size-6" />

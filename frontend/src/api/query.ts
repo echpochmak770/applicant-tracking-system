@@ -16,5 +16,7 @@ export const invalidate = (key: readonly unknown[]) =>
 export const removeQueries = (key: readonly unknown[]) =>
   queryClient.removeQueries({ queryKey: key });
 
-export const queryKeys = {
-} as const;
+export const authKeys = {
+  all: ['auth'] as const,
+  me: ['auth', 'me'] as const,
+};

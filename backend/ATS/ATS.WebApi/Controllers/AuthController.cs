@@ -1,5 +1,5 @@
-﻿using ATS.Core.Features.Auth.DTOs;
-using ATS.Core.Features.Auth.Interfaces;
+﻿using ATS.UseCases.Features.Auth.DTOs;
+using ATS.UseCases.Features.Auth.Interfaces;
 using ATS.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,31 +13,26 @@ namespace ATS.WebApi.Controllers
         private readonly IAuthService _authService;
         private readonly ICurrentUserService _currentUserService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, ICurrentUserService currentUserService)
         {
             _authService = authService;
+            _currentUserService = currentUserService;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            var result = await _authService.RegisterAsync(dto);
-            return Ok(result);
+            var authResult = await _authService.RegisterAsync(dto);
+            SetTokenCookie(authResult.AccessToken, authResult.ExpiresAt);
+
+            return Ok(new { message = "User registered and logged in successfully" });
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
             var authResult = await _authService.LoginAsync(dto);
-
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = authResult.ExpiresAt
-            };
-
-            Response.Cookies.Append("accessToken", authResult.AccessToken, cookieOptions);
+            SetTokenCookie(authResult.AccessToken, authResult.ExpiresAt);
 
             return Ok(new { message = "Logged in successfully" });
         }
@@ -55,6 +50,19 @@ namespace ATS.WebApi.Controllers
             };
 
             return Ok(result);
+        }
+
+        private void SetTokenCookie(string token, DateTime expiresAt)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
+                Secure = false,
+                Expires = expiresAt
+            };
+
+            Response.Cookies.Append("accessToken", token, cookieOptions);
         }
     }
 }

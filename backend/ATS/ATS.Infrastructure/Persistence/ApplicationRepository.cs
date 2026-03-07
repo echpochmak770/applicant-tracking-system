@@ -12,6 +12,15 @@ namespace ATS.Infrastructure.Persistence
     {
         public ApplicationRepository(AppDbContext dbContext) : base(dbContext) { }
 
+        protected override string MapSortField(string sortBy) => sortBy switch
+        {
+            "name" => "Candidate.FirstName",
+            "email" => "Candidate.Email",
+            "stage" => "CurrentStage.Order",
+            "order" => "ToStage.Order",
+            _ => sortBy
+        };
+
         public async Task<List<Application>> GetByCandidateAsync(Guid candidateId)
         {
             return await _dbSet
@@ -50,26 +59,14 @@ namespace ATS.Infrastructure.Persistence
             if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(a =>
-                    EF.Functions.Like(a.Candidate.FirstName + " " + a.Candidate.LastName, $"%{search}%") ||
+                    EF.Functions.Like(a.Candidate.FirstName, $"%{search}%") ||
+                    EF.Functions.Like(a.Candidate.LastName, $"%{search}%") ||
                     EF.Functions.Like(a.Candidate.Email, $"%{search}%"));
             }
 
-            query = sortBy?.ToLower() switch
-            {
-                "name" => ApplySort(query, a => a.Candidate.FirstName + " " + a.Candidate.LastName, sortDirection),
-                "email" => ApplySort(query, a => a.Candidate.Email, sortDirection),
-                "stage" => ApplySort(query, a => a.CurrentStage.Order, sortDirection),
-                _ => query.OrderByDescending(a => a.CreatedAt)
-            };
+            query = ApplyUniversalSorting(query, sortBy, sortDirection, "CreatedAt");
 
-            var totalCount = await query.CountAsync(ct);
-
-            var items = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync(ct);
-
-            return (items, totalCount);
+            return await GetPagedDataAsync(query, page, pageSize, ct);
         }
 
         public async Task<Application?> GetWithDetailsAsync(Guid id)
@@ -101,21 +98,9 @@ namespace ATS.Infrastructure.Persistence
                 .Include(h => h.ChangedBy)
                 .AsNoTracking();
 
-            historyQuery = sortBy?.ToLower() switch
-            {
-                "order" => ApplySort(historyQuery, h => h.ToStage.Order, sortDirection),
-                "changedat" => ApplySort(historyQuery, h => h.ChangedAt, sortDirection),
-                _ => historyQuery.OrderByDescending(h => h.ChangedAt)
-            };
+            historyQuery = ApplyUniversalSorting(historyQuery, sortBy, sortDirection, "ChangedAt");
 
-            var totalCount = await historyQuery.CountAsync(ct);
-
-            var items = await historyQuery
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync(ct);
-
-            return (items, totalCount);
+            return await GetPagedDataAsync(historyQuery, page, pageSize, ct);
         }
     }
 }
