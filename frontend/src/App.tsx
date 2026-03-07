@@ -35,7 +35,7 @@ const RootLayout = () => {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header user={user}/>
-      <main className="w-full max-w-[1440px] m-auto p-6"> 
+      <main className="w-full max-w-[1440px] mx-auto p-6"> 
         <Outlet />
       </main>
     </div>
