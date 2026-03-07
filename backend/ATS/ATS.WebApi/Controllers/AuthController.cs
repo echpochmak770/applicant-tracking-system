@@ -37,6 +37,21 @@ namespace ATS.WebApi.Controllers
             return Ok(new { message = "Logged in successfully" });
         }
 
+        [HttpGet("me")]
+        [Authorize]
+        public ActionResult<UserMeDto> GetMe()
+        {
+            var result = new UserMeDto
+            {
+                Id = _currentUserService.RequiredUserId,
+                Email = _currentUserService.Email,
+                FullName = _currentUserService.FullName,
+                Role = _currentUserService.Role
+            };
+
+            return Ok(result);
+        }
+
         private void SetTokenCookie(string token, DateTime expiresAt)
         {
             var cookieOptions = new CookieOptions
