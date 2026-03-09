@@ -51,7 +51,8 @@ namespace ATS.WebApi.Helpers
                     {
                         policy.WithOrigins("https://localhost:5173", "http://localhost:5173")
                             .AllowAnyHeader()
-                            .AllowAnyMethod();
+                            .AllowAnyMethod()
+                            .AllowCredentials();
                     });
             });
         }

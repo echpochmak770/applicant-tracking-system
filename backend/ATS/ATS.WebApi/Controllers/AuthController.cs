@@ -22,23 +22,17 @@ namespace ATS.WebApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            var result = await _authService.RegisterAsync(dto);
-            return Ok(result);
+            var authResult = await _authService.RegisterAsync(dto);
+            SetTokenCookie(authResult.AccessToken, authResult.ExpiresAt);
+
+            return Ok(new { message = "User registered and logged in successfully" });
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
             var authResult = await _authService.LoginAsync(dto);
-
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = authResult.ExpiresAt
-            };
-
-            Response.Cookies.Append("accessToken", authResult.AccessToken, cookieOptions);
+            SetTokenCookie(authResult.AccessToken, authResult.ExpiresAt);
 
             return Ok(new { message = "Logged in successfully" });
         }
@@ -56,6 +50,19 @@ namespace ATS.WebApi.Controllers
             };
 
             return Ok(result);
+        }
+
+        private void SetTokenCookie(string token, DateTime expiresAt)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
+                Secure = false,
+                Expires = expiresAt
+            };
+
+            Response.Cookies.Append("accessToken", token, cookieOptions);
         }
     }
 }
