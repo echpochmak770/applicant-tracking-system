@@ -1,4 +1,5 @@
 import { QueryClient } from "@tanstack/react-query";
+import { type VacanciesParamsDto } from "./vacancies/model/types";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,4 +20,9 @@ export const removeQueries = (key: readonly unknown[]) =>
 export const authKeys = {
   all: ['auth'] as const,
   me: ['auth', 'me'] as const,
+};
+
+export const vacancyKeys = {
+  all: ['vacancies'] as const,
+  list: (params: VacanciesParamsDto) => ['vacancies', 'list', params] as const,
 };

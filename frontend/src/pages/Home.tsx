@@ -84,7 +84,7 @@ const colDefs = useMemo<ColDef<VacancyItemDto>[]>(() => [
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Вакансии</h1>
         </div>
-        <Button className="gap-2 h-full">
+        <Button className="gap-2 h-full" onClick={() => navigate('/add-vacancy')}>
           <Plus className="h-4 w-4" /> Добавить
         </Button>
       </div>

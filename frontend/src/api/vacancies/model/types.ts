@@ -25,3 +25,9 @@ export type VacanciesResponse = {
   pageSize: number;
   totalPages: number;
 };
+
+export type CreateVacancyBody = {
+  title: string;
+  description: string;
+  stagesNames: string[];
+}
