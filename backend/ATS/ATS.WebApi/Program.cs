@@ -1,5 +1,7 @@
-using Microsoft.EntityFrameworkCore;
-using ATS.Infrastructure.Persistence;
+using ATS.Infrastructure.Helpers;
+using ATS.WebApi.Middlewares;
+using ATS.WebApi.Helpers;
+using ATS.UseCases.Helpers;
 
 namespace ATS.WebApi
 {
@@ -9,32 +11,33 @@ namespace ATS.WebApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
-            builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(
-                    builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddInfrastructureServices(builder.Configuration);
+            builder.Services.AddCoreServices();
+            builder.Services.AddApiServices(builder.Configuration);
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerWithJwt();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            app.ApplyMigrations();
+            
+            app.UseMiddleware<ExceptionMiddleware>();
+
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseCors("AllowFrontend");
 
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
 

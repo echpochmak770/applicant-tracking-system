@@ -1,0 +1,17 @@
+$projects = @("ATS.WebApi") 
+
+foreach ($proj in $projects) {
+    Write-Host "Building image for $proj..." -ForegroundColor Cyan
+    
+    if (Test-Path "./$proj/$proj.csproj") {
+        dotnet publish "./$proj/$proj.csproj" `
+            /t:PublishContainer `
+            -c Release `
+            --os linux `
+            --arch x64 `
+            -p:ContainerArchiveOutputPath="./dist-images/$($proj.ToLower()).tar" `
+            -p:ContainerImageName="$($proj.ToLower())"
+    } else {
+        Write-Host "Project $proj not found!" -ForegroundColor Red
+    }
+}
