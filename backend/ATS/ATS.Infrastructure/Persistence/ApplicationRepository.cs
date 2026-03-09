@@ -66,13 +66,11 @@ namespace ATS.Infrastructure.Persistence
 
         public async Task<Application?> GetWithDetailsAsync(Guid id)
         {
-            return await _dbSet
+            return await _context.Applications
                 .Include(a => a.Candidate)
-                .Include(a => a.Vacancy)
                 .Include(a => a.CurrentStage)
+                .Include(a => a.CreatedBy)
                 .Include(a => a.Resume)
-                .Include(a => a.Histories)
-                .Include(a => a.Communications)
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 

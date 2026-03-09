@@ -39,7 +39,7 @@ namespace ATS.WebApi.Controllers
 
         [HttpGet("me")]
         [Authorize]
-        public ActionResult<UserMeDto> GetMe()
+        public IActionResult GetMe()
         {
             var result = new UserMeDto
             {
