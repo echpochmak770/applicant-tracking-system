@@ -2,9 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authActions } from "../action/auth";
 import { authKeys } from "@/api/query";
 import { useNavigate } from "react-router";
+import { queryClient } from "@/api/query";
 
 export const useRegisterMutation = () => {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
