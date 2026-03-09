@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ATS.UseCases.Common.Models
+namespace ATS.Domain.Common
 {
     public class ColumnFilter
     {

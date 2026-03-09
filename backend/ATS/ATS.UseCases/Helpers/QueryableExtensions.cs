@@ -1,4 +1,4 @@
-﻿using ATS.UseCases.Common.Models;
+﻿using ATS.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -10,9 +10,9 @@ namespace ATS.UseCases.Helpers
     {
         public static IQueryable<T> ApplyDynamicQuery<T>(this IQueryable<T> query, PagedQuery request)
         {
-            query = query.ApplyDynamicFilter(request.Columns);
+            query = query.ApplyDynamicFilter(request.ColumnFilters);
 
-            var sorts = request.Columns
+            var sorts = request.ColumnFilters
                 .Where(c => !string.IsNullOrEmpty(c.Sort))
                 .Select(c => new SortModel
                 {

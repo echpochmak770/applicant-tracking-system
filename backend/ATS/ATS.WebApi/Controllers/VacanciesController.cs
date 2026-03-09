@@ -31,10 +31,7 @@ namespace ATS.WebApi.Controllers
             [FromRoute] Guid vacancyId,
             [FromQuery] GetApplicationsByVacancyQuery query)
         {
-            if (vacancyId == Guid.Empty)
-            {
-                return BadRequest("Empty vacancy id");
-            }
+            if (vacancyId == Guid.Empty) return BadRequest("Empty vacancy id");
 
             query.VacancyId = vacancyId;
 
@@ -43,8 +40,7 @@ namespace ATS.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(
-            [FromBody] CreateVacancyCommand command)
+        public async Task<IActionResult> Create([FromBody] CreateVacancyCommand command)
         {
             var id = await _mediator.Send(command);
 

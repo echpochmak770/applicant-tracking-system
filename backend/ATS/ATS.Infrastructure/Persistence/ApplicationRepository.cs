@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
+﻿using ATS.Domain.Common;
 using ATS.Domain.Entities;
 using ATS.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Text;
 
 namespace ATS.Infrastructure.Persistence
 {
@@ -39,13 +40,9 @@ namespace ATS.Infrastructure.Persistence
                 .ToListAsync();
         }
 
-        public async Task<(List<Application> Items, int TotalCount)> GetByVacancyPagedAsync(
+        public async Task<(List<Application> Items, int Total)> GetByVacancyPagedAsync(
             Guid vacancyId,
-            string? search,
-            string? sortBy,
-            string? sortDirection,
-            int page,
-            int pageSize,
+            PagedQuery request,
             CancellationToken ct)
         {
             var query = _dbSet
@@ -56,17 +53,15 @@ namespace ATS.Infrastructure.Persistence
                 .Where(a => a.VacancyId == vacancyId && !a.IsDeleted)
                 .AsNoTracking();
 
-            if (!string.IsNullOrWhiteSpace(search))
+            if (!string.IsNullOrWhiteSpace(request.Search))
             {
                 query = query.Where(a =>
-                    EF.Functions.Like(a.Candidate.FirstName, $"%{search}%") ||
-                    EF.Functions.Like(a.Candidate.LastName, $"%{search}%") ||
-                    EF.Functions.Like(a.Candidate.Email, $"%{search}%"));
+                    a.Candidate.FirstName.Contains(request.Search) ||
+                    a.Candidate.LastName.Contains(request.Search) ||
+                    a.Candidate.Email.Contains(request.Search));
             }
 
-            query = ApplyUniversalSorting(query, sortBy, sortDirection, "CreatedAt");
-
-            return await GetPagedDataAsync(query, page, pageSize, ct);
+            return await GetPagedDataAsync(query, request, ct);
         }
 
         public async Task<Application?> GetWithDetailsAsync(Guid id)
@@ -81,13 +76,10 @@ namespace ATS.Infrastructure.Persistence
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task<(List<ApplicationHistory> Items, int TotalCount)> GetStageHistoryPagedAsync(
+        public async Task<(List<ApplicationHistory> Items, int Total)> GetStageHistoryPagedAsync(
             Guid vacancyId,
             Guid applicationId,
-            string? sortBy,
-            string? sortDirection,
-            int page,
-            int pageSize,
+            PagedQuery request,
             CancellationToken ct)
         {
             var historyQuery = _dbSet
@@ -98,9 +90,7 @@ namespace ATS.Infrastructure.Persistence
                 .Include(h => h.ChangedBy)
                 .AsNoTracking();
 
-            historyQuery = ApplyUniversalSorting(historyQuery, sortBy, sortDirection, "ChangedAt");
-
-            return await GetPagedDataAsync(historyQuery, page, pageSize, ct);
+            return await GetPagedDataAsync(historyQuery, request, ct);
         }
     }
 }

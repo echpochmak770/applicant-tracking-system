@@ -1,4 +1,4 @@
-﻿namespace ATS.UseCases.Common.Models
+﻿namespace ATS.Domain.Common
 {
     public class PagedResult<T>
     {
