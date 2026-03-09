@@ -1,4 +1,5 @@
 ﻿using ATS.UseCases.Features.Applications.Queries;
+using ATS.UseCases.Features.Stages.Queries;
 using ATS.UseCases.Features.Vacancies.Commands;
 using ATS.UseCases.Features.Vacancies.Queries;
 using MediatR;
@@ -58,6 +59,13 @@ namespace ATS.WebApi.Controllers
         public async Task<IActionResult> GetById(Guid id)
         {
             var result = await _mediator.Send(new GetVacancyByIdQuery { Id = id });
+            return Ok(result);
+        }
+
+        [HttpGet("{vacancyId}/stages")]
+        public async Task<IActionResult> GetStages(Guid vacancyId)
+        {
+            var result = await _mediator.Send(new GetStagesByVacancyQuery { VacancyId = vacancyId });
             return Ok(result);
         }
     }
