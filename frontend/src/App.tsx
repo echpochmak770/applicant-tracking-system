@@ -7,9 +7,10 @@ import { AllCommunityModule } from "ag-grid-community";
 import { AgGridProvider } from "ag-grid-react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./api/query";
-import { useState } from "react";
 import { useMeQuery } from "./api/auth/model/queries";
 import { Header } from "./components/layout/header/Header";
+import CreateVacancy from "./pages/MutateForms/CreateVacancy";
+import { Toaster } from "./components/ui/sonner";
 
 const modules = [AllCommunityModule];
 
@@ -38,9 +39,18 @@ const RootLayout = () => {
       <main className="w-full max-w-[1440px] mx-auto p-6"> 
         <Outlet />
       </main>
+      <Toaster />
     </div>
   );
 };
+
+// const authLoader = async () => {
+//   try {
+//     return await queryClient.ensureQueryData(useMeQuery.getOptions());
+//   } catch (e) {
+//     return null;
+//   }
+// };
 
 const router = createBrowserRouter([
   {
@@ -67,6 +77,10 @@ const router = createBrowserRouter([
             element: <Home />,
           },
           {
+            path: "add-vacancy",
+            element: <CreateVacancy />,
+          },
+          {
             path: "applications/:id",
             element: <Applications />,
           },
@@ -81,10 +95,9 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-  const [stateQueryClient] = useState(() => queryClient);
   return (
     <AgGridProvider modules={modules}>
-      <QueryClientProvider client={stateQueryClient}>
+      <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
       </QueryClientProvider>
     </AgGridProvider>
