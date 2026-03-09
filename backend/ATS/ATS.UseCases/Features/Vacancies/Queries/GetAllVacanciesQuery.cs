@@ -1,4 +1,4 @@
-﻿using ATS.UseCases.Common.Models;
+﻿using ATS.Domain.Common;
 using ATS.UseCases.Features.Vacancies.DTOs;
 using MediatR;
 
