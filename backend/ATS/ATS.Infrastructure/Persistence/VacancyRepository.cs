@@ -25,9 +25,7 @@ namespace ATS.Infrastructure.Persistence
 
         public async Task<(List<Vacancy> Items, int Total)> GetAllPagedAsync(PagedQuery request, CancellationToken ct)
         {
-            var query = _context.Vacancies
-                .Include(v => v.CreatedBy)
-                .AsNoTracking();
+            var query = _context.Vacancies.AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
@@ -35,7 +33,17 @@ namespace ATS.Infrastructure.Persistence
                                          v.Description.Contains(request.Search));
             }
 
-            return await GetPagedDataAsync(query, request, ct);
+            query = query.ApplyDynamicQuery(request);
+
+            var total = await query.CountAsync(ct);
+
+            var items = await query
+                .Include(v => v.CreatedBy)
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToListAsync(ct);
+
+            return (items, total);
         }
 
         public async Task<Vacancy?> GetFullAsync(Guid id)
