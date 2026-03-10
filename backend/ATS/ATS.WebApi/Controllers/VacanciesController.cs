@@ -20,8 +20,8 @@ namespace ATS.WebApi.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllPaged([FromQuery] GetAllVacanciesQuery query)
+        [HttpPost("search")]
+        public async Task<IActionResult> GetAllPaged([FromBody] GetAllVacanciesQuery query)
         {
             var result = await _mediator.Send(query);
             return Ok(result);
