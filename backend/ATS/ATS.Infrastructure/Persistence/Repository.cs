@@ -41,9 +41,17 @@ namespace ATS.Infrastructure.Persistence
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(Guid id)
+        public async Task<T?> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includes)
         {
-            return await _dbSet.FirstOrDefaultAsync(e => e.Id == id);
+            IQueryable<T> query = _dbSet;
+
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                    query = query.Include(include);
+            }
+
+            return await query.FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public IQueryable<T> Query()

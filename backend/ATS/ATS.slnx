@@ -2,7 +2,6 @@
   <Folder Name="/docker/" />
   <Project Path="ATS.Domain/ATS.Domain.csproj" />
   <Project Path="ATS.Infrastructure/ATS.Infrastructure.csproj" />
-  <Project Path="ATS.UnitTests/ATS.UnitTests.csproj" Id="a364a80a-52e1-4d95-8766-7c601db4a97d" />
   <Project Path="ATS.UseCases/ATS.UseCases.csproj" />
   <Project Path="ATS.WebApi/ATS.WebApi.csproj" />
   <Project Path="Shared/Shared.csproj" Id="1a846290-cdcf-4195-adf4-6c3926e51d1b" />

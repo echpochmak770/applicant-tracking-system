@@ -1,6 +1,7 @@
 ﻿using ATS.UseCases.Features.Applications.Commands;
 using ATS.UseCases.Features.Applications.DTOs;
 using ATS.UseCases.Features.Applications.Queries;
+using ATS.UseCases.Features.Resumes.Queries;
 using ATS.WebApi.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -55,5 +56,11 @@ namespace ATS.WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpGet("{id}/resume")]
+        public async Task<IActionResult> DownloadResume(Guid id)
+        {
+            var result = await _mediator.Send(new GetResumeQuery { ApplicationId = id });
+            return File(result.Content, result.ContentType, result.FileName);
+        }
     }
 }
