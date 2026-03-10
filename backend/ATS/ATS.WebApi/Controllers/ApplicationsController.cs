@@ -1,6 +1,7 @@
 ﻿using ATS.UseCases.Features.Applications.Commands;
 using ATS.UseCases.Features.Applications.DTOs;
 using ATS.UseCases.Features.Applications.Queries;
+using ATS.WebApi.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,13 +31,20 @@ namespace ATS.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] CreateApplicationCommand command, IFormFile resumeFile)
+        public async Task<IActionResult> Create([FromForm] CreateApplicationRequest request)
         {
-            command.ResumeStream = resumeFile.OpenReadStream();
-            command.ResumeFileName = resumeFile.FileName;
+            var command = new CreateApplicationCommand
+            {
+                VacancyId = request.VacancyId,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                Phone = request.Phone,
+                ResumeStream = request.ResumeFile.OpenReadStream(),
+                ResumeFileName = request.ResumeFile.FileName
+            };
 
             var id = await _mediator.Send(command);
-
             return CreatedAtAction(nameof(GetById), new { id }, new { id });
         }
 
