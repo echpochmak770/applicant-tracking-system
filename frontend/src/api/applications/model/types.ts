@@ -20,9 +20,25 @@ export type ApplicationsResponse = {
 
 export interface ApplicationsParamsDto {
   vacancyId: string;
+  applicationId?: string;
   search?: string;
   sortBy?: keyof ApplicationItemDto;
   sortDirection?: 'asc' | 'desc';
   page: number;
   pageSize: number;
 }
+
+export type ApplicationHistoryDto = {
+  applicationId: string, 
+  vacancyId: string,
+}
+
+export type ApplicationHistoryItemDto = {
+  id: string;
+  fromStageName: string;
+  toStageName: string;
+  order: number;
+  changedAt: string;
+  comment: string;
+  changedByName: string;
+};

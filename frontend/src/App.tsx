@@ -11,7 +11,7 @@ import LoginPage from "./pages/auth/LoginPage";
 import VacancyListPage from "./pages/vacancies/VacanciesListPage";
 import CreateVacancyPage from "./pages/vacancies/CreateVacancyPage";
 import ApplicationsListPage from "./pages/applications/ApplicationsListPage";
-import ApplicationHistoryPage from "./pages/applications/ApplicationHistoryPage";
+// import ApplicationHistoryPage from "./pages/applications/ApplicationHistoryPage";
 
 const modules = [AllCommunityModule];
 
@@ -75,27 +75,34 @@ const router = createBrowserRouter([
           },
           {
             path: "vacancies",
-            element: <VacancyListPage />, // переименованный Home
-          },
-          {
-            path: "vacancies/create", // лучше чем add-vacancy
-            element: <CreateVacancyPage />,
-          },
-          {
-            // Здесь id — это id вакансии, чтобы посмотреть список откликов
-            path: "vacancies/:vacancyId/applications", 
-            element: <ApplicationsListPage />,
-          },
-          { 
-            // История конкретного отклика
-            path: "vacancies/:vacancyId/applications/:applicationId/history", 
-            element: <ApplicationHistoryPage /> 
+            children: [
+              { 
+                index: true, 
+                element: <VacancyListPage /> 
+              },
+              { 
+                path: "create", 
+                element: <CreateVacancyPage /> 
+              },
+              {
+                path: ":vacancyId/applications",
+                children: [
+                  { 
+                    index: true, 
+                    element: <ApplicationsListPage /> 
+                  },
+                  // { 
+                  //   path: ":applicationId/history", 
+                  //   element: <ApplicationHistoryPage /> 
+                  // },
+                ],
+              },
+            ],
           },
         ],
       },
     ],
-  },
-  { path: "*", element: <Navigate to="/" replace /> },
+  }
 ]);
 
 export default function App() {
