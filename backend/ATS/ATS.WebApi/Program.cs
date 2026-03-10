@@ -34,6 +34,8 @@ namespace ATS.WebApi
 
             app.UseHttpsRedirection();
 
+            app.UseStaticFiles();
+
             app.UseCors("AllowFrontend");
 
             app.UseAuthentication();

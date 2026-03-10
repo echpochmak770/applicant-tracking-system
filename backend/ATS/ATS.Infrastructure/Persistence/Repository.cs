@@ -1,7 +1,6 @@
 ﻿using ATS.Domain.Common;
 using ATS.Domain.Entities;
 using ATS.Domain.Interfaces;
-using ATS.UseCases.Common.Models;
 using ATS.UseCases.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -59,40 +58,19 @@ namespace ATS.Infrastructure.Persistence
 
         protected async Task<(List<TEntity> Items, int TotalCount)> GetPagedDataAsync<TEntity>(
             IQueryable<TEntity> query,
-            int page,
-            int pageSize,
+            PagedQuery request,
             CancellationToken ct)
         {
+            query = query.ApplyDynamicQuery(request);
+
             var totalCount = await query.CountAsync(ct);
 
             var items = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .ToListAsync(ct);
 
             return (items, totalCount);
-        }
-
-        protected IQueryable<TEntity> ApplyUniversalSorting<TEntity>(
-        IQueryable<TEntity> query,
-        string? sortBy,
-        string? direction,
-        string defaultField)
-        {
-            if (string.IsNullOrWhiteSpace(sortBy))
-            {
-                return query.ApplySorting(new List<SortModel>
-                {
-                    new() { Field = defaultField, Direction = "desc" }
-                });
-            }
-
-            var field = MapSortField(sortBy.ToLower());
-
-            return query.ApplySorting(new List<SortModel>
-            {
-                new() { Field = field, Direction = direction ?? "asc" }
-            });
         }
 
         protected virtual string MapSortField(string sortBy) => sortBy;

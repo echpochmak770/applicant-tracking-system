@@ -1,34 +1,34 @@
-﻿using ATS.Domain.Common;
+﻿using ATS.Domain.Interfaces;
 using ATS.UseCases.Features.Applications.DTOs;
 using ATS.UseCases.Features.Applications.Queries;
-using ATS.Domain.Interfaces;
 using MediatR;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace ATS.UseCases.Features.Applications.Handlers
 {
-    internal class GetApplicationsByVacancyHandler : IRequestHandler<GetApplicationsByVacancyQuery, PagedResult<ApplicationDto>>
+    internal class GetApplicationByIdHandler : IRequestHandler<GetApplicationByIdQuery, ApplicationDto>
     {
         private readonly IApplicationRepository _applicationRepository;
 
-        public GetApplicationsByVacancyHandler(IApplicationRepository applicationRepository)
+        public GetApplicationByIdHandler(IApplicationRepository applicationRepository)
         {
             _applicationRepository = applicationRepository;
         }
 
-        public async Task<PagedResult<ApplicationDto>> Handle(
-            GetApplicationsByVacancyQuery request,
+        public async Task<ApplicationDto> Handle(
+            GetApplicationByIdQuery request,
             CancellationToken cancellationToken)
         {
-            var (items, total) = await _applicationRepository.GetByVacancyPagedAsync(
-                request.VacancyId,
-                request,
-                cancellationToken);
+            var a = await _applicationRepository.GetWithDetailsAsync(request.Id);
 
-            var dtos = items.Select(a => new ApplicationDto
+            if (a == null)
+            {
+                throw new KeyNotFoundException($"Отклик с ID {request.Id} не найден.");
+            }
+
+            return new ApplicationDto
             {
                 Id = a.Id,
                 CandidateFullName = $"{a.Candidate.FirstName} {a.Candidate.LastName}",
@@ -39,14 +39,6 @@ namespace ATS.UseCases.Features.Applications.Handlers
                 ResumeFileUrl = a.Resume.FileUrl,
                 ResumeName = a.Resume.FileName,
                 IsDeleted = a.IsDeleted
-            }).ToList();
-
-            return new PagedResult<ApplicationDto>
-            {
-                Items = dtos,
-                TotalCount = total,
-                Page = request.Page,
-                PageSize = request.PageSize
             };
         }
     }

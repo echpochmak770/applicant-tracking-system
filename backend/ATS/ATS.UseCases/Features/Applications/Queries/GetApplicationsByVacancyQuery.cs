@@ -1,4 +1,4 @@
-﻿using ATS.UseCases.Common.Models;
+﻿using ATS.Domain.Common;
 using ATS.UseCases.Features.Applications.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.ModelBinding;

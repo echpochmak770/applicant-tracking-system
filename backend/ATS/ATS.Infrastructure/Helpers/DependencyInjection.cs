@@ -23,6 +23,7 @@ namespace ATS.Infrastructure.Helpers
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IFileService, FileService>();
 
             return services;
         }

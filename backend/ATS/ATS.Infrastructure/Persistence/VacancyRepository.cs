@@ -1,6 +1,6 @@
 ﻿using ATS.Domain.Entities;
 using ATS.Domain.Interfaces;
-using ATS.UseCases.Common.Models;
+using ATS.Domain.Common;
 using ATS.UseCases.Helpers;
 using Azure.Core;
 using Microsoft.EntityFrameworkCore;
@@ -23,29 +23,19 @@ namespace ATS.Infrastructure.Persistence
             _ => sortBy
         };
 
-        public async Task<(List<Vacancy> Items, int TotalCount)> GetAllPagedAsync(
-            string? search,
-            string? sortBy,
-            string? sortDirection,
-            int page,
-            int pageSize,
-            CancellationToken ct)
+        public async Task<(List<Vacancy> Items, int Total)> GetAllPagedAsync(PagedQuery request, CancellationToken ct)
         {
-            var query = _dbSet
+            var query = _context.Vacancies
                 .Include(v => v.CreatedBy)
                 .AsNoTracking();
 
-            if (!string.IsNullOrWhiteSpace(search))
+            if (!string.IsNullOrWhiteSpace(request.Search))
             {
-                query = query.Where(v =>
-                    EF.Functions.Like(v.Title, $"%{search}%") ||
-                    EF.Functions.Like(v.Description, $"%{search}%") ||
-                    EF.Functions.Like(v.CreatedBy.FirstName + " " + v.CreatedBy.LastName, $"%{search}%"));
+                query = query.Where(v => v.Title.Contains(request.Search) ||
+                                         v.Description.Contains(request.Search));
             }
 
-            query = ApplyUniversalSorting(query, sortBy, sortDirection, "CreatedAt");
-
-            return await GetPagedDataAsync(query, page, pageSize, ct);
+            return await GetPagedDataAsync(query, request, ct);
         }
 
         public async Task<Vacancy?> GetFullAsync(Guid id)

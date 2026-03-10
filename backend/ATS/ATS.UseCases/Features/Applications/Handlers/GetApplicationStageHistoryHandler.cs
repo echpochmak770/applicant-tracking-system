@@ -1,4 +1,4 @@
-﻿using ATS.UseCases.Common.Models;
+﻿using ATS.Domain.Common;
 using ATS.UseCases.Features.Applications.DTOs;
 using ATS.UseCases.Features.Applications.Queries;
 using ATS.Domain.Interfaces;
@@ -19,15 +19,14 @@ namespace ATS.UseCases.Features.Applications.Handlers
             _applicationRepository = applicationRepository;
         }
 
-        public async Task<PagedResult<ApplicationStageHistoryDto>> Handle(GetApplicationStageHistoryQuery request, CancellationToken ct)
+        public async Task<PagedResult<ApplicationStageHistoryDto>> Handle(
+            GetApplicationStageHistoryQuery request,
+            CancellationToken ct)
         {
             var (items, total) = await _applicationRepository.GetStageHistoryPagedAsync(
                 request.VacancyId,
                 request.ApplicationId,
-                request.SortBy,
-                request.SortDirection,
-                request.Page,
-                request.PageSize,
+                request,
                 ct);
 
             var dtos = items.Select(h => new ApplicationStageHistoryDto

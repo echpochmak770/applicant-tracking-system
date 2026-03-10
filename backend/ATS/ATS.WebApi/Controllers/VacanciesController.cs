@@ -1,4 +1,5 @@
 ﻿using ATS.UseCases.Features.Applications.Queries;
+using ATS.UseCases.Features.Stages.Queries;
 using ATS.UseCases.Features.Vacancies.Commands;
 using ATS.UseCases.Features.Vacancies.Queries;
 using MediatR;
@@ -31,10 +32,7 @@ namespace ATS.WebApi.Controllers
             [FromRoute] Guid vacancyId,
             [FromQuery] GetApplicationsByVacancyQuery query)
         {
-            if (vacancyId == Guid.Empty)
-            {
-                return BadRequest("Empty vacancy id");
-            }
+            if (vacancyId == Guid.Empty) return BadRequest("Empty vacancy id");
 
             query.VacancyId = vacancyId;
 
@@ -43,8 +41,7 @@ namespace ATS.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(
-            [FromBody] CreateVacancyCommand command)
+        public async Task<IActionResult> Create([FromBody] CreateVacancyCommand command)
         {
             var id = await _mediator.Send(command);
 
@@ -58,6 +55,13 @@ namespace ATS.WebApi.Controllers
         public async Task<IActionResult> GetById(Guid id)
         {
             var result = await _mediator.Send(new GetVacancyByIdQuery { Id = id });
+            return Ok(result);
+        }
+
+        [HttpGet("{vacancyId}/stages")]
+        public async Task<IActionResult> GetStages(Guid vacancyId)
+        {
+            var result = await _mediator.Send(new GetStagesByVacancyQuery { VacancyId = vacancyId });
             return Ok(result);
         }
     }
