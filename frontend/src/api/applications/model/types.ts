@@ -1,3 +1,5 @@
+import type { ColumnFilter } from "@/api/types";
+
 export type ApplicationItemDto = {
   id: string;
   candidateFullName: string;
@@ -19,13 +21,11 @@ export type ApplicationsResponse = {
 };
 
 export interface ApplicationsParamsDto {
-  vacancyId: string;
-  applicationId?: string;
-  search?: string;
-  sortBy?: keyof ApplicationItemDto;
-  sortDirection?: 'asc' | 'desc';
-  page: number;
-  pageSize: number;
+  vacancyId: string
+  search?: string
+  page: number
+  pageSize: number
+  columnFilters?: ColumnFilter[]
 }
 
 export type ApplicationHistoryDto = {

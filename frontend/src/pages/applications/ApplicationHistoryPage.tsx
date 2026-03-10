@@ -142,19 +142,18 @@
 //   );
 // }
 
-// // Вспомогательный компонент для строк деталей
-// // function DetailRow({ label, value, icon, isLink, href }: any) {
-// //   return (
-// //     <div className="flex flex-col gap-1">
-// //       <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">{label}</span>
-// //       <div className="flex items-center gap-2 text-sm">
-// //         <span className="text-muted-foreground">{icon}</span>
-// //         {isLink ? (
-// //           <a href={href} className="text-primary hover:underline font-medium">{value}</a>
-// //         ) : (
-// //           <span className="font-medium text-foreground">{value}</span>
-// //         )}
-// //       </div>
-// //     </div>
-// //   );
-// // }
+// function DetailRow({ label, value, icon, isLink, href }: any) {
+//   return (
+//     <div className="flex flex-col gap-1">
+//       <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">{label}</span>
+//       <div className="flex items-center gap-2 text-sm">
+//         <span className="text-muted-foreground">{icon}</span>
+//         {isLink ? (
+//           <a href={href} className="text-primary hover:underline font-medium">{value}</a>
+//         ) : (
+//           <span className="font-medium text-foreground">{value}</span>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }

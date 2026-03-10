@@ -1,11 +1,5 @@
-export interface VacanciesParamsDto {
-  search?: string;
-  sortBy?: string;
-  sortDirection?: 'asc' | 'desc' | string;
-  page: number;
-  pageSize: number;
-  status?: VacancyStatus
-}
+
+import type { ColumnFilter } from "@/api/types";
 
 export type VacancyStatus = 'Draft' | 'Paused' | 'Open' | 'Closed';
 
@@ -30,4 +24,11 @@ export type CreateVacancyBody = {
   title: string;
   description: string;
   stagesNames: string[];
+}
+
+export interface VacanciesSearchRequest {
+  search?: string
+  page: number
+  pageSize: number
+  columnFilters?: ColumnFilter[]
 }

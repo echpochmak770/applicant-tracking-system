@@ -12,6 +12,7 @@ import VacancyListPage from "./pages/vacancies/VacanciesListPage";
 import CreateVacancyPage from "./pages/vacancies/CreateVacancyPage";
 import ApplicationsListPage from "./pages/applications/ApplicationsListPage";
 // import ApplicationHistoryPage from "./pages/applications/ApplicationHistoryPage";
+import CreateApplicationPage from "./pages/applications/CreateApplicationPage";
 
 const modules = [AllCommunityModule];
 
@@ -90,6 +91,10 @@ const router = createBrowserRouter([
                   { 
                     index: true, 
                     element: <ApplicationsListPage /> 
+                  },
+                  { 
+                    path: "create", 
+                    element: <CreateApplicationPage /> 
                   },
                   // { 
                   //   path: ":applicationId/history", 

@@ -14,4 +14,13 @@ export const applicationActions = {
     });
     return response.data
   },
+  createApplication: async (body: FormData) => {
+    const { data } = await api.post("/api/Applications", body, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+
+    return data
+  },
 };
