@@ -19,15 +19,13 @@ namespace ATS.WebApi.Controllers
         public ApplicationsController(IMediator mediator) => _mediator = mediator;
 
         [HttpGet("{vacancyId}/{applicationId}/history")]
-        public async Task<IActionResult> GetHistory(
-            Guid vacancyId,
-            Guid applicationId,
-            [FromQuery] GetApplicationStageHistoryQuery query)
+        public async Task<IActionResult> GetHistory(Guid vacancyId, Guid applicationId)
         {
-            query.VacancyId = vacancyId;
-            query.ApplicationId = applicationId;
-
-            var result = await _mediator.Send(query);
+            var result = await _mediator.Send(new GetApplicationStageHistoryQuery
+            {
+                VacancyId = vacancyId,
+                ApplicationId = applicationId
+            });
             return Ok(result);
         }
 
