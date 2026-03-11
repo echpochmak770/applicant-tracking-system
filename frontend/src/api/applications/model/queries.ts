@@ -4,16 +4,17 @@ import { applicationActions } from "../action/application";
 import { applicationKeys } from "@/api/query";
 
 export const useApplicationsQuery = (
-  data: ApplicationsParamsDto, 
+  vacancyId: string,
+  data: ApplicationsParamsDto,
   options?: { enabled?: boolean }
 ) => {
   return useQuery({
-    queryKey: applicationKeys.list(data), 
-    queryFn: () => applicationActions.getApplications(data),
+    queryKey: applicationKeys.list(vacancyId, data),
+    queryFn: () => applicationActions.getApplications(vacancyId, data),
     retry: false,
     enabled: options?.enabled
-  });
-};
+  })
+}
 
 export const useApplicationHistoryQuery = (
   data: ApplicationHistoryDto,

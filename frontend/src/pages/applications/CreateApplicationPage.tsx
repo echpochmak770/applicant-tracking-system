@@ -29,6 +29,7 @@ import { IMaskInput } from "react-imask"
 
 import { useCreateApplicationMutation } from "@/api/applications/model/mutations"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
 
 export default function CreateApplicationPage() {
   const navigate = useNavigate()
@@ -57,29 +58,41 @@ export default function CreateApplicationPage() {
     if (file) setResume(file)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-
-    const payload = new FormData()
-
-    payload.append("FirstName", form.firstName)
-    payload.append("LastName", form.lastName)
-    payload.append("Email", form.email)
-
-    if (form.phone) {
-      payload.append("Phone", form.phone)
-    }
-
-    if (resume) {
-      payload.append("ResumeFile", resume)
-    }
-
-    mutate(payload, {
-      onSuccess: () => {
-        navigate(`/vacancies/${vacancyId}/applications`)
-      }
-    })
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault()
+  
+  if (!vacancyId) {
+    console.error("VacancyId is missing")
+    return
   }
+
+  const payload = new FormData()
+
+  payload.append("VacancyId", vacancyId)
+  payload.append("FirstName", form.firstName)
+  payload.append("LastName", form.lastName)
+  payload.append("Email", form.email)
+
+  if (form.phone) {
+    payload.append("Phone", form.phone)
+  }
+
+  if (!resume) {
+    return
+  }
+  
+  payload.append("ResumeFile", resume)
+
+  mutate(payload, {
+    onSuccess: () => {
+      toast('Отклик создан!')
+      navigate(`/vacancies/${vacancyId}/applications`)
+    },
+    onError: (error) => {
+      console.error("Error creating application:", error)
+    }
+  })
+}
 
   return (
     <div className="max-w-2xl mx-auto px-4">

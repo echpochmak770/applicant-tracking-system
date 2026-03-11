@@ -6,30 +6,36 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
-import type { VacancyStatus } from "@/api/vacancies/model/types"
 
-type Option = {
-  label: string
-  val?: string
+type BackendStage = {
+  id: string
+  name: string
+  order?: number
 }
 
 type Props = {
   value?: string
   onChange: (value?: string) => void
-  options?: Option[]
+  options?: BackendStage[]
 }
 
 export const StatusVacancyFilter = ({ value, onChange, options }: Props) => {
-
-  const defaultStatuses: Option[] = [
-    { label: "Все", val: undefined },
-    { label: "Open", val: "Open" },
-    { label: "Draft", val: "Draft" },
-    { label: "Paused", val: "Paused" },
-    { label: "Closed", val: "Closed" },
-  ]
-
-  const statuses = options ?? defaultStatuses
+  
+  const formattedStatuses = options 
+    ? [
+        { label: "Все", val: undefined }, 
+        ...options.map(stage => ({
+          label: stage.name,
+          val: stage.name 
+        }))
+      ]
+    : [
+        { label: "Все", val: undefined },
+        { label: "Open", val: "Open" },
+        { label: "Draft", val: "Draft" },
+        { label: "Paused", val: "Paused" },
+        { label: "Closed", val: "Closed" },
+      ]
 
   return (
     <div onClick={(e) => e.stopPropagation()}>
@@ -45,17 +51,17 @@ export const StatusVacancyFilter = ({ value, onChange, options }: Props) => {
           </button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end" className="w-[150px]">
-          {statuses.map((s) => (
+        <DropdownMenuContent align="end" className="w-[180px] max-h-[300px] overflow-y-auto">
+          {formattedStatuses.map((s) => (
             <DropdownMenuItem
               key={s.val ?? "all"}
-              className="flex justify-between"
+              className="flex justify-between cursor-pointer"
               onClick={() => onChange(s.val)}
             >
-              {s.label}
+              <span className="truncate mr-2">{s.label}</span>
 
               {value === s.val && (
-                <Check className="h-4 w-4 text-primary" />
+                <Check className="h-4 w-4 text-primary shrink-0" />
               )}
             </DropdownMenuItem>
           ))}

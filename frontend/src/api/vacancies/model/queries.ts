@@ -15,7 +15,9 @@ export const useVacanciesQuery = (params: VacanciesSearchRequest) => {
 export const useVacancyStagesQuery = (vacancyId: string) => {
   return useQuery({
     queryKey: ["vacancy-stages", vacancyId],
-    queryFn: () => vacanciesActions.stage(vacancyId),
+    queryFn: () => {
+      return vacanciesActions.stage(vacancyId)
+    },
     enabled: !!vacancyId
   })
 }

@@ -21,7 +21,6 @@ export type ApplicationsResponse = {
 };
 
 export interface ApplicationsParamsDto {
-  vacancyId: string
   search?: string
   page: number
   pageSize: number

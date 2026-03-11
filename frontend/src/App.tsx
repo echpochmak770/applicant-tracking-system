@@ -11,7 +11,7 @@ import LoginPage from "./pages/auth/LoginPage";
 import VacancyListPage from "./pages/vacancies/VacanciesListPage";
 import CreateVacancyPage from "./pages/vacancies/CreateVacancyPage";
 import ApplicationsListPage from "./pages/applications/ApplicationsListPage";
-// import ApplicationHistoryPage from "./pages/applications/ApplicationHistoryPage";
+import ApplicationHistoryPage from "./pages/applications/ApplicationHistoryPage";
 import CreateApplicationPage from "./pages/applications/CreateApplicationPage";
 
 const modules = [AllCommunityModule];
@@ -45,14 +45,6 @@ const RootLayout = () => {
     </div>
   );
 };
-
-// const authLoader = async () => {
-//   try {
-//     return await queryClient.ensureQueryData(useMeQuery.getOptions());
-//   } catch (e) {
-//     return null;
-//   }
-// };
 
 const router = createBrowserRouter([
   {
@@ -96,10 +88,10 @@ const router = createBrowserRouter([
                     path: "create", 
                     element: <CreateApplicationPage /> 
                   },
-                  // { 
-                  //   path: ":applicationId/history", 
-                  //   element: <ApplicationHistoryPage /> 
-                  // },
+                  { 
+                    path: ":applicationId/history", 
+                    element: <ApplicationHistoryPage /> 
+                  },
                 ],
               },
             ],
