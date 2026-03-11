@@ -17,6 +17,7 @@ namespace ATS.Infrastructure.Persistence
         {
             "name" => "Candidate.FirstName",
             "email" => "Candidate.Email",
+            "currentStageName" => "CurrentStage.Name",
             "stage" => "CurrentStage.Order",
             "order" => "ToStage.Order",
             _ => sortBy
@@ -53,15 +54,40 @@ namespace ATS.Infrastructure.Persistence
                 .Where(a => a.VacancyId == vacancyId && !a.IsDeleted)
                 .AsNoTracking();
 
-            if (!string.IsNullOrWhiteSpace(request.Search))
-            {
-                query = query.Where(a =>
-                    a.Candidate.FirstName.Contains(request.Search) ||
-                    a.Candidate.LastName.Contains(request.Search) ||
-                    a.Candidate.Email.Contains(request.Search));
-            }
+            query = ApplyManualFilters(query, request.ColumnFilters);
+            query = ApplySearch(query, request.Search);
 
             return await GetPagedDataAsync(query, request, ct);
+        }
+
+        private IQueryable<Application> ApplyManualFilters(IQueryable<Application> query, List<ColumnFilter>? filters)
+        {
+            if (filters == null || !filters.Any()) return query;
+
+            foreach (var filter in filters)
+            {
+                if (string.IsNullOrWhiteSpace(filter.Filter)) continue;
+
+                query = filter.Field switch
+                {
+                    "currentStageName" => query.Where(a => a.CurrentStage.Name.Contains(filter.Filter)),
+                    "isDeleted" => query.Where(a => a.IsDeleted == bool.Parse(filter.Filter)),
+                    "candidateFullName" => query.Where(a => (a.Candidate.FirstName + " " + a.Candidate.LastName).Contains(filter.Filter)),
+                    _ => query
+                };
+            }
+
+            return query;
+        }
+
+        private IQueryable<Application> ApplySearch(IQueryable<Application> query, string? search)
+        {
+            if (string.IsNullOrWhiteSpace(search)) return query;
+
+            return query.Where(a =>
+                a.Candidate.FirstName.Contains(search) ||
+                a.Candidate.LastName.Contains(search) ||
+                a.Candidate.Email.Contains(search));
         }
 
         public async Task<Application?> GetWithDetailsAsync(Guid id)
