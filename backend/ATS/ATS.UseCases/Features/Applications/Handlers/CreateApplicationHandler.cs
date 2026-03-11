@@ -82,7 +82,7 @@ namespace ATS.UseCases.Features.Applications.Handlers
                     FirstName = request.FirstName,
                     LastName = request.LastName,
                     Email = request.Email,
-                    Phone = request.Phone
+                    Phone = request.Phone ?? null
                 };
                 await _candidateRepository.AddAsync(candidate);
             }
