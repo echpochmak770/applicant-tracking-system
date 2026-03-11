@@ -27,10 +27,10 @@ namespace ATS.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{vacancyId}/applications")]
+        [HttpPost("{vacancyId}/applications/search")]
         public async Task<IActionResult> GetApplications(
             [FromRoute] Guid vacancyId,
-            [FromQuery] GetApplicationsByVacancyQuery query)
+            [FromBody] GetApplicationsByVacancyQuery query)
         {
             if (vacancyId == Guid.Empty) return BadRequest("Empty vacancy id");
 
