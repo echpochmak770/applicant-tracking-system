@@ -18,12 +18,15 @@ namespace ATS.UseCases.Features.Stages.Handlers
         {
             var stages = await _stageRepository.GetByVacancyOrderedAsync(request.VacancyId);
 
-            return stages.Select(s => new StageDto
-            {
-                Id = s.Id,
-                Name = s.Name,
-                Order = s.Order
-            }).ToList();
+            return stages
+                .Where(s => s.Name != "Отказ")
+                .Select(s => new StageDto
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    Order = s.Order,
+                    IsFinal = s.IsFinal
+                }).ToList();
         }
     }
 }
