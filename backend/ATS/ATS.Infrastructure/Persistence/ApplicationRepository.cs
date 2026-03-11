@@ -20,6 +20,7 @@ namespace ATS.Infrastructure.Persistence
             "currentStageName" => "CurrentStage.Name",
             "stage" => "CurrentStage.Order",
             "order" => "ToStage.Order",
+            "author" => "CreatedBy.FirstName",
             _ => sortBy
         };
 
@@ -54,10 +55,23 @@ namespace ATS.Infrastructure.Persistence
                 .Where(a => a.VacancyId == vacancyId && !a.IsDeleted)
                 .AsNoTracking();
 
+            PrepareQueryFields(request);
+
             query = ApplyManualFilters(query, request.ColumnFilters);
             query = ApplySearch(query, request.Search);
 
             return await GetPagedDataAsync(query, request, ct);
+        }
+
+        private void PrepareQueryFields(PagedQuery request)
+        {
+            if (request.ColumnFilters == null) return;
+
+            foreach (var filter in request.ColumnFilters)
+            {
+                // Вызываем переопределенный MapSortField
+                filter.Field = MapSortField(filter.Field);
+            }
         }
 
         private IQueryable<Application> ApplyManualFilters(IQueryable<Application> query, List<ColumnFilter>? filters)

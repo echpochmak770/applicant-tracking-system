@@ -33,34 +33,43 @@ namespace ATS.UseCases.Helpers
                 if (string.IsNullOrEmpty(filter.Field)) continue;
 
                 var parameter = Expression.Parameter(typeof(T), "x");
-                var propertyInfo = typeof(T).GetProperty(filter.Field,
-                    System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                Expression property;
 
-                if (propertyInfo == null) continue;
-                var property = Expression.Property(parameter, propertyInfo);
+                try
+                {
+                    property = filter.Field.Split('.')
+                        .Aggregate<string, Expression>(parameter, Expression.PropertyOrField);
+                }
+                catch { continue; }
 
                 if (!string.IsNullOrEmpty(filter.Filter))
                 {
                     Expression? condition = null;
-                    if (property.Type == typeof(string))
+                    var targetType = Nullable.GetUnderlyingType(property.Type) ?? property.Type;
+
+                    if (targetType == typeof(string))
                     {
                         var method = typeof(string).GetMethod("Contains", new[] { typeof(string) });
                         condition = Expression.Call(property, method!, Expression.Constant(filter.Filter));
                     }
-                    else if (property.Type.IsEnum)
+                    else if (targetType.IsEnum)
                     {
                         var values = filter.Filter.Split(',', StringSplitOptions.RemoveEmptyEntries);
                         var equals = values.Select(v => {
-                            return Enum.TryParse(property.Type, v.Trim(), true, out var res)
+                            return Enum.TryParse(targetType, v.Trim(), true, out var res)
                                 ? Expression.Equal(property, Expression.Constant(res, property.Type))
                                 : null;
                         }).Where(e => e != null).Cast<Expression>().ToList();
 
                         if (equals.Any()) condition = equals.Aggregate(Expression.OrElse);
                     }
-                    else if (property.Type == typeof(Guid) && Guid.TryParse(filter.Filter, out var g))
+                    else if (targetType == typeof(Guid) && Guid.TryParse(filter.Filter, out var g))
                     {
-                        condition = Expression.Equal(property, Expression.Constant(g));
+                        condition = Expression.Equal(property, Expression.Constant(g, property.Type));
+                    }
+                    else if (targetType == typeof(bool) && bool.TryParse(filter.Filter, out var b))
+                    {
+                        condition = Expression.Equal(property, Expression.Constant(b, property.Type));
                     }
 
                     if (condition != null)
@@ -82,15 +91,17 @@ namespace ATS.UseCases.Helpers
             bool isFirstSort = true;
             foreach (var sort in sorts)
             {
-                var propertyInfo = typeof(T).GetProperty(sort.Field,
-                    System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-
-                if (propertyInfo == null) continue;
-
                 var parameter = Expression.Parameter(typeof(T), "x");
-                var propertyAccess = Expression.MakeMemberAccess(parameter, propertyInfo);
-                var lambda = Expression.Lambda(propertyAccess, parameter);
+                Expression propertyAccess;
 
+                try
+                {
+                    propertyAccess = sort.Field.Split('.')
+                        .Aggregate<string, Expression>(parameter, Expression.PropertyOrField);
+                }
+                catch { continue; }
+
+                var lambda = Expression.Lambda(propertyAccess, parameter);
                 string methodName = isFirstSort
                     ? (sort.Direction.ToLower() == "desc" ? "OrderByDescending" : "OrderBy")
                     : (sort.Direction.ToLower() == "desc" ? "ThenByDescending" : "ThenBy");
@@ -105,7 +116,6 @@ namespace ATS.UseCases.Helpers
                 query = query.Provider.CreateQuery<T>(resultExp);
                 isFirstSort = false;
             }
-
             return query;
         }
     }
