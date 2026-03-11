@@ -35,7 +35,8 @@ namespace ATS.UseCases.Features.Applications.Handlers
                 ToStageName = h.ToStage?.Name,
                 ChangedAt = h.ChangedAt,
                 Comment = h.Comment,
-                ChangedByName = $"{h.ChangedBy?.FirstName} {h.ChangedBy?.LastName}".Trim()
+                ChangedByName = $"{h.ChangedBy?.FirstName} {h.ChangedBy?.LastName}".Trim(),
+                IsRejection = h.IsRejection
             }).ToList();
         }
     }
