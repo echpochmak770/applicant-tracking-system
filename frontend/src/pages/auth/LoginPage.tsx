@@ -9,19 +9,20 @@ import { Mail, LockKeyhole, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router";
 import { LoginSchema, type LoginSchemaType } from "@/schemas/auth/auth.schema";
 import { useLoginMutation } from "@/api/auth/model/mutations";
+import { getErrorMessage } from "@/utils/errorsGetter";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const { mutate, isPending } = useLoginMutation();
-
-  const {
+    const {
     register,
     handleSubmit,
     formState: { errors, isValid, isSubmitted },
   } = useForm<LoginSchemaType>({
     resolver: zodResolver(LoginSchema),
   });
+
+  const { mutate, isPending, error } = useLoginMutation();
 
   const isButtonDisabled = isSubmitted && !isValid;
 
@@ -88,6 +89,11 @@ export default function LoginPage() {
               </div>
               <div className="h-4 text-[12px] text-red-500">
                 {errors.password ? errors.password.message : ''}
+                {error && (
+                  <div className="text-red-500 text-sm mt-2">
+                    {getErrorMessage(error)}
+                  </div>
+                )}
               </div>
             </div>
 

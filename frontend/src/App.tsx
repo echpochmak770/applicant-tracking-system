@@ -1,16 +1,18 @@
 import { createBrowserRouter, RouterProvider, Outlet, Navigate } from "react-router";
-import Home from "./pages/Home";
-import Applications from "./pages/Applications";
-import LoginPage from "./pages/landing/Auth";
-import RegisterPage from "./pages/landing/Register";
 import { AllCommunityModule } from "ag-grid-community";
 import { AgGridProvider } from "ag-grid-react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./api/query";
 import { useMeQuery } from "./api/auth/model/queries";
 import { Header } from "./components/layout/header/Header";
-import CreateVacancy from "./pages/MutateForms/CreateVacancy";
 import { Toaster } from "./components/ui/sonner";
+import RegisterPage from "./pages/auth/RegisterPage";
+import LoginPage from "./pages/auth/LoginPage";
+import VacancyListPage from "./pages/vacancies/VacanciesListPage";
+import CreateVacancyPage from "./pages/vacancies/CreateVacancyPage";
+import ApplicationsListPage from "./pages/applications/ApplicationsListPage";
+import ApplicationHistoryPage from "./pages/applications/ApplicationHistoryPage";
+import CreateApplicationPage from "./pages/applications/CreateApplicationPage";
 
 const modules = [AllCommunityModule];
 
@@ -44,14 +46,6 @@ const RootLayout = () => {
   );
 };
 
-// const authLoader = async () => {
-//   try {
-//     return await queryClient.ensureQueryData(useMeQuery.getOptions());
-//   } catch (e) {
-//     return null;
-//   }
-// };
-
 const router = createBrowserRouter([
   {
     path: "/auth",
@@ -74,24 +68,38 @@ const router = createBrowserRouter([
           },
           {
             path: "vacancies",
-            element: <Home />,
-          },
-          {
-            path: "add-vacancy",
-            element: <CreateVacancy />,
-          },
-          {
-            path: "applications/:id",
-            element: <Applications />,
+            children: [
+              { 
+                index: true, 
+                element: <VacancyListPage /> 
+              },
+              { 
+                path: "create", 
+                element: <CreateVacancyPage /> 
+              },
+              {
+                path: ":vacancyId/applications",
+                children: [
+                  { 
+                    index: true, 
+                    element: <ApplicationsListPage /> 
+                  },
+                  { 
+                    path: "create", 
+                    element: <CreateApplicationPage /> 
+                  },
+                  { 
+                    path: ":applicationId/history", 
+                    element: <ApplicationHistoryPage /> 
+                  },
+                ],
+              },
+            ],
           },
         ],
       },
     ],
-  },
-  {
-    path: "*",
-    element: <Navigate to="/" replace />,
-  },
+  }
 ]);
 
 export default function App() {
