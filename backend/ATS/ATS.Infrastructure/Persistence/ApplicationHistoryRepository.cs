@@ -11,15 +11,19 @@ namespace ATS.Infrastructure.Persistence
     {
         public ApplicationHistoryRepository(AppDbContext context) : base(context) { }
 
-        public async Task<List<ApplicationHistory>> GetByApplicationAsync(Guid applicationId)
+        public async Task<List<ApplicationHistory>> GetByApplicationAsync(
+            Guid vacancyId,
+            Guid applicationId,
+            CancellationToken ct)
         {
             return await _dbSet
-                .Where(ah => ah.ApplicationId == applicationId)
-                .Include(ah => ah.FromStage)
-                .Include(ah => ah.ToStage)
-                .Include(ah => ah.CreatedAt)
-                .Include(ah => ah.ChangedAt)
-                .ToListAsync();
+                .Include(h => h.FromStage)
+                .Include(h => h.ToStage)
+                .Include(h => h.ChangedBy)
+                .Where(h => h.ApplicationId == applicationId && h.Application.VacancyId == vacancyId)
+                .OrderByDescending(h => h.ChangedAt)
+                .AsNoTracking()
+                .ToListAsync(ct);
         }
     }
 }
