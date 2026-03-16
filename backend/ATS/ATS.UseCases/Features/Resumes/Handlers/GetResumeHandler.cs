@@ -10,38 +10,39 @@ namespace ATS.UseCases.Features.Resumes.Handlers
 {
     public class GetResumeHandler : IRequestHandler<GetResumeQuery, FileResponseDto>
     {
-        private readonly IApplicationRepository _repository;
-        private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "resumes");
+        private readonly IApplicationRepository _applicationRepository;
+        private readonly IFileService _fileService;
 
-        public GetResumeHandler(IApplicationRepository repository) => _repository = repository;
-
-        public async Task<FileResponseDto> Handle(
-            GetResumeQuery request,
-            CancellationToken ct)
+        public GetResumeHandler(IApplicationRepository repository, IFileService fileService)
         {
-            var application = await _repository.GetByIdAsync(
+            _applicationRepository = repository;
+            _fileService = fileService;
+        }
+
+        public async Task<FileResponseDto> Handle(GetResumeQuery request, CancellationToken ct)
+        {
+            var application = await _applicationRepository.GetByIdAsync(
                 request.ApplicationId,
                 a => a.Resume
             );
 
-            if (application == null || application.Resume == null || string.IsNullOrEmpty(application.Resume.FileName))
+            if (application?.Resume == null || string.IsNullOrEmpty(application.Resume.FileUrl))
             {
-                throw new Exception("File not found in the database");
+                throw new Exception("Резюме не найдено в базе данных для данного отклика.");
             }
 
-            var filePath = Path.Combine(_uploadPath, application.Resume.FileName);
+            var fullPath = _fileService.GetFullPath(application.Resume.FileUrl);
 
-            if (!File.Exists(filePath))
+            if (!File.Exists(fullPath))
             {
-                throw new Exception("File not found in server folder: " + filePath);
+                throw new Exception($"Файл физически отсутствует по пути: {fullPath}");
             }
 
             var memory = new MemoryStream();
-            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            using (var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
             {
                 await stream.CopyToAsync(memory, ct);
             }
-
             memory.Position = 0;
 
             return new FileResponseDto
