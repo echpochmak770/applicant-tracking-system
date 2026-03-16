@@ -54,10 +54,10 @@ namespace ATS.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id}/resume")]
-        public async Task<IActionResult> DownloadResume(Guid id)
+        [HttpGet("{applicationId}/resume")]
+        public async Task<IActionResult> DownloadResume(Guid applicationId)
         {
-            var result = await _mediator.Send(new GetResumeQuery { ApplicationId = id });
+            var result = await _mediator.Send(new GetResumeQuery { ApplicationId = applicationId });
             return File(result.Content, result.ContentType, result.FileName);
         }
     }
