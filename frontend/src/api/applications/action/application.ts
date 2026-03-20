@@ -11,7 +11,7 @@ export const applicationActions = {
     body: ApplicationsParamsDto,
   ): Promise<ApplicationsResponse> => {
     const response = await api.post(
-      `/api/Vacancies/${vacancyId}/applications/search`,
+      `/Vacancies/${vacancyId}/applications/search`,
       body,
     );
     return response.data;
@@ -20,7 +20,7 @@ export const applicationActions = {
     data: ApplicationHistoryDto,
   ): Promise<ApplicationsResponse> => {
     const response = await api.get(
-      `/api/Applications/${data.vacancyId}/${data.applicationId}/history`,
+      `/Applications/${data.vacancyId}/${data.applicationId}/history`,
       {
         params: data,
       },
