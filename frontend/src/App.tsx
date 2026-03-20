@@ -1,4 +1,9 @@
-import { createBrowserRouter, RouterProvider, Outlet, Navigate } from "react-router";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+  Navigate,
+} from "react-router";
 import { AllCommunityModule } from "ag-grid-community";
 import { AgGridProvider } from "ag-grid-react";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -6,13 +11,26 @@ import { queryClient } from "./api/query";
 import { useMeQuery } from "./api/auth/model/queries";
 import { Header } from "./components/layout/header/Header";
 import { Toaster } from "./components/ui/sonner";
-import RegisterPage from "./pages/auth/RegisterPage";
-import LoginPage from "./pages/auth/LoginPage";
-import VacancyListPage from "./pages/vacancies/VacanciesListPage";
-import CreateVacancyPage from "./pages/vacancies/CreateVacancyPage";
-import ApplicationsListPage from "./pages/applications/ApplicationsListPage";
-import ApplicationHistoryPage from "./pages/applications/ApplicationHistoryPage";
-import CreateApplicationPage from "./pages/applications/CreateApplicationPage";
+import { Suspense } from "react";
+import { lazy } from "react";
+
+const RegisterPage = lazy(() => import("./pages/auth/RegisterPage"));
+const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
+const VacancyListPage = lazy(
+  () => import("./pages/vacancies/VacanciesListPage"),
+);
+const CreateVacancyPage = lazy(
+  () => import("./pages/vacancies/CreateVacancyPage"),
+);
+const ApplicationsListPage = lazy(
+  () => import("./pages/applications/ApplicationsListPage"),
+);
+const ApplicationHistoryPage = lazy(
+  () => import("./pages/applications/ApplicationHistoryPage"),
+);
+const CreateApplicationPage = lazy(
+  () => import("./pages/applications/CreateApplicationPage"),
+);
 
 const modules = [AllCommunityModule];
 
@@ -37,8 +55,8 @@ const RootLayout = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <Header user={user}/>
-      <main className="w-full max-w-[1440px] mx-auto p-6"> 
+      <Header user={user} />
+      <main className="w-full max-w-[1440px] mx-auto p-6">
         <Outlet />
       </main>
       <Toaster />
@@ -69,28 +87,28 @@ const router = createBrowserRouter([
           {
             path: "vacancies",
             children: [
-              { 
-                index: true, 
-                element: <VacancyListPage /> 
+              {
+                index: true,
+                element: <VacancyListPage />,
               },
-              { 
-                path: "create", 
-                element: <CreateVacancyPage /> 
+              {
+                path: "create",
+                element: <CreateVacancyPage />,
               },
               {
                 path: ":vacancyId/applications",
                 children: [
-                  { 
-                    index: true, 
-                    element: <ApplicationsListPage /> 
+                  {
+                    index: true,
+                    element: <ApplicationsListPage />,
                   },
-                  { 
-                    path: "create", 
-                    element: <CreateApplicationPage /> 
+                  {
+                    path: "create",
+                    element: <CreateApplicationPage />,
                   },
-                  { 
-                    path: ":applicationId/history", 
-                    element: <ApplicationHistoryPage /> 
+                  {
+                    path: ":applicationId/history",
+                    element: <ApplicationHistoryPage />,
                   },
                 ],
               },
@@ -99,14 +117,16 @@ const router = createBrowserRouter([
         ],
       },
     ],
-  }
+  },
 ]);
 
 export default function App() {
   return (
     <AgGridProvider modules={modules}>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <RouterProvider router={router} />
+        </Suspense>
       </QueryClientProvider>
     </AgGridProvider>
   );

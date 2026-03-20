@@ -1,21 +1,31 @@
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from '@hookform/resolvers/zod';
-import { IMaskInput } from 'react-imask';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { IMaskInput } from "react-imask";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FieldLabel } from "@/components/ui/field";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Mail, LockKeyhole, User, Eye, EyeOff, Phone } from "lucide-react";
 import { useNavigate } from "react-router";
-import { RegisterSchema, type RegisterSchemaType } from "@/schemas/auth/auth.schema";
+import {
+  RegisterSchema,
+  type RegisterSchemaType,
+} from "@/schemas/auth/auth.schema";
 import { cn } from "@/lib/utils";
 import { useRegisterMutation } from "@/api/auth/model/mutations";
+import { getErrorMessage } from "@/utils/errorsGetter";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [showPass, setShowPass] = useState(false);
-  const { mutate, isPending } = useRegisterMutation();
+  const { mutate, isPending, error, reset } = useRegisterMutation();
 
   const {
     control,
@@ -26,9 +36,9 @@ export default function RegisterPage() {
     resolver: zodResolver(RegisterSchema),
   });
 
-  const isButtonDisabled = isSubmitted && !isValid;
+  const isButtonDisabled = (isSubmitted && !isValid) || !!error || isPending;
 
-const handleRegister = (formData: RegisterSchemaType) => {
+  const handleRegister = (formData: RegisterSchemaType) => {
     mutate(formData);
   };
 
@@ -43,77 +53,104 @@ const handleRegister = (formData: RegisterSchemaType) => {
             Создайте профиль компании, чтобы публиковать вакансии
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="pt-0">
-          <form onSubmit={handleSubmit(handleRegister)} noValidate className="space-y-3">
-              
+          <form
+            onSubmit={handleSubmit(handleRegister)}
+            noValidate
+            className="space-y-3"
+            onChange={() => {
+              if (error) reset();
+            }}
+          >
             <div>
-              <FieldLabel htmlFor="firstName" className="text-foreground/90 font-medium text-sm">
+              <FieldLabel
+                htmlFor="firstName"
+                className="text-foreground/90 font-medium text-sm"
+              >
                 Имя <span className="text-red-500">*</span>
               </FieldLabel>
               <div className="relative mt-1">
                 <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  {...register('firstName')}
+                <Input
+                  {...register("firstName")}
                   id="firstName"
-                  placeholder="Иван" 
+                  placeholder="Иван"
                   className={`pl-10 border-border focus-visible:ring-primary h-9 ${
-                    errors.firstName ? 'border-red-500 focus-visible:ring-red-500' : ''
+                    errors.firstName
+                      ? "border-red-500 focus-visible:ring-red-500"
+                      : ""
                   }`}
-                  aria-invalid={errors.firstName ? 'true' : 'false'}
+                  aria-invalid={errors.firstName ? "true" : "false"}
                 />
               </div>
               <div className="h-5 text-xs text-red-500 mt-0.5">
-                {errors.firstName ? errors.firstName.message : ''}
+                {errors.firstName ? errors.firstName.message : ""}
               </div>
             </div>
 
             <div>
-              <FieldLabel htmlFor="lastName" className="text-foreground/90 font-medium text-sm">
+              <FieldLabel
+                htmlFor="lastName"
+                className="text-foreground/90 font-medium text-sm"
+              >
                 Фамилия
               </FieldLabel>
               <div className="relative mt-1">
                 <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  {...register('lastName')}
+                <Input
+                  {...register("lastName")}
                   id="lastName"
-                  placeholder="Иванов" 
+                  placeholder="Иванов"
                   className={`pl-10 border-border focus-visible:ring-primary h-9 ${
-                    errors.lastName ? 'border-red-500 focus-visible:ring-red-500' : ''
+                    errors.lastName
+                      ? "border-red-500 focus-visible:ring-red-500"
+                      : ""
                   }`}
-                  aria-invalid={errors.lastName ? 'true' : 'false'}
+                  aria-invalid={errors.lastName ? "true" : "false"}
                 />
               </div>
               <div className="h-5 text-xs text-red-500 mt-0.5">
-                {errors.lastName ? errors.lastName.message : ''}
+                {errors.lastName ? errors.lastName.message : ""}
               </div>
             </div>
 
             <div>
-              <FieldLabel htmlFor="email" className="text-foreground/90 font-medium text-sm">
+              <FieldLabel
+                htmlFor="email"
+                className="text-foreground/90 font-medium text-sm"
+              >
                 Электронная почта <span className="text-red-500">*</span>
               </FieldLabel>
               <div className="relative mt-1">
                 <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  {...register('email')}
+                <Input
+                  {...register("email")}
                   id="email"
                   type="email"
-                  placeholder="hr@agency.com" 
+                  placeholder="hr@agency.com"
                   className={`pl-10 border-border focus-visible:ring-primary h-9 ${
-                    errors.email ? 'border-red-500 focus-visible:ring-red-500' : ''
+                    errors.email
+                      ? "border-red-500 focus-visible:ring-red-500"
+                      : ""
                   }`}
-                  aria-invalid={errors.email ? 'true' : 'false'}
+                  aria-invalid={errors.email ? "true" : "false"}
                 />
               </div>
               <div className="h-5 text-xs text-red-500 mt-0.5">
-                {errors.email ? errors.email.message : ''}
+                {errors.email ? errors.email.message : ""}
               </div>
             </div>
 
             <div className="space-y-1">
-              <FieldLabel htmlFor="phone" className="text-foreground/90 font-medium text-sm">
-                Телефон <span className="text-muted-foreground text-xs">(необязательно)</span>
+              <FieldLabel
+                htmlFor="phone"
+                className="text-foreground/90 font-medium text-sm"
+              >
+                Телефон{" "}
+                <span className="text-muted-foreground text-xs">
+                  (необязательно)
+                </span>
               </FieldLabel>
               <div className="relative">
                 <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground z-10" />
@@ -124,17 +161,18 @@ const handleRegister = (formData: RegisterSchemaType) => {
                     <IMaskInput
                       mask="+000000000000000"
                       definitions={{
-                        '0': /[0-9]/,
+                        "0": /[0-9]/,
                       }}
                       lazy={true}
-                      value={value || ''}
+                      value={value || ""}
                       unmask={false}
                       onAccept={(val) => onChange(val)}
                       onBlur={onBlur}
                       inputRef={ref}
                       className={cn(
                         "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring pl-10",
-                        errors.phone && "border-red-500 focus-visible:ring-red-500"
+                        errors.phone &&
+                          "border-red-500 focus-visible:ring-red-500",
                       )}
                       placeholder="+1 234 567 89 00"
                       id="phone"
@@ -149,20 +187,25 @@ const handleRegister = (formData: RegisterSchemaType) => {
             </div>
 
             <div>
-              <FieldLabel htmlFor="password" className="text-foreground/90 font-medium text-sm">
+              <FieldLabel
+                htmlFor="password"
+                className="text-foreground/90 font-medium text-sm"
+              >
                 Пароль <span className="text-red-500">*</span>
               </FieldLabel>
               <div className="relative mt-1">
                 <LockKeyhole className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  {...register('password')}
-                  id="password" 
-                  type={showPass ? "text" : "password"} 
+                <Input
+                  {...register("password")}
+                  id="password"
+                  type={showPass ? "text" : "password"}
                   className={`pl-10 pr-10 h-9 ${
-                    errors.password ? 'border-red-500 focus-visible:ring-red-500' : 'border-border'
-                  }`} 
+                    errors.password
+                      ? "border-red-500 focus-visible:ring-red-500"
+                      : "border-border"
+                  }`}
                   placeholder="Пароль"
-                  aria-invalid={errors.password ? 'true' : 'false'}
+                  aria-invalid={errors.password ? "true" : "false"}
                 />
                 <button
                   type="button"
@@ -170,26 +213,33 @@ const handleRegister = (formData: RegisterSchemaType) => {
                   className="absolute right-3 top-2.5 text-muted-foreground hover:text-primary"
                   tabIndex={-1}
                 >
-                  {showPass ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                  {showPass ? (
+                    <Eye className="h-4 w-4" />
+                  ) : (
+                    <EyeOff className="h-4 w-4" />
+                  )}
                 </button>
               </div>
-              <div className="h-5 text-xs text-red-500 mt-0.5">
-                {errors.password ? errors.password.message : ''}
+              <div className="h-4 text-[12px] text-red-500">
+                {errors.password && <div>{errors.password.message}</div>}
+              </div>
+              <div className="h-1 text-[12px] text-red-500">
+                {error && <div>{getErrorMessage(error)}</div>}
               </div>
             </div>
 
             <div className="pt-4">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full h-10 bg-primary text-primary-foreground shadow-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={isButtonDisabled || isPending}
+                disabled={isButtonDisabled}
               >
-                {isPending ? 'Создание...' : 'Создать аккаунт'}
+                {isPending ? "Создание..." : "Создать аккаунт"}
               </Button>
-              
+
               <p className="text-center text-sm text-muted-foreground mt-3">
                 Уже есть аккаунт?{" "}
-                <button 
+                <button
                   type="button"
                   className="text-primary font-semibold hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
                   onClick={() => navigate("/auth")}
@@ -198,7 +248,6 @@ const handleRegister = (formData: RegisterSchemaType) => {
                 </button>
               </p>
             </div>
-
           </form>
         </CardContent>
       </Card>
