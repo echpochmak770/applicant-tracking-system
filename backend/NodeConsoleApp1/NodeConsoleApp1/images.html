@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8. Изображения разными способами</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8e44ad, #3498db);
+            color: white;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+
+        .section {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 15px;
+        }
+
+        h2 {
+            border-bottom: 2px solid white;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* 1. Обычная картинка */
+        .normal-img img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* 2. Фоновое изображение */
+        .bg-example {
+            background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format');
+            background-size: cover;
+            background-position: center;
+            padding: 80px 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px black;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        /* 3. Картинка-кнопка */
+        .image-button {
+            border: none;
+            background: none;
+            padding: 0;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+            .image-button img {
+                width: 200px;
+                height: 200px;
+                object-fit: cover;
+                border-radius: 50%;
+                border: 5px solid white;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            }
+
+            .image-button:hover {
+                transform: scale(1.1);
+            }
+
+                .image-button:hover img {
+                    border-color: #f1c40f;
+                }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 15px 30px;
+            background: #e67e22;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+            .back-link:hover {
+                background: #d35400;
+                transform: translateY(-3px);
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ 8. Изображения тремя способами</h1>
+
+        <div class="section">
+            <h2>1. Обычная картинка (тег &lt;img&gt;)</h2>
+            <div class="normal-img">
+                <img src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=600&auto=format" alt="Пейзаж с озером">
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2. Изображение как фон (CSS background-image)</h2>
+            <div class="bg-example">
+                <p>🌄 Этот текст на фоновом изображении</p>
+                <p>Горы и закат</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>3. Изображение как кнопка</h2>
+            <div style="text-align: center;">
+                <button class="image-button" onclick="alert('Вы нажали на картинку-кнопку!')">
+                    <img src="https://images.unsplash.com/photo-1593642532400-2682810df593?w=200&auto=format" alt="Кнопка-картинка">
+                </button>
+                <p style="margin-top: 10px;">👆 Нажми на картинку — сработает alert</p>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="index.html" class="back-link">← Вернуться на главную</a>
+        </div>
+    </div>
+</body>
+</html>

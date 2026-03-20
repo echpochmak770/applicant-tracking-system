@@ -1,5 +1,4 @@
 ﻿using ATS.UseCases.Features.Applications.Commands;
-using ATS.UseCases.Features.Applications.DTOs;
 using ATS.UseCases.Features.Applications.Queries;
 using ATS.UseCases.Features.Resumes.Queries;
 using ATS.WebApi.Requests;

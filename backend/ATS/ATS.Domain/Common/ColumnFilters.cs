@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ATS.Domain.Common
+﻿namespace ATS.Domain.Common
 {
     public class ColumnFilter
     {

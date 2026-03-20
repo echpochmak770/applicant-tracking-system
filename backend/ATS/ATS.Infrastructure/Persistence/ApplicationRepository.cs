@@ -55,8 +55,9 @@ namespace ATS.Infrastructure.Persistence
                 .Where(a => a.VacancyId == vacancyId && !a.IsDeleted)
                 .AsNoTracking();
 
-            PrepareQueryFields(request);
+            query = ApplyStageSorting(query, request);
 
+            PrepareQueryFields(request);
             query = ApplyManualFilters(query, request.ColumnFilters);
             query = ApplySearch(query, request.Search);
 
@@ -69,7 +70,6 @@ namespace ATS.Infrastructure.Persistence
 
             foreach (var filter in request.ColumnFilters)
             {
-                // Вызываем переопределенный MapSortField
                 filter.Field = MapSortField(filter.Field);
             }
         }
@@ -129,6 +129,30 @@ namespace ATS.Infrastructure.Persistence
                 .AsNoTracking();
 
             return await GetPagedDataAsync(historyQuery, request, ct);
+        }
+
+        private IQueryable<Application> ApplyStageSorting(IQueryable<Application> query, PagedQuery request)
+        {
+            var stageFilter = request.ColumnFilters
+                .FirstOrDefault(f => f.Field.Equals("status", StringComparison.OrdinalIgnoreCase) ||
+                                     f.Field.Equals("currentStageName", StringComparison.OrdinalIgnoreCase));
+
+            if (stageFilter != null && !string.IsNullOrEmpty(stageFilter.Sort))
+            {
+                bool isDescending = stageFilter.Sort.Equals("desc", StringComparison.OrdinalIgnoreCase);
+
+                query = isDescending
+                    ? query.OrderByDescending(a => a.CurrentStage.Order)
+                    : query.OrderBy(a => a.CurrentStage.Order);
+
+                stageFilter.Sort = null;
+            }
+            else
+            {
+                query = query.OrderBy(a => a.CurrentStage.Order);
+            }
+
+            return query;
         }
     }
 }

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 1. Название документа -->
+    <title>1. Времена года - все задания</title>
+    <!-- 13. Иконка в адресную строку (favicon) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍂</text></svg>">
+    <!-- 9. Редирект через 10 секунд на страницу с изображениями -->
+    <meta http-equiv="refresh" content="10; url=images.html">
+    <style>
+        /* Общие стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 12. Общий фон для страницы */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3498db;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin: 25px 0 15px;
+            border-left: 5px solid #3498db;
+            padding-left: 15px;
+        }
+
+        /* ========== ПУНКТ 1: Месяцы с картинками ========== */
+        .months-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .month-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+            .month-card h3 {
+                margin-bottom: 10px;
+                color: #3498db;
+            }
+
+            .month-card img {
+                width: 100%;
+                height: 120px;
+                object-fit: cover;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+
+                .month-card img:hover {
+                    transform: scale(1.05);
+                    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+                }
+
+        /* ========== ПУНКТ 5: Списки с историей ========== */
+        .history-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+            .history-section h3 {
+                color: #2c3e50;
+                margin: 15px 0 10px;
+            }
+
+        /* Разные виды списков */
+        ul {
+            list-style-type: square;
+            margin-left: 30px;
+            color: #34495e;
+        }
+
+        ol {
+            list-style-type: upper-roman;
+            margin-left: 30px;
+        }
+
+        dl {
+            margin-left: 20px;
+        }
+
+        dt {
+            font-weight: bold;
+            color: #e67e22;
+            margin-top: 10px;
+        }
+
+        dd {
+            margin-left: 20px;
+            color: #7f8c8d;
+        }
+
+        /* ========== ПУНКТ 6: Таблица ========== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            font-size: 1.1em;
+        }
+
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        tr:hover {
+            background: #e8f4f8;
+        }
+
+        /* ========== ПУНКТ 7: Ссылки на почту/Skype ========== */
+        .contact-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .contact-link {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+            .contact-link:hover {
+                background: #2980b9;
+                transform: translateY(-3px);
+                box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            }
+
+            .contact-link.skype {
+                background: #00aff0;
+            }
+
+                .contact-link.skype:hover {
+                    background: #0099cc;
+                }
+
+        /* ========== ПУНКТ 10: Адаптивное изображение ========== */
+        .responsive-img {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        picture img {
+            width: 100%;
+            max-width: 800px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* ========== ПУНКТ 11: Изображение с подписью ========== */
+        figure {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+            figure img {
+                max-width: 100%;
+                border-radius: 10px;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            }
+
+        figcaption {
+            margin-top: 10px;
+            font-style: italic;
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        /* ========== ПУНКТ 12: Галерея ========== */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+            .gallery-item img {
+                width: 100%;
+                height: 180px;
+                object-fit: cover;
+                border-radius: 8px;
+            }
+
+            .gallery-item p {
+                margin-top: 10px;
+                text-align: center;
+                font-weight: bold;
+                color: #2c3e50;
+            }
+
+        /* ========== ПУНКТ 14,15,16: Аудио и видео ========== */
+        .media-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        audio, video {
+            width: 100%;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        /* Счетчик для редиректа */
+        .redirect-info {
+            background: #f1c40f;
+            color: #2c3e50;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            margin: 20px 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .countdown {
+            font-size: 2em;
+            color: #e74c3c;
+            margin: 10px 0;
+        }
+
+        hr {
+            margin: 30px 0;
+            border: 2px dashed #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ========== ПУНКТ 1: Название документа (уже в title) и месяцы с картинками ========== -->
+        <h1>📅 1. Двенадцать месяцев с изображениями пор года</h1>
+
+        <div class="months-grid">
+            <!-- Зима -->
+            <div class="month-card">
+                <h3>Декабрь</h3>
+                <a href="zima.html#dec"><img src="https://images.unsplash.com/photo-1483664852093-6b2c7f2f2b7a?w=400&auto=format" alt="Декабрь"></a>
+            </div>
+            <div class="month-card">
+                <h3>Январь</h3>
+                <a href="zima.html#jan"><img src="https://images.unsplash.com/photo-1542600806-6f9e3b3f4b3a?w=400&auto=format" alt="Январь"></a>
+            </div>
+            <div class="month-card">
+                <h3>Февраль</h3>
+                <a href="zima.html#feb"><img src="https://images.unsplash.com/photo-1517260739337-6799d239ce9a?w=400&auto=format" alt="Февраль"></a>
+            </div>
+
+            <!-- Весна -->
+            <div class="month-card">
+                <h3>Март</h3>
+                <a href="vesna.html#mar"><img src="https://images.unsplash.com/photo-1523471823198-5f5e8d5b9c5a?w=400&auto=format" alt="Март"></a>
+            </div>
+            <div class="month-card">
+                <h3>Апрель</h3>
+                <a href="vesna.html#apr"><img src="https://images.unsplash.com/photo-1589884624823-d9a3a3b9b5f8?w=400&auto=format" alt="Апрель"></a>
+            </div>
+            <div class="month-card">
+                <h3>Май</h3>
+                <a href="vesna.html#may"><img src="https://images.unsplash.com/photo-1527137342181-19aab11a8ee2?w=400&auto=format" alt="Май"></a>
+            </div>
+
+            <!-- Лето -->
+            <div class="month-card">
+                <h3>Июнь</h3>
+                <a href="leto.html#jun"><img src="https://images.unsplash.com/photo-1469122312224-c5846569feb4?w=400&auto=format" alt="Июнь"></a>
+            </div>
+            <div class="month-card">
+                <h3>Июль</h3>
+                <a href="leto.html#jul"><img src="https://images.unsplash.com/photo-1525498128493-380d1990a112?w=400&auto=format" alt="Июль"></a>
+            </div>
+            <div class="month-card">
+                <h3>Август</h3>
+                <a href="leto.html#aug"><img src="https://images.unsplash.com/photo-1521729141475-7b2b3a6f6c5f?w=400&auto=format" alt="Август"></a>
+            </div>
+
+            <!-- Осень -->
+            <div class="month-card">
+                <h3>Сентябрь</h3>
+                <a href="osen.html#sep"><img src="https://images.unsplash.com/photo-1505506874110-6a7a69069a08?w=400&auto=format" alt="Сентябрь"></a>
+            </div>
+            <div class="month-card">
+                <h3>Октябрь</h3>
+                <a href="osen.html#oct"><img src="https://images.unsplash.com/photo-1505253206341-9a4d9e9b9b5a?w=400&auto=format" alt="Октябрь"></a>
+            </div>
+            <div class="month-card">
+                <h3>Ноябрь</h3>
+                <a href="osen.html#nov"><img src="https://images.unsplash.com/photo-1445966275305-9806327e1a9b?w=400&auto=format" alt="Ноябрь"></a>
+            </div>
+        </div>
+
+        <!-- ========== ПУНКТ 5: История HTML, CSS, JS с разными списками ========== -->
+        <h2>📚 5. История веб-технологий (разные виды списков)</h2>
+        <div class="history-section">
+            <h3>📄 HTML (маркированный список ul)</h3>
+            <ul>
+                <li><strong>1991:</strong> Первая версия HTML от Тима Бернерса-Ли</li>
+                <li><strong>1995:</strong> HTML 2.0 — стандартизация</li>
+                <li><strong>1997:</strong> HTML 4.0 — отделение стилей</li>
+                <li><strong>2014:</strong> HTML5 — семантика, видео, аудио</li>
+            </ul>
+
+            <h3>🎨 CSS (нумерованный список ol)</h3>
+            <ol>
+                <li><strong>1996:</strong> CSS Level 1 — базовые стили</li>
+                <li><strong>1998:</strong> CSS Level 2 — позиционирование</li>
+                <li><strong>2011:</strong> CSS3 — модули, анимации</li>
+                <li><strong>Сегодня:</strong> CSS4 (отдельные модули)</li>
+            </ol>
+
+            <h3>⚡ JavaScript (список определений dl)</h3>
+            <dl>
+                <dt><strong>1995:</strong></dt>
+                <dd>Создан Бренданом Айком за 10 дней (Mocha → LiveScript → JavaScript)</dd>
+                <dt><strong>1997:</strong></dt>
+                <dd>ECMAScript 1 — стандартизация</dd>
+                <dt><strong>2009:</strong></dt>
+                <dd>ES5 — JSON, строгий режим</dd>
+                <dt><strong>2015:</strong></dt>
+                <dd>ES6 — классы, модули, стрелочные функции</dd>
+            </dl>
+        </div>
+
+        <!-- ========== ПУНКТ 6: Таблица сравнения товаров ========== -->
+        <h2>📊 6. Сравнение характеристик товаров (электрогитары)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Модель</th>
+                    <th>Звукосниматели</th>
+                    <th>Материал деки</th>
+                    <th>Цена</th>
+                    <th>Вес</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Fender Stratocaster</td>
+                    <td>3 сингла</td>
+                    <td>Ольха</td>
+                    <td>$1200</td>
+                    <td>3.5 кг</td>
+                </tr>
+                <tr>
+                    <td>Gibson Les Paul</td>
+                    <td>2 хамбакера</td>
+                    <td>Махагони</td>
+                    <td>$2500</td>
+                    <td>4.2 кг</td>
+                </tr>
+                <tr>
+                    <td>Ibanez RG</td>
+                    <td>2 хамбакера</td>
+                    <td>Липа</td>
+                    <td>$800</td>
+                    <td>3.2 кг</td>
+                </tr>
+                <tr>
+                    <td>PRS Custom 24</td>
+                    <td>2 хамбакера</td>
+                    <td>Клен</td>
+                    <td>$3500</td>
+                    <td>3.8 кг</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ========== ПУНКТ 7: Ссылки на почту и Skype ========== -->
+        <h2>📧 7. Контакты (почта и Skype)</h2>
+        <div class="contact-links">
+            <a href="mailto:info@example.com?subject=Вопрос%20по%20временам%20года" class="contact-link">✉️ Отправить email</a>
+            <a href="skype:live:example?chat" class="contact-link skype">💬 Чат в Skype</a>
+            <a href="skype:live:example?call" class="contact-link skype">📞 Позвонить в Skype</a>
+        </div>
+
+        <!-- ========== ПУНКТ 9: Информация о редиректе ========== -->
+        <div class="redirect-info">
+            <p>⏰ 9. Через 10 секунд вы будете перенаправлены на страницу с изображениями (images.html)</p>
+            <div class="countdown" id="countdown">10</div>
+        </div>
+
+        <!-- ========== ПУНКТ 10: Адаптивное изображение ========== -->
+        <h2>🖼️ 10. Адаптивное изображение (меняется при изменении экрана)</h2>
+        <div class="responsive-img">
+            <picture>
+                <source srcset="https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?w=400&auto=format" media="(max-width: 600px)">
+                <source srcset="https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?w=800&auto=format" media="(max-width: 1024px)">
+                <img src="https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?w=1200&auto=format" alt="Адаптивный пейзаж">
+            </picture>
+        </div>
+
+        <!-- ========== ПУНКТ 11: Изображение с подписью ========== -->
+        <h2>📝 11. Изображение с подписью (figure + figcaption)</h2>
+        <figure>
+            <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=600&auto=format" alt="Осенний букет">
+            <figcaption>🌻 Рисунок 1: Осенний букет — символ октября (листья, рябина, астры)</figcaption>
+        </figure>
+
+        <!-- ========== ПУНКТ 12: Несколько изображений с подписями и общим фоном ========== -->
+        <h2>🖼️ 12. Галерея изображений (общий фон у body)</h2>
+        <div class="gallery">
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&auto=format" alt="Туманный лес">
+                <p><strong>Рисунок 2:</strong> Утренний туман в лесу</p>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&auto=format" alt="Солнечный лес">
+                <p><strong>Рисунок 3:</strong> Солнечные лучи в лесу</p>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&auto=format" alt="Зимний лес">
+                <p><strong>Рисунок 4:</strong> Зимний пейзаж</p>
+            </div>
+        </div>
+
+        <!-- ========== ПУНКТ 13: Favicon уже добавлен в head ========== -->
+        <h2>🔖 13. Иконка в адресной строке</h2>
+        <p>Посмотрите на вкладку браузера — там отображается иконка 🍂 (favicon добавлен в head)</p>
+
+        <!-- ========== ПУНКТ 14: Аудио с циклическим проигрыванием ========== -->
+        <h2>🎵 14. Аудио (циклическое проигрывание)</h2>
+        <div class="media-section">
+            <audio controls loop>
+                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.ogg" type="audio/ogg">
+                Ваш браузер не поддерживает аудио.
+            </audio>
+            <p><small>♻️ Атрибут loop — аудио будет повторяться</small></p>
+        </div>
+
+        <!-- ========== ПУНКТ 15 и 16: Видео с постером и текстовой дорожкой ========== -->
+        <h2>🎬 15. Видео с постером + 16. Текстовая дорожка</h2>
+        <div class="media-section">
+            <video controls poster="https://images.unsplash.com/photo-1536240474400-95dad987e4b6?w=800&auto=format">
+                <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4">
+                <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm" type="video/webm">
+                <!-- 16. Текстовая дорожка (субтитры) -->
+                <track src="data:text/vtt,WEBVTT%0A%0A00%3A00.000%20--%3E%2000%3A05.000%0A%3Cv%20Speaker%3EВидео%20о%20временах%20года%2C%20часть%201%0A%0A00%3A05.000%20--%3E%2000%3A10.000%0A%3Cv%20Speaker%3EЗдесь%20показана%20красота%20природы%20в%20разные%20сезоны"
+                       kind="subtitles"
+                       srclang="ru"
+                       label="Русский">
+                Ваш браузер не поддерживает видео.
+            </video>
+            <p><small>🎬 Постер загружается до начала видео. Субтитры (track) добавлены с названием файла.</small></p>
+        </div>
+
+        <hr>
+
+        <h2>📋 Список выполненных заданий:</h2>
+        <ul style="columns: 2; list-style-type: none;">
+            <li>✅ 1. Месяцы с картинками</li>
+            <li>✅ 2. 4 страницы сезонов</li>
+            <li>✅ 3. Ссылки с картинок</li>
+            <li>✅ 4. Внутренние ссылки</li>
+            <li>✅ 5. История (списки)</li>
+            <li>✅ 6. Таблица товаров</li>
+            <li>✅ 7. Почта/Skype</li>
+            <li>✅ 8. Страница images.html</li>
+            <li>✅ 9. Редирект 10 сек</li>
+            <li>✅ 10. Адаптивное фото</li>
+            <li>✅ 11. Подпись к фото</li>
+            <li>✅ 12. Галерея + фон</li>
+            <li>✅ 13. Favicon</li>
+            <li>✅ 14. Аудио loop</li>
+            <li>✅ 15. Видео с постером</li>
+            <li>✅ 16. Текстовая дорожка</li>
+        </ul>
+
+        <p style="text-align: center; margin-top: 30px;">
+            <a href="images.html" style="display: inline-block; padding: 15px 30px; background: #e67e22; color: white; text-decoration: none; border-radius: 50px; font-weight: bold;">👉 Перейти на страницу с изображениями (пункт 8)</a>
+        </p>
+    </div>
+
+    <script>
+        // Таймер для обратного отсчета
+        let seconds = 10;
+        const countdownEl = document.getElementById('countdown');
+        const timer = setInterval(() => {
+            seconds--;
+            if (countdownEl) countdownEl.textContent = seconds;
+            if (seconds <= 0) clearInterval(timer);
+        }, 1000);
+    </script>
+</body>
+</html>
