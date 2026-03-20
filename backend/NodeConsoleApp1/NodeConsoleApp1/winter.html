@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Зима</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            min-height: 100vh;
+            padding: 30px;
+            color: #2c3e50;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3em;
+            color: #3498db;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+            .nav-links a {
+                background: #3498db;
+                color: white;
+                text-decoration: none;
+                padding: 12px 30px;
+                border-radius: 50px;
+                font-weight: bold;
+                font-size: 1.2em;
+                transition: all 0.3s;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+
+                .nav-links a:hover {
+                    background: #2980b9;
+                    transform: translateY(-3px);
+                    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+                }
+
+        .month-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-left: 8px solid #3498db;
+            scroll-margin-top: 30px;
+        }
+
+        h2 {
+            color: #3498db;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #34495e;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+            .back-link:hover {
+                background: #2980b9;
+            }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <h1>❄️ Зима</h1>
+
+    <div class="nav-links">
+        <a href="#dec">Декабрь</a>
+        <a href="#jan">Январь</a>
+        <a href="#feb">Февраль</a>
+    </div>
+
+    <div id="dec" class="month-card">
+        <h2>🎄 Декабрь</h2>
+        <p>Начало зимы, холодная погода, подготовка к праздникам. Устанавливается снежный покров. Все готовятся к Новому году.</p>
+    </div>
+
+    <div id="jan" class="month-card">
+        <h2>⛄ Январь</h2>
+        <p>Самый холодный месяц, новогодние каникулы. Морозы крепчают, стоят ясные солнечные дни. Время катания на санках и лыжах.</p>
+    </div>
+
+    <div id="feb" class="month-card">
+        <h2>🌨️ Февраль</h2>
+        <p>Короткий месяц, возможны сильные морозы и метели. Часто бывают вьюги и снегопады. Но солнце начинает пригревать — весна не за горами.</p>
+    </div>
+
+    <a href="index.html" class="back-link">← На главную</a>
+
+    <footer>
+        <p>Зимнее настроение</p>
+    </footer>
+</body>
+</html>
