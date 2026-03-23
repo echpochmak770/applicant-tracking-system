@@ -34,7 +34,7 @@ services:
       context: ./frontend
     container_name: ats_frontend
     ports:
-      - "3000:80"
+      - "5173:80"
     restart: unless-stopped
 
 volumes:
