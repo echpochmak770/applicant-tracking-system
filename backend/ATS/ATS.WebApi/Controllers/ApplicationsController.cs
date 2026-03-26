@@ -59,5 +59,18 @@ namespace ATS.WebApi.Controllers
             var result = await _mediator.Send(new GetResumeQuery { ApplicationId = applicationId });
             return File(result.Content, result.ContentType, result.FileName);
         }
+
+        [HttpPut("{id}/stage")]
+        public async Task<IActionResult> UpdateStage(Guid id, [FromBody] UpdateApplicationStageRequest request)
+        {
+            await _mediator.Send(new UpdateApplicationStageCommand
+            {
+                ApplicationId = id,
+                TargetStageId = request.TargetStageId,
+                Comment = request.Comment,
+                IsRejection = request.IsRejection
+            });
+            return NoContent();
+        }
     }
 }

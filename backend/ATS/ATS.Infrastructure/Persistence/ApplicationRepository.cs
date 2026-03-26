@@ -111,6 +111,7 @@ namespace ATS.Infrastructure.Persistence
                 .Include(a => a.CurrentStage)
                 .Include(a => a.CreatedBy)
                 .Include(a => a.Resume)
+                .Include(a => a.Histories)
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 

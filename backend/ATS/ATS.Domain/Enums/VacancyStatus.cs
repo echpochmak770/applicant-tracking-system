@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ATS.Domain.Enums
+﻿namespace ATS.Domain.Enums
 {
     public enum VacancyStatus
     {
