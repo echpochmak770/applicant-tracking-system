@@ -5,9 +5,8 @@ using System.Text;
 
 namespace ATS.UseCases.Features.Applications.Commands
 {
-    public class UpdateApplicationStageCommand : IRequest<Unit>
+    public class UpdateApplicationStageDto
     {
-        public Guid ApplicationId { get; set; }
         public Guid TargetStageId { get; set; }
         public string? Comment { get; set; }
     }

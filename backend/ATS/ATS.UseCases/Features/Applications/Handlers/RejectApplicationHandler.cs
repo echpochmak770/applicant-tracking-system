@@ -5,48 +5,40 @@ using MediatR;
 
 namespace ATS.UseCases.Features.Applications.Handlers
 {
-    public class UpdateApplicationStageHandler : IRequestHandler<UpdateApplicationStageCommand, Unit>
+    public class RejectApplicationHandler : IRequestHandler<RejectApplicationCommand, Unit>
     {
         private readonly IApplicationRepository _applicationRepository;
         private readonly IApplicationHistoryRepository _applicationHistoryRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
 
-        public UpdateApplicationStageHandler(
+        public RejectApplicationHandler(
             IApplicationRepository applicationRepository,
+            IApplicationHistoryRepository applicationHistoryRepository,
             IUnitOfWork unitOfWork,
-            ICurrentUserService currentUserService,
-            IApplicationHistoryRepository applicationHistoryRepository
-            )
+            ICurrentUserService currentUserService)
         {
             _applicationRepository = applicationRepository;
+            _applicationHistoryRepository = applicationHistoryRepository;
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
-            _applicationHistoryRepository = applicationHistoryRepository;
         }
 
-        public async Task<Unit> Handle(UpdateApplicationStageCommand request, CancellationToken ct)
+        public async Task<Unit> Handle(RejectApplicationCommand request, CancellationToken ct)
         {
             var application = await _applicationRepository.GetWithDetailsAsync(request.ApplicationId)
                 ?? throw new Exception("Application not found");
 
-            var oldStageId = application.CurrentStageId;
-
-            application.CurrentStageId = request.TargetStageId;
-
-            if (!string.IsNullOrEmpty(application.RejectionReason))
-            {
-                application.RejectionReason = null;
-            }
+            application.RejectionReason = request.Comment;
 
             var history = new ApplicationHistory
             {
                 Id = Guid.NewGuid(),
                 ApplicationId = application.Id,
-                FromStageId = oldStageId,
-                ToStageId = request.TargetStageId,
-                Comment = request.Comment ?? "Кандидат возвращен в работу",
-                IsRejection = false,
+                FromStageId = application.CurrentStageId,
+                ToStageId = application.CurrentStageId,
+                Comment = request.Comment,
+                IsRejection = true,
                 ChangedAt = DateTime.UtcNow,
                 ChangedById = _currentUserService.RequiredUserId
             };

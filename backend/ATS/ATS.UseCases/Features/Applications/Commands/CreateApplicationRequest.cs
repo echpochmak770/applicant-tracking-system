@@ -1,6 +1,8 @@
-﻿namespace ATS.WebApi.Requests
+﻿using Microsoft.AspNetCore.Http;
+
+namespace ATS.WebApi.Requests
 {
-    public class CreateApplicationRequest
+    public class CreateApplicationDto
     {
         public Guid VacancyId { get; set; }
         public string FirstName { get; set; }
