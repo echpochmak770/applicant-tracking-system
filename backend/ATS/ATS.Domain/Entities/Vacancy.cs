@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ATS.Domain.Common;
+﻿using ATS.Domain.Common;
 using ATS.Domain.Enums;
 
 namespace ATS.Domain.Entities

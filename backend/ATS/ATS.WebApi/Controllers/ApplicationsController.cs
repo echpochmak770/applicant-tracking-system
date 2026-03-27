@@ -1,6 +1,7 @@
 ﻿using ATS.UseCases.Features.Applications.Commands;
 using ATS.UseCases.Features.Applications.Queries;
 using ATS.UseCases.Features.Resumes.Queries;
+using ATS.UseCases.Features.Applications.DTOs;
 using ATS.WebApi.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -29,7 +30,7 @@ namespace ATS.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] CreateApplicationRequest request)
+        public async Task<IActionResult> Create([FromForm] CreateApplicationDto request)
         {
             var command = new CreateApplicationCommand
             {
@@ -59,5 +60,29 @@ namespace ATS.WebApi.Controllers
             var result = await _mediator.Send(new GetResumeQuery { ApplicationId = applicationId });
             return File(result.Content, result.ContentType, result.FileName);
         }
-    }
+
+        [HttpPut("{id}/stage")]
+        public async Task<IActionResult> UpdateStage(Guid id, [FromBody] UpdateApplicationStageDto request)
+        {
+            await _mediator.Send(new UpdateApplicationStageCommand
+            {
+                ApplicationId = id,
+                TargetStageId = request.TargetStageId,
+                Comment = request.Comment
+            });
+            return NoContent();
+        }
+
+		[HttpPut("{id}/reject")]
+		public async Task<IActionResult> Reject(Guid id, [FromBody] RejectApplicationDto request)
+		{
+			await _mediator.Send(new RejectApplicationCommand
+			{
+				ApplicationId = id,
+				Comment = request.Comment
+			});
+
+			return NoContent();
+		}
+	}
 }
