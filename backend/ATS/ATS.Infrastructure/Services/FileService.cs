@@ -27,5 +27,11 @@ namespace ATS.Infrastructure.Services
 
             return "/" + relativePath.Replace("\\", "/");
         }
+
+        public string GetFullPath(string relativeUrl)
+        {
+            var rootPath = _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            return Path.Combine(rootPath, relativeUrl.TrimStart('/'));
+        }
     }
 }

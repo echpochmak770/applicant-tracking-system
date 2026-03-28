@@ -17,7 +17,7 @@ services:
       dockerfile: Dockerfile
     container_name: ats_backend
     ports:
-      - "5000:8080"
+      - "5179:8080"
     depends_on:
       - db
     environment:
@@ -35,6 +35,10 @@ services:
     container_name: ats_frontend
     ports:
       - "5173:80"
+    environment:
+      - BACKEND_URL=${BACKEND_URL}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
 
 volumes:

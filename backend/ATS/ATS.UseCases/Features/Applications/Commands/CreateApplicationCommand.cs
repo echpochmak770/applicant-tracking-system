@@ -1,11 +1,4 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Runtime.Serialization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ATS.UseCases.Features.Applications.Commands
 {

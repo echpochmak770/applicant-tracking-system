@@ -1,8 +1,5 @@
 ﻿using ATS.Domain.Common;
 using ATS.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ATS.Domain.Entities
 {

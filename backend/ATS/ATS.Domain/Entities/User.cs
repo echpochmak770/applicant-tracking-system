@@ -1,7 +1,4 @@
 ﻿using ATS.Domain.Common;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using ATS.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
