@@ -9,15 +9,15 @@ export const useVacanciesQuery = (params: VacanciesSearchRequest) => {
     queryKey: vacancyKeys.list(params),
     queryFn: () => vacanciesActions.vacancies(params),
     placeholderData: keepPreviousData,
-  })
-}
+  });
+};
 
 export const useVacancyStagesQuery = (vacancyId: string) => {
   return useQuery({
     queryKey: ["vacancy-stages", vacancyId],
     queryFn: () => {
-      return vacanciesActions.stage(vacancyId)
+      return vacanciesActions.stage(vacancyId);
     },
-    enabled: !!vacancyId
-  })
-}
+    enabled: !!vacancyId,
+  });
+};

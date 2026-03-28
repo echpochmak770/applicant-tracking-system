@@ -1,17 +1,17 @@
-import { ArrowUp, ArrowDown, X } from "lucide-react"
+import { ArrowUp, ArrowDown, X } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 type Props = {
-  field: string
-  currentSort?: "asc" | "desc" | undefined
-  onSort: (field: string, direction?: "asc" | "desc") => void
-}
+  field: string;
+  currentSort?: "asc" | "desc" | undefined;
+  onSort: (field: string, direction?: "asc" | "desc") => void;
+};
 
 export const SortDropdown = ({ field, currentSort, onSort }: Props) => {
   return (
@@ -21,7 +21,7 @@ export const SortDropdown = ({ field, currentSort, onSort }: Props) => {
           <button
             className={cn(
               "flex h-7 w-7 items-center justify-center rounded-md hover:bg-muted",
-              currentSort && "text-primary"
+              currentSort && "text-primary",
             )}
           >
             {currentSort === "asc" && <ArrowUp className="h-4 w-4" />}
@@ -48,5 +48,5 @@ export const SortDropdown = ({ field, currentSort, onSort }: Props) => {
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  )
-}
+  );
+};
