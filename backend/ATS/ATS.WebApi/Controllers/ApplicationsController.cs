@@ -1,7 +1,9 @@
-﻿using ATS.UseCases.Features.Applications.Commands;
+﻿using ATS.Domain.Interfaces;
+using ATS.UseCases.Features.Applications.Commands;
 using ATS.UseCases.Features.Applications.Queries;
 using ATS.UseCases.Features.Resumes.Queries;
 using ATS.WebApi.Requests;
+using ATS.WebApi.Requests.ATS.WebApi.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,8 +16,13 @@ namespace ATS.WebApi.Controllers
     public class ApplicationsController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IFileService _fileService;
 
-        public ApplicationsController(IMediator mediator) => _mediator = mediator;
+        public ApplicationsController(IMediator mediator, IFileService fileService)
+        {
+            _mediator = mediator;
+            _fileService = fileService;
+        }
 
         [HttpGet("{vacancyId}/{applicationId}/history")]
         public async Task<IActionResult> GetHistory(Guid vacancyId, Guid applicationId)
@@ -58,6 +65,38 @@ namespace ATS.WebApi.Controllers
         {
             var result = await _mediator.Send(new GetResumeQuery { ApplicationId = applicationId });
             return File(result.Content, result.ContentType, result.FileName);
+        }
+
+        [HttpPut("{id}")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateApplicationRequest request)
+        {
+            string? uploadedUrl = null;
+            string? uploadedName = null;
+
+            if (request.ResumeFile != null)
+            {
+                uploadedName = request.ResumeFile.FileName;
+
+                uploadedUrl = await _fileService.SaveFileAsync(
+                    request.ResumeFile.OpenReadStream(),
+                    uploadedName,
+                    "resumes"
+                );
+            }
+
+            await _mediator.Send(new UpdateApplicationCommand
+            {
+                Id = id,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                Phone = request.Phone,
+                ResumeFileUrl = uploadedUrl,
+                ResumeFileName = uploadedName
+            });
+
+            return NoContent();
         }
     }
 }
