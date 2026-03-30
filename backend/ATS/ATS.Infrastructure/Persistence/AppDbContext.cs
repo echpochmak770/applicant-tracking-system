@@ -239,6 +239,11 @@ namespace ATS.Infrastructure.Persistence
                     .HasMaxLength(512)
                     .IsRequired();
 
+                entity.Property(v => v.Status)
+                    .HasConversion<string>()
+                    .HasMaxLength(64)
+                    .IsRequired();
+
                 entity.HasOne(v => v.CreatedBy)
                     .WithMany(u => u.Vacancies)
                     .HasForeignKey(v => v.CreatedById)
