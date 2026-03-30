@@ -9,6 +9,5 @@ namespace ATS.UseCases.Features.Stages.DTOs
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public int Order { get; set; }
-        public bool IsFinal { get; set; }
     }
 }

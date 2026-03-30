@@ -24,8 +24,7 @@ namespace ATS.UseCases.Features.Stages.Handlers
                 {
                     Id = s.Id,
                     Name = s.Name,
-                    Order = s.Order,
-                    IsFinal = s.IsFinal
+                    Order = s.Order
                 }).ToList();
         }
     }
