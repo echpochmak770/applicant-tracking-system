@@ -53,7 +53,7 @@ namespace ATS.WebApi.Controllers
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
-        {
+        {   
             var result = await _mediator.Send(new GetVacancyByIdQuery { Id = id });
             return Ok(result);
         }
@@ -63,6 +63,15 @@ namespace ATS.WebApi.Controllers
         {
             var result = await _mediator.Send(new GetStagesByVacancyQuery { VacancyId = vacancyId });
             return Ok(result);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateVacancyCommand command)
+        {
+            command.Id = id;
+
+            await _mediator.Send(command);
+            return NoContent();
         }
     }
 }
