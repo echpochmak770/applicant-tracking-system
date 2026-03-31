@@ -1,21 +1,27 @@
-import { api } from '@/api/client';
-import type { VacanciesResponse, CreateVacancyBody, VacanciesSearchRequest } from '../model/types';
+import { api } from "@/api/client";
+import type {
+  VacanciesResponse,
+  CreateVacancyBody,
+  VacanciesSearchRequest,
+} from "../model/types";
 
 export const vacanciesActions = {
-  vacancies: async (body: VacanciesSearchRequest): Promise<VacanciesResponse> => {
+  vacancies: async (
+    body: VacanciesSearchRequest,
+  ): Promise<VacanciesResponse> => {
     const { data } = await api.post<VacanciesResponse>(
-      "/api/Vacancies/search",
-      body
-    )
+      "/Vacancies/search",
+      body,
+    );
 
-    return data
+    return data;
   },
 
   createVacancy: async (body: CreateVacancyBody) =>
-    api.post("/api/Vacancies", body),
+    api.post("/Vacancies", body),
 
-  stage: async (vacancyId: string) =>{
-    const response =  await api.get(`/api/Vacancies/${vacancyId}/stages`)
-    return response.data
-  }
-}
+  stage: async (vacancyId: string) => {
+    const response = await api.get(`/Vacancies/${vacancyId}/stages`);
+    return response.data;
+  },
+};

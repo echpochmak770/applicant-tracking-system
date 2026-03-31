@@ -23,4 +23,8 @@
     <ProjectReference Include="..\ATS.Infrastructure\ATS.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Requests\" />
+  </ItemGroup>
+
 </Project>

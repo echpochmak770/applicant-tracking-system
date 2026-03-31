@@ -1,37 +1,37 @@
-import { useState, useEffect } from "react"
-import { Filter, X } from "lucide-react"
+import { useState, useEffect } from "react";
+import { Filter, X } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 type Props = {
-  value?: string
-  onChange: (value?: string) => void
-  placeholder?: string
-}
+  value?: string;
+  onChange: (value?: string) => void;
+  placeholder?: string;
+};
 
 export const TextSearchFilter = ({
   value,
   onChange,
   placeholder = "Поиск...",
 }: Props) => {
-  const [local, setLocal] = useState(value ?? "")
+  const [local, setLocal] = useState(value ?? "");
 
   useEffect(() => {
-    setLocal(value ?? "")
-  }, [value])
+    setLocal(value ?? "");
+  }, [value]);
 
   const apply = () => {
-    onChange(local.trim() || undefined)
-  }
+    onChange(local.trim() || undefined);
+  };
 
   const reset = () => {
-    setLocal("")
-    onChange(undefined)
-  }
+    setLocal("");
+    onChange(undefined);
+  };
 
   return (
     <div onClick={(e) => e.stopPropagation()}>
@@ -40,7 +40,7 @@ export const TextSearchFilter = ({
           <button
             className={cn(
               "flex h-7 w-7 items-center justify-center rounded-md hover:bg-muted",
-              value && "text-primary"
+              value && "text-primary",
             )}
           >
             <Filter className="h-4 w-4" />
@@ -76,5 +76,5 @@ export const TextSearchFilter = ({
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  )
-}
+  );
+};
