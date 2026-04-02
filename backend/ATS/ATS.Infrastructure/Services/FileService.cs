@@ -33,5 +33,27 @@ namespace ATS.Infrastructure.Services
             var rootPath = _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
             return Path.Combine(rootPath, relativeUrl.TrimStart('/'));
         }
+
+        public async Task DeleteFileAsync(string? relativeUrl)
+        {
+            if (string.IsNullOrWhiteSpace(relativeUrl))
+            {
+                return;
+            }
+
+            var fullPath = GetFullPath(relativeUrl);
+
+            if (File.Exists(fullPath))
+            {
+                try
+                {
+                    await Task.Run(() => File.Delete(fullPath));
+                }
+                catch (IOException)
+                {
+                    throw;
+                }
+            }
+        }
     }
 }

@@ -84,5 +84,12 @@ namespace ATS.WebApi.Controllers
 
 			return NoContent();
 		}
-	}
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await _mediator.Send(new DeleteApplicationCommand { Id = id });
+            return NoContent();
+        }
+    }
 }
