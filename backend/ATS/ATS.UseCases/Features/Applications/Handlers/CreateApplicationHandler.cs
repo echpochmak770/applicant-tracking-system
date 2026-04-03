@@ -74,7 +74,7 @@ namespace ATS.UseCases.Features.Applications.Handlers
 
         private async Task<Candidate> GetOrCreateCandidateAsync(CreateApplicationCommand request)
         {
-            var candidate = await _candidateRepository.GetByEmailAsync(request.Email);
+            var candidate = await _candidateRepository.GetByEmailIncludingDeletedAsync(request.Email);
 
             if (candidate == null)
             {
@@ -85,6 +85,17 @@ namespace ATS.UseCases.Features.Applications.Handlers
                     Email = request.Email,
                     Phone = request.Phone
                 };
+                await _candidateRepository.AddAsync(candidate);
+            }
+            else if (candidate.IsDeleted)
+            {
+                candidate.IsDeleted = false;
+
+                candidate.FirstName = request.FirstName;
+                candidate.LastName = request.LastName;
+                candidate.Phone = request.Phone;
+
+                _candidateRepository.Update(candidate);
             }
 
             return candidate;
