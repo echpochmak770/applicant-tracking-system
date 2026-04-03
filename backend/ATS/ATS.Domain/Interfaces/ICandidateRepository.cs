@@ -6,5 +6,6 @@ namespace ATS.Domain.Interfaces
     {
         Task<Candidate?> GetWithApplicationsAsync(Guid id);
         Task<Candidate?> GetByEmailAsync(string email);
+        Task<Candidate?> GetByEmailIncludingDeletedAsync(string email);
     }
 }
