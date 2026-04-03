@@ -22,6 +22,7 @@ namespace ATS.Infrastructure.Persistence
         public DbSet<ApplicationHistory> ApplicationHistories { get; set; }
         public DbSet<Candidate> Candidates { get; set; }
         public DbSet<Communication> Communications { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Resume> Resumes { get; set; }
         public DbSet<Stage> Stages { get; set; }
         public DbSet<User> Users { get; set; }
@@ -158,6 +159,23 @@ namespace ATS.Infrastructure.Persistence
                     .IsRequired(true);
             });
 
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasKey(t => t.Id);
+
+                entity.Property(t => t.Token)
+                    .IsRequired()
+                    .HasMaxLength(512);
+
+                entity.HasIndex(t => t.Token)
+                    .IsUnique();
+
+                entity.HasOne(t => t.User)
+                    .WithMany()
+                    .HasForeignKey(t => t.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
             modelBuilder.Entity<Resume>(entity =>
             {
                 entity.HasKey(r => r.Id);
@@ -281,7 +299,7 @@ namespace ATS.Infrastructure.Persistence
                         break;
 
                     case EntityState.Deleted:
-                        HandleSoftDelete(entry);
+                        HandleDeletion(entry);
                         break;
                 }
             }
@@ -305,8 +323,13 @@ namespace ATS.Infrastructure.Persistence
             }
         }
 
-        private void HandleSoftDelete(EntityEntry<BaseEntity> entry)
+        private void HandleDeletion(EntityEntry<BaseEntity> entry)
         {
+            if (entry.Entity is RefreshToken)
+            {
+                return;
+            }
+
             entry.State = EntityState.Modified;
             entry.Entity.IsDeleted = true;
         }

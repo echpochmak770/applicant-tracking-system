@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ATS.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,5 +9,6 @@ namespace ATS.UseCases.Features.Auth.DTOs
     {
         public string AccessToken { get; set; } = null!;
         public DateTime ExpiresAt { get; set; }
+        public string RefreshToken { get; set; }
     }
 }

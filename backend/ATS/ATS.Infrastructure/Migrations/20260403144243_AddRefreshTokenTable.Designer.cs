@@ -4,6 +4,7 @@ using ATS.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATS.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260403144243_AddRefreshTokenTable")]
+    partial class AddRefreshTokenTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,7 +31,7 @@ namespace ATS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CandidateId")
+                    b.Property<Guid?>("CandidateId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -47,7 +50,7 @@ namespace ATS.Infrastructure.Migrations
                         .HasMaxLength(2048)
                         .HasColumnType("nvarchar(2048)");
 
-                    b.Property<Guid>("ResumeId")
+                    b.Property<Guid?>("ResumeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("VacancyId")
@@ -369,8 +372,10 @@ namespace ATS.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -389,8 +394,7 @@ namespace ATS.Infrastructure.Migrations
                     b.HasOne("ATS.Domain.Entities.Candidate", "Candidate")
                         .WithMany("Applications")
                         .HasForeignKey("CandidateId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ATS.Domain.Entities.User", "CreatedBy")
                         .WithMany("CreatedApplications")
@@ -407,8 +411,7 @@ namespace ATS.Infrastructure.Migrations
                     b.HasOne("ATS.Domain.Entities.Resume", "Resume")
                         .WithMany("Applications")
                         .HasForeignKey("ResumeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ATS.Domain.Entities.Vacancy", "Vacancy")
                         .WithMany("Applications")
