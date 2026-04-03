@@ -6,6 +6,7 @@ using ATS.Infrastructure.Authentication;
 using ATS.UseCases.Features.Auth.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using ATS.Infrastructure.Persistence;
+using ATS.Domain.Interfaces;
 
 namespace ATS.WebApi.Helpers
 {
@@ -17,6 +18,7 @@ namespace ATS.WebApi.Helpers
             AddJwtAuthentication(services, configuration);
             services.AddAuthorization();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             return services;
         }
 
@@ -82,7 +84,7 @@ namespace ATS.WebApi.Helpers
                         IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.UTF8.GetBytes(jwtSettings.Secret)),
 
-                        ClockSkew = TimeSpan.Zero
+                        ClockSkew = TimeSpan.FromSeconds(30)
                     };
 
                     options.Events = new JwtBearerEvents
