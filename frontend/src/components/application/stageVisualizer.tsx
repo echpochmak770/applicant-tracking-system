@@ -1,17 +1,16 @@
-type BackendStage = {
-  id: string;
-  name: string;
-  order?: number;
-};
+import { type StageType } from "@/api/stage/model/types";
 
 interface StageVisualizerProps {
-  stages: BackendStage[];
+  stages: StageType[];
   currentStage: string;
-  isRejected?: boolean; 
+  isRejected?: boolean;
 }
 
-export default function StageVisualizer({ stages, currentStage, isRejected = false }: StageVisualizerProps) {
-
+export default function StageVisualizer({
+  stages,
+  currentStage,
+  isRejected = false,
+}: StageVisualizerProps) {
   const currentStageIdx = stages.findIndex((s) => s.name === currentStage);
 
   return (
@@ -26,17 +25,18 @@ export default function StageVisualizer({ stages, currentStage, isRejected = fal
         {stages.map((stage, idx) => {
           const isCurrent = stage.name === currentStage;
           const isCompleted = currentStageIdx > idx;
-          
+
           let statusClass = "";
-          
+
           if (isCurrent) {
-            statusClass = isRejected 
-              ? "bg-destructive text-destructive-foreground border-destructive shadow-lg z-10" 
+            statusClass = isRejected
+              ? "bg-destructive text-destructive-foreground border-destructive shadow-lg z-10"
               : "bg-primary text-primary-foreground border-primary shadow-lg z-10";
           } else if (isCompleted) {
             statusClass = "bg-green-600 text-white border-green-600";
           } else {
-            statusClass = "bg-background border-border text-muted-foreground opacity-60";
+            statusClass =
+              "bg-background border-border text-muted-foreground opacity-60";
           }
 
           return (
@@ -50,13 +50,10 @@ export default function StageVisualizer({ stages, currentStage, isRejected = fal
                 <span className="text-sm font-semibold whitespace-nowrap">
                   {stage.name}
                 </span>
-              
               </div>
 
               {idx < stages.length - 1 && (
-                <div 
-                  className="h-[1px] w-8 transition-colors duration-300 bg-border"
-                />
+                <div className="h-[1px] w-8 transition-colors duration-300 bg-border" />
               )}
             </div>
           );

@@ -5,7 +5,7 @@ import type { ColDef, ICellRendererParams } from "ag-grid-community";
 import { Button } from "@/components/ui/button";
 import { Plus, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { useApplicationsQuery } from "@/api/applications/model/queries";
-import { useVacancyStagesQuery } from "@/api/vacancies/model/queries";
+import { useVacancyStagesQuery } from "@/api/stage/model/queries";
 import { useApplicationStore } from "@/store/useApplicationStore";
 import { useStagesStore } from "@/store/useStagesStore";
 import { Input } from "@/components/ui/input";

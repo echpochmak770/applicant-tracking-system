@@ -8,7 +8,7 @@ import type {
 export const applicationActions = {
   getApplications: async (
     vacancyId: string,
-    body: ApplicationsParamsDto,
+    body?: ApplicationsParamsDto,
   ): Promise<ApplicationsResponse> => {
     const response = await api.post(
       `/Vacancies/${vacancyId}/applications/search`,
