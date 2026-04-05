@@ -19,9 +19,4 @@ export const vacanciesActions = {
 
   createVacancy: async (body: CreateVacancyBody) =>
     api.post("/Vacancies", body),
-
-  stage: async (vacancyId: string) => {
-    const response = await api.get(`/Vacancies/${vacancyId}/stages`);
-    return response.data;
-  },
 };

@@ -1,17 +1,12 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-
-export type BackendStage = {
-  id: string;
-  name: string;
-  order?: number;
-};
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import type { StageType } from "@/api/stage/model/types";
 
 interface StagesState {
-  stagesByVacancy: Record<string, BackendStage[]>;
-  
-  setStages: (vacancyId: string, stages: BackendStage[]) => void;
-  getStages: (vacancyId: string) => BackendStage[];
+  stagesByVacancy: Record<string, StageType[]>;
+
+  setStages: (vacancyId: string, stages: StageType[]) => void;
+  getStages: (vacancyId: string) => StageType[];
   clearStages: () => void;
 }
 
@@ -21,7 +16,9 @@ export const useStagesStore = create<StagesState>()(
       stagesByVacancy: {},
 
       setStages: (vacancyId, stages) => {
-        const sortedStages = [...stages].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+        const sortedStages = [...stages].sort(
+          (a, b) => (a.order ?? 0) - (b.order ?? 0),
+        );
         set((state) => ({
           stagesByVacancy: {
             ...state.stagesByVacancy,
@@ -37,8 +34,8 @@ export const useStagesStore = create<StagesState>()(
       clearStages: () => set({ stagesByVacancy: {} }),
     }),
     {
-      name: 'vacancy-stages-storage',
+      name: "vacancy-stages-storage",
       storage: createJSONStorage(() => localStorage),
-    }
-  )
+    },
+  ),
 );
