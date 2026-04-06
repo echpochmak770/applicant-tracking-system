@@ -24,6 +24,14 @@ namespace ATS.Infrastructure.Persistence
             _ => sortBy
         };
 
+        public async Task<Application?> GetForUpdateAsync(Guid id, CancellationToken ct = default)
+        {
+            return await _context.Applications
+                .Include(a => a.Candidate)
+                .Include(a => a.Resume)
+                .FirstOrDefaultAsync(a => a.Id == id, ct);
+        }
+
         public async Task<List<Application>> GetByCandidateAsync(Guid candidateId)
         {
             return await _dbSet

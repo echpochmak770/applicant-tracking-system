@@ -18,5 +18,6 @@ namespace ATS.Domain.Interfaces
             Guid applicationId,
             PagedQuery request,
             CancellationToken ct);
+        Task<Application?> GetForUpdateAsync(Guid id, CancellationToken ct = default);
     }
 }
