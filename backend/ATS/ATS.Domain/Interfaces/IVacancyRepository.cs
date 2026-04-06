@@ -8,7 +8,7 @@ namespace ATS.Domain.Interfaces
 {
     public interface IVacancyRepository : IRepository<Vacancy>
     {
-        Task<Vacancy?> GetWithStagesAsync(Guid id);
+        Task<Vacancy?> GetWithStagesAsync(Guid id, CancellationToken ct);
         Task<Vacancy?> GetFullAsync(Guid id);
         Task<Vacancy?> GetWithAuthorByIdAsync(Guid id);
         Task<(List<Vacancy> Items, int Total)> GetAllPagedAsync(PagedQuery request, CancellationToken ct);

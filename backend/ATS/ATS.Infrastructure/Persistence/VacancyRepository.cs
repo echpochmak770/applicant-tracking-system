@@ -62,7 +62,7 @@ namespace ATS.Infrastructure.Persistence
                 .FirstOrDefaultAsync(v => v.Id == id);
         }
 
-        public async Task<Vacancy?> GetWithStagesAsync(Guid id)
+        public async Task<Vacancy?> GetWithStagesAsync(Guid id, CancellationToken cd)
         {
             return await _dbSet
                 .Include(v => v.Stages)

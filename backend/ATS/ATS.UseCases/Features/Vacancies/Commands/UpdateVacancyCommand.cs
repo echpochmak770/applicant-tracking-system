@@ -12,5 +12,6 @@ namespace ATS.UseCases.Features.Vacancies.Commands
         public string Description { get; set; } = string.Empty;
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public VacancyStatus Status { get; set; }
+        public List<string> StagesNames { get; set; } = new();
     }
 }
