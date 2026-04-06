@@ -13,18 +13,14 @@ namespace ATS.UseCases.Features.Applications.Handlers
         private readonly IApplicationRepository _applicationRepository;
         private readonly IStageRepository _stageRepository;
         private readonly ICandidateRepository _candidateRepository;
-        private readonly IRepository<Resume> _resumeRepository;
         private readonly ICurrentUserService _currentUserService;
         private readonly IFileService _fileService;
-
-        private static readonly Guid SystemUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
 
         public CreateApplicationHandler(
             IUnitOfWork unitOfWork,
             IApplicationRepository applicationRepository,
             IStageRepository stageRepository,
             ICandidateRepository candidateRepository,
-            IRepository<Resume> resumeRepository,
             ICurrentUserService currentUserService,
             IFileService fileService)
         {
@@ -32,7 +28,6 @@ namespace ATS.UseCases.Features.Applications.Handlers
             _applicationRepository = applicationRepository;
             _stageRepository = stageRepository;
             _candidateRepository = candidateRepository;
-            _resumeRepository = resumeRepository;
             _currentUserService = currentUserService;
             _fileService = fileService;
         }
@@ -40,17 +35,21 @@ namespace ATS.UseCases.Features.Applications.Handlers
         public async Task<Guid> Handle(CreateApplicationCommand request, CancellationToken ct)
         {
             var firstStage = await GetFirstStageAsync(request.VacancyId);
+            var recruiterId = _currentUserService.UserId ?? throw new ArgumentNullException("Couldn't get current user");
 
-            var recruiterId = _currentUserService.RequiredUserId;
+            string filePath = await _fileService.SaveFileAsync(request.ResumeStream, request.ResumeFileName, "resumes");
 
             await _unitOfWork.BeginTransactionAsync();
 
             try
             {
                 var candidate = await GetOrCreateCandidateAsync(request);
-                var resume = await CreateResumeAsync(candidate, request);
 
-                var application = await CreateApplicationInternalAsync(request, candidate, resume, firstStage.Id, recruiterId);
+                var resume = CreateResumeObject(candidate, request, filePath);
+
+                var application = CreateApplicationObject(request, candidate, resume, firstStage.Id, recruiterId);
+
+                await _applicationRepository.AddAsync(application);
 
                 await _unitOfWork.SaveChangesAsync(ct);
                 await _unitOfWork.CommitTransactionAsync();
@@ -60,9 +59,11 @@ namespace ATS.UseCases.Features.Applications.Handlers
             catch (Exception)
             {
                 await _unitOfWork.RollbackTransactionAsync();
+                await _fileService.DeleteFileAsync(filePath);
                 throw;
             }
         }
+
 
         private async Task<Stage> GetFirstStageAsync(Guid vacancyId)
         {
@@ -73,7 +74,7 @@ namespace ATS.UseCases.Features.Applications.Handlers
 
         private async Task<Candidate> GetOrCreateCandidateAsync(CreateApplicationCommand request)
         {
-            var candidate = await _candidateRepository.GetByEmailAsync(request.Email);
+            var candidate = await _candidateRepository.GetByEmailIncludingDeletedAsync(request.Email);
 
             if (candidate == null)
             {
@@ -82,45 +83,49 @@ namespace ATS.UseCases.Features.Applications.Handlers
                     FirstName = request.FirstName,
                     LastName = request.LastName,
                     Email = request.Email,
-                    Phone = request.Phone ?? null
+                    Phone = request.Phone
                 };
                 await _candidateRepository.AddAsync(candidate);
+            }
+            else if (candidate.IsDeleted)
+            {
+                candidate.IsDeleted = false;
+
+                candidate.FirstName = request.FirstName;
+                candidate.LastName = request.LastName;
+                candidate.Phone = request.Phone;
+
+                _candidateRepository.Update(candidate);
             }
 
             return candidate;
         }
 
-        private async Task<Resume> CreateResumeAsync(Candidate candidate, CreateApplicationCommand request)
+        private Resume CreateResumeObject(Candidate candidate, CreateApplicationCommand request, string filePath)
         {
-            var filePath = await _fileService.SaveFileAsync(request.ResumeStream, request.ResumeFileName, "resumes");
-
-            var resume = new Resume
+            return new Resume
             {
                 Candidate = candidate,
                 FileName = request.ResumeFileName,
                 FileUrl = filePath,
                 Type = FileType.PDF
             };
-
-            await _resumeRepository.AddAsync(resume);
-            return resume;
         }
 
-        private async Task<Application> CreateApplicationInternalAsync(
+        private Application CreateApplicationObject(
             CreateApplicationCommand request,
             Candidate candidate,
             Resume resume,
             Guid stageId,
             Guid userId)
         {
-            var application = new Application
+            return new Application
             {
                 VacancyId = request.VacancyId,
                 Candidate = candidate,
                 Resume = resume,
                 CurrentStageId = stageId,
                 CreatedById = userId,
-
                 Histories = new List<ApplicationHistory>
                 {
                     new ApplicationHistory
@@ -132,9 +137,6 @@ namespace ATS.UseCases.Features.Applications.Handlers
                     }
                 }
             };
-
-            await _applicationRepository.AddAsync(application);
-            return application;
         }
     }
 }

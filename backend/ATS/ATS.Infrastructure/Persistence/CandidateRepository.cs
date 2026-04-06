@@ -23,5 +23,12 @@ namespace ATS.Infrastructure.Persistence
                 .ThenInclude(a => a.Vacancy)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
+
+        public async Task<Candidate?> GetByEmailIncludingDeletedAsync(string email)
+        {
+            return await _dbSet
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(c => c.Email == email);
+        }
     }
 }

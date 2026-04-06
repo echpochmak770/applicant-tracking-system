@@ -99,5 +99,24 @@ namespace ATS.WebApi.Controllers
 
             return NoContent();
         }
+
+		[HttpPut("{id}/reject")]
+		public async Task<IActionResult> Reject(Guid id, [FromBody] RejectApplicationDto request)
+		{
+			await _mediator.Send(new RejectApplicationCommand
+			{
+				ApplicationId = id,
+				Comment = request.Comment
+			});
+
+			return NoContent();
+		}
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await _mediator.Send(new DeleteApplicationCommand { Id = id });
+            return NoContent();
+        }
     }
 }

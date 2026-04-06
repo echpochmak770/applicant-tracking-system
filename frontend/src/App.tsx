@@ -13,6 +13,7 @@ import { Header } from "./components/layout/header/Header";
 import { Toaster } from "./components/ui/sonner";
 import { Suspense } from "react";
 import { lazy } from "react";
+import StagesBoardPage from "./pages/stages/StagesBoardPage";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
@@ -31,6 +32,8 @@ const ApplicationHistoryPage = lazy(
 const CreateApplicationPage = lazy(
   () => import("./pages/applications/CreateApplicationPage"),
 );
+
+// const StagesBoardPage = lazy(() => import("./pages/stages/StagesBoardPage"));
 
 const modules = [AllCommunityModule];
 
@@ -113,6 +116,10 @@ const router = createBrowserRouter([
                 ],
               },
             ],
+          },
+          {
+            path: "stages",
+            element: <StagesBoardPage />,
           },
         ],
       },

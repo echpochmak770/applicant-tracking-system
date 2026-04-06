@@ -8,5 +8,6 @@ namespace ATS.Domain.Interfaces
     {
         Task<string> SaveFileAsync(Stream content, string fileName, string folderName);
         string GetFullPath(string relativeUrl);
+        Task DeleteFileAsync(string? relativeUrl);
     }
 }
