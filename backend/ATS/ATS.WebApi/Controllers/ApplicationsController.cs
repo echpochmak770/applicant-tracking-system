@@ -3,11 +3,11 @@ using ATS.UseCases.Features.Applications.Commands;
 using ATS.UseCases.Features.Applications.Queries;
 using ATS.UseCases.Features.Resumes.Queries;
 using ATS.UseCases.Features.Applications.DTOs;
-using ATS.WebApi.Requests;
-using ATS.WebApi.Requests.ATS.WebApi.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ATS.WebApi.DTOs;
+using ATS.WebApi.Requests;
 
 namespace ATS.WebApi.Controllers
 {
@@ -37,6 +37,7 @@ namespace ATS.WebApi.Controllers
         }
 
         [HttpPost]
+        [Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromForm] CreateApplicationDto request)
         {
             var command = new CreateApplicationCommand
@@ -51,6 +52,7 @@ namespace ATS.WebApi.Controllers
             };
 
             var id = await _mediator.Send(command);
+
             return CreatedAtAction(nameof(GetById), new { id }, new { id });
         }
 
@@ -70,37 +72,25 @@ namespace ATS.WebApi.Controllers
 
         [HttpPut("{id}")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateApplicationRequest request)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateApplicationDto request)
         {
-            string? uploadedUrl = null;
-            string? uploadedName = null;
-
-            if (request.ResumeFile != null)
-            {
-                uploadedName = request.ResumeFile.FileName;
-
-                uploadedUrl = await _fileService.SaveFileAsync(
-                    request.ResumeFile.OpenReadStream(),
-                    uploadedName,
-                    "resumes"
-                );
-            }
-
-            await _mediator.Send(new UpdateApplicationCommand
+            var command = new UpdateApplicationCommand
             {
                 Id = id,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Email = request.Email,
                 Phone = request.Phone,
-                ResumeFileUrl = uploadedUrl,
-                ResumeFileName = uploadedName
-            });
+                ResumeStream = request.ResumeFile?.OpenReadStream(),
+                ResumeFileName = request.ResumeFile?.FileName
+            };
+
+            await _mediator.Send(command);
 
             return NoContent();
         }
 
-		[HttpPut("{id}/reject")]
+        [HttpPut("{id}/reject")]
 		public async Task<IActionResult> Reject(Guid id, [FromBody] RejectApplicationDto request)
 		{
 			await _mediator.Send(new RejectApplicationCommand
