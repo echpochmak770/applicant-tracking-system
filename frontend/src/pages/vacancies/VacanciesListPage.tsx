@@ -10,6 +10,7 @@ import type { ColumnFilter } from "@/api/types";
 import { Input } from "@/components/ui/input";
 import { ColumnActions } from "@/components/tables/ColumnActions";
 import { useVacancyStore } from "@/store/useVacanciesStore";
+import { VacancyActions } from "@/components/tables/VacancyActions";
 
 export default function VacanciesListPage() {
   const navigate = useNavigate();
@@ -114,6 +115,7 @@ export default function VacanciesListPage() {
           navigate(`/vacancies/${params.data?.id}/applications`),
         cellClass:
           "cursor-pointer hover:text-primary hover:underline font-medium transition-colors",
+        cellRenderer: VacancyActions,
       },
       {
         field: "description",

@@ -11,3 +11,12 @@ export const useVacanciesQuery = (params: VacanciesSearchRequest) => {
     placeholderData: keepPreviousData,
   });
 };
+
+export const useVacancyQuery = (id: string) => {
+  return useQuery({
+    queryKey: [id, "vacancy"],
+    queryFn: () => vacanciesActions.getVacancy(id),
+    placeholderData: keepPreviousData,
+    enabled: !!id,
+  });
+};

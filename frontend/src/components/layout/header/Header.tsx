@@ -2,8 +2,8 @@ import { type UserDto } from "@/api/auth/model/types";
 import { Button } from "@/components/ui/button";
 import { LogOut, LayoutDashboard } from "lucide-react";
 import { useNavigate } from "react-router";
-import { queryClient } from "@/api/query";
 import { NavLink } from "react-router";
+import { useLogoutMutation } from "@/api/auth/model/mutations";
 
 interface HeaderProps {
   user?: UserDto;
@@ -12,9 +12,10 @@ interface HeaderProps {
 export function Header({ user }: HeaderProps) {
   const navigate = useNavigate();
 
+  const { mutate } = useLogoutMutation();
+
   const handleLogout = () => {
-    queryClient.clear();
-    navigate("/auth");
+    mutate();
   };
 
   const initials = user?.fullName

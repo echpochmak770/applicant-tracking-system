@@ -19,6 +19,8 @@ import StageVisualizer from "@/components/application/stageVisualizer";
 import { useApplicationStore } from "@/store/useApplicationStore";
 import { useStagesStore } from "@/store/useStagesStore";
 
+import { useDownloadFile } from "@/api/applications/model/mutations";
+
 export default function ApplicationHistoryPage() {
   const { vacancyId, applicationId } = useParams();
   const navigate = useNavigate();
@@ -26,6 +28,8 @@ export default function ApplicationHistoryPage() {
   const currentApplication = useApplicationStore(
     (state) => state.currentApplication,
   );
+
+  const { mutate: downloadFile } = useDownloadFile();
   const stages =
     useStagesStore((state) => (vacancyId ? state.getStages(vacancyId) : [])) ||
     [];
@@ -76,7 +80,7 @@ export default function ApplicationHistoryPage() {
     [],
   );
 
-  if (isLoading)
+  if (isLoading || !vacancyId || !applicationId)
     return <div className="p-10 text-center">Загрузка истории...</div>;
 
   if (!currentApplication) {
@@ -148,14 +152,18 @@ export default function ApplicationHistoryPage() {
               <h3 className="font-bold flex items-center gap-2 mb-4">
                 <FileText className="size-4" /> Документы
               </h3>
-              <a
-                href={currentApplication.resumeFileUrl}
-                target="_blank"
-                rel="noreferrer"
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={() =>
+                  downloadFile({
+                    applicationId: applicationId,
+                  })
+                }
                 className="flex items-center justify-between p-3 rounded-lg border border-dashed border-primary/50 bg-primary/5 hover:bg-primary/10 transition-colors group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white rounded border shadow-sm text-primary">
+                  <div className="p-2 text-primary">
                     <FileText className="size-5" />
                   </div>
                   <div className="flex flex-col">
@@ -167,7 +175,7 @@ export default function ApplicationHistoryPage() {
                     </span>
                   </div>
                 </div>
-              </a>
+              </Button>
             </div>
           </div>
         </div>

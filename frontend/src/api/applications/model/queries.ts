@@ -2,14 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import type { ApplicationsParamsDto, ApplicationHistoryDto } from "./types";
 import { applicationActions } from "../action/application";
 import { applicationKeys } from "@/api/query";
-import type { ApplicationsResponse, ApplicationItemDto } from "./types";
+import type { ApplicationsResponse } from "./types";
 
-export const useApplicationsQuery = (
+export const useApplicationsQuery = <TData = ApplicationsResponse>(
   vacancyId: string,
   data: ApplicationsParamsDto,
   options?: {
     enabled?: boolean;
-    select?: (data: ApplicationsResponse) => ApplicationItemDto[];
+    select?: (data: ApplicationsResponse) => TData;
   },
 ) => {
   return useQuery({

@@ -18,7 +18,7 @@ export const applicationActions = {
   },
   getApplicationHistory: async (
     data: ApplicationHistoryDto,
-  ): Promise<ApplicationsResponse> => {
+  ): Promise<ApplicationsParamsDto> => {
     const response = await api.get(
       `/Applications/${data.vacancyId}/${data.applicationId}/history`,
       {
@@ -34,5 +34,14 @@ export const applicationActions = {
       },
     });
     return data;
+  },
+  downloadResume: async (applicationId: string) => {
+    const response = await api.get(
+      `/api/Applications/${applicationId}/resume`,
+      {
+        responseType: "blob",
+      },
+    );
+    return response.data;
   },
 };
