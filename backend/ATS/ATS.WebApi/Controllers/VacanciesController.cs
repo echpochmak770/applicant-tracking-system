@@ -1,5 +1,4 @@
-﻿using ATS.UseCases.Features.Applications.Queries;
-using ATS.UseCases.Features.Stages.Queries;
+﻿using ATS.UseCases.Features.Stages.Queries;
 using ATS.UseCases.Features.Vacancies.Commands;
 using ATS.UseCases.Features.Vacancies.Queries;
 using MediatR;
@@ -47,14 +46,14 @@ namespace ATS.WebApi.Controllers
 
             return CreatedAtAction(
                 nameof(GetById),
-                new { id },
-                new { message = "Vacancy created successfully", id });
+                new { id = id },
+                new { id, message = "Вакансия успешно создана" });
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        [HttpGet("{vacancyId}")]
+        public async Task<IActionResult> GetById(Guid vacancyId)
         {   
-            var result = await _mediator.Send(new GetVacancyByIdQuery { Id = id });
+            var result = await _mediator.Send(new GetVacancyByIdQuery { VacancyId = vacancyId });
             return Ok(result);
         }
 
@@ -69,8 +68,8 @@ namespace ATS.WebApi.Controllers
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateVacancyCommand command)
         {
             command.Id = id;
-
             await _mediator.Send(command);
+
             return NoContent();
         }
 

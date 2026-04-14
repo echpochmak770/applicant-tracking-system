@@ -288,19 +288,20 @@ namespace ATS.Infrastructure.Persistence
 
             foreach (var entry in entries)
             {
-                switch (entry.State)
+                if (entry.State == EntityState.Added)
                 {
-                    case EntityState.Added:
-                        HandleAddedEntity(entry);
-                        break;
+                    HandleAddedEntity(entry);
+                }
 
-                    case EntityState.Modified:
-                        HandleModifiedEntity(entry);
-                        break;
+                if (entry.State == EntityState.Modified)
+                {
+                    HandleModifiedEntity(entry);
+                }
 
-                    case EntityState.Deleted:
-                        HandleDeletion(entry);
-                        break;
+                if (entry.State == EntityState.Deleted)
+                {
+                    entry.State = EntityState.Modified;
+                    entry.Entity.IsDeleted = true;
                 }
             }
         }
@@ -317,21 +318,6 @@ namespace ATS.Infrastructure.Persistence
 
         private void HandleModifiedEntity(EntityEntry<BaseEntity> entry)
         {
-            if (entry.Entity.IsDeleted)
-            {
-                entry.State = EntityState.Unchanged;
-            }
-        }
-
-        private void HandleDeletion(EntityEntry<BaseEntity> entry)
-        {
-            if (entry.Entity is RefreshToken)
-            {
-                return;
-            }
-
-            entry.State = EntityState.Modified;
-            entry.Entity.IsDeleted = true;
         }
 
         private void ApplySoftDeleteFilter(ModelBuilder modelBuilder)
