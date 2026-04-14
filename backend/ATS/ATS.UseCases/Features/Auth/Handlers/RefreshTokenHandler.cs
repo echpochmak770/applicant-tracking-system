@@ -39,6 +39,11 @@ public class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, AuthResp
             throw AuthException.InvalidToken();
         }
 
+        if (storedToken.User == null)
+        {
+            throw AuthException.InvalidToken();
+        }
+
         _refreshTokenRepository.Delete(storedToken);
 
         var authResponse = _authService.GenerateTokens(storedToken.User);
