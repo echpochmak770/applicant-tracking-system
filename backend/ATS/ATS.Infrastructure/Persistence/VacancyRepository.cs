@@ -68,5 +68,35 @@ namespace ATS.Infrastructure.Persistence
                 .Include(v => v.Stages)
                 .FirstOrDefaultAsync(v => v.Id == id);
         }
+
+        public async Task RemoveStagesAsync(IEnumerable<Guid> stageIds, CancellationToken ct)
+        {
+            var stages = await _context.Stages
+                .Where(s => stageIds.Contains(s.Id))
+                .ToListAsync(ct);
+
+            _context.Stages.RemoveRange(stages);
+        }
+
+        public async Task UpdateStagesAsync(Vacancy vacancy, IEnumerable<string> stageNames, CancellationToken ct)
+        {
+            var normalized = stageNames.Select(x => x.Trim()).ToList();
+
+            _context.Stages.RemoveRange(vacancy.Stages);
+
+            vacancy.Stages.Clear();
+
+            for (int i = 0; i < normalized.Count; i++)
+            {
+                vacancy.Stages.Add(new Stage
+                {
+                    Id = Guid.NewGuid(),
+                    VacancyId = vacancy.Id,
+                    Name = normalized[i],
+                    Order = i + 1,
+                    IsFinal = false
+                });
+            }
+        }
     }
 }

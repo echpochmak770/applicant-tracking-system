@@ -8,10 +8,12 @@ namespace ATS.UseCases.Features.Vacancies.Commands
     {
         [JsonIgnore]
         public Guid Id { get; set; }
+
         public string Title { get; set; } = string.Empty;
+
         public string Description { get; set; } = string.Empty;
+
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public VacancyStatus Status { get; set; }
-        public List<string> StagesNames { get; set; } = new();
     }
 }

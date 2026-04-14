@@ -8,6 +8,6 @@ namespace ATS.UseCases.Features.Vacancies.Queries
 {
     public class GetVacancyByIdQuery : IRequest<VacancyDto>
     {
-        public Guid Id { get; set; }
+        public Guid VacancyId { get; set; }
     }
 }
