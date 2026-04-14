@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Select,
@@ -21,6 +21,8 @@ import {
 import { type VacancyStatus } from "@/store/useVacanciesStore";
 import { useVacancyQuery } from "@/api/vacancies/model/queries";
 import { useVacancyStagesQuery } from "@/api/stage/model/queries";
+import { useUpdateVacancyMutation } from "@/api/vacancies/model/mutations";
+import { toast } from "sonner";
 
 export const VACANCY_STATUSES: VacancyStatus[] = [
   "Draft",
@@ -35,12 +37,13 @@ export default function UpdateVacancyPage() {
 
   const { data, isLoading } = useVacancyQuery(vacancyId!);
   const { data: stages } = useVacancyStagesQuery(vacancyId!);
+  const { mutate: update } = useUpdateVacancyMutation();
 
   const {
     register,
     handleSubmit,
-    control,
     getValues,
+    setValue,
     formState: { errors },
   } = useForm<UpdateVacancyFormValues>({
     resolver: zodResolver(updateVacancySchema),
@@ -52,7 +55,18 @@ export default function UpdateVacancyPage() {
   });
 
   const onSubmit = (data: UpdateVacancyFormValues) => {
-    console.log("Submitting:", data);
+    update(
+      {
+        id: vacancyId!,
+        body: data,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Вакансия обновлена!");
+          navigate("/vacancies");
+        },
+      },
+    );
   };
 
   const currentStages = stages || [];
@@ -93,29 +107,25 @@ export default function UpdateVacancyPage() {
 
               <Field>
                 <FieldLabel>Статус вакансии</FieldLabel>
-                <Controller
-                  control={control}
-                  name="status"
-                  render={({ field }) => (
-                    <Select
-                      value={field.value || "Open"}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger
-                        className={cn(errors.status && "border-red-500")}
-                      >
-                        <SelectValue placeholder="Выберите статус" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {VACANCY_STATUSES.map((label) => (
-                          <SelectItem key={label} value={label}>
-                            {label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
+                <Select
+                  value={getValues("status")}
+                  onValueChange={(status) => {
+                    setValue("status", status);
+                  }}
+                >
+                  <SelectTrigger
+                    className={cn(errors.status && "border-red-500")}
+                  >
+                    <SelectValue placeholder="Выберите статус" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {VACANCY_STATUSES.map((label) => (
+                      <SelectItem key={label} value={label}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <div className="h-4 text-xs text-red-500">
                   {errors.status?.message}
                 </div>

@@ -34,6 +34,9 @@ const ApplicationHistoryPage = lazy(
 const CreateApplicationPage = lazy(
   () => import("./pages/applications/CreateApplicationPage"),
 );
+const UpdateApplicationPage = lazy(
+  () => import("./pages/applications/UpdateApplicationPage"),
+);
 
 const StagesBoardPage = lazy(() => import("./pages/stages/StagesBoardPage"));
 
@@ -114,6 +117,10 @@ const router = createBrowserRouter([
                   {
                     path: "create",
                     element: <CreateApplicationPage />,
+                  },
+                  {
+                    path: ":applicationId/update",
+                    element: <UpdateApplicationPage />,
                   },
                   {
                     path: ":applicationId/history",

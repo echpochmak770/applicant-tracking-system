@@ -26,8 +26,8 @@ export const vacanciesActions = {
   updateVacancy: async (
     id: string,
     body: VacanciesUpdatePayload,
-  ): Promise<VacancyItemDto> => {
-    const { data } = await api.put(`/Vacancies/search/${id}`, body);
+  ): Promise<void> => {
+    const { data } = await api.put(`/Vacancies/${id}`, body);
     return data;
   },
 

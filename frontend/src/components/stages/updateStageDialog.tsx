@@ -9,9 +9,9 @@ import {
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { Textarea } from "../ui/textarea";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { type PendingMove } from "@/pages/stages/StagesBoardPage";
-import { twMerge } from "tailwind-merge";
+import { cn } from "@/lib/utils";
 
 type UpdateStageDialogProps = {
   pendingMove: PendingMove | null;
@@ -32,12 +32,51 @@ export default function UpdateStageDialog({
   handleConfirmMove,
 }: UpdateStageDialogProps) {
   const [comment, setComment] = useState("");
+
+  useEffect(() => {
+    if (!pendingMove) setComment("");
+  }, [pendingMove]);
+
   const type = pendingMove?.type;
+
+  const config = {
+    update: {
+      title: "Изменить стадию",
+      description: (
+        <span>
+          Вы точно хотите перенести <b>{dialogData.targetApp}</b> на стадию{" "}
+          <b>{dialogData.targetStage}</b>?
+        </span>
+      ),
+      buttonClass: "bg-primary hover:bg-primary/90",
+    },
+    reject: {
+      title: "Отказ",
+      description: (
+        <span>
+          Вы точно хотите отклонить кандидатуру <b>{dialogData.targetApp}</b>?
+        </span>
+      ),
+      buttonClass: "bg-destructive hover:bg-destructive-hover",
+    },
+    offer: {
+      title: "Выставление оффера",
+      description: (
+        <span>
+          Вы точно хотите перевести <b>{dialogData.targetApp}</b> на этап
+          оффера?
+        </span>
+      ),
+      buttonClass: "bg-success hover:bg-success/90 text-success-foreground",
+    },
+  };
+
+  const currentConfig = type ? config[type] : config.update;
 
   const handleConfirm = () => {
     handleConfirmMove(comment);
-    setComment("");
   };
+
   return (
     <Dialog
       open={!!pendingMove}
@@ -45,30 +84,24 @@ export default function UpdateStageDialog({
         !open && !isUpdateStagePending && setPendingMove(null)
       }
     >
-      <DialogContent>
+      <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>
-            {type === "UPDATE" ? "Изменить стадию" : "Отказ"}
-          </DialogTitle>
-          <DialogDescription>
-            {type === "UPDATE" ? (
-              <span>
-                Вы точно хотите перенести <b>{dialogData.targetApp}</b> на
-                стадию <b>{dialogData.targetStage}</b>?
-              </span>
-            ) : (
-              <span>
-                Вы точно хотите отклонить <b>{dialogData.targetApp}</b>?
-              </span>
-            )}
+          <DialogTitle>{currentConfig.title}</DialogTitle>
+          <DialogDescription className="pt-2">
+            {currentConfig.description}
           </DialogDescription>
         </DialogHeader>
-        <Textarea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="Комментарии..."
-        />
-        <DialogFooter>
+
+        <div className="grid gap-4 py-4">
+          <Textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Добавьте комментарий к этому решению..."
+            className="min-h-[100px] resize-none"
+          />
+        </div>
+
+        <DialogFooter className="gap-2">
           <Button
             variant="outline"
             onClick={() => setPendingMove(null)}
@@ -79,13 +112,10 @@ export default function UpdateStageDialog({
           <Button
             onClick={handleConfirm}
             disabled={isUpdateStagePending}
-            className={twMerge(
-              "min-w-[120px]",
-              type === "REJECT" && "bg-destructive hover:bg-destructive-hover",
-            )}
+            className={cn("min-w-[140px]", currentConfig.buttonClass)}
           >
             {isUpdateStagePending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               "Подтвердить"
             )}

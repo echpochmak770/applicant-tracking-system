@@ -28,3 +28,13 @@ export const useDownloadFile = () => {
     },
   });
 };
+
+export const useUpdateApplicationMutation = () => {
+  return useMutation({
+    mutationFn: ({ id, body }: { id: string; body: FormData }) =>
+      applicationActions.updateApplication(id, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: applicationKeys.all });
+    },
+  });
+};

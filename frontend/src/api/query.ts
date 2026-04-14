@@ -30,6 +30,7 @@ export const vacancyKeys = {
   all: ["vacancies"] as const,
   list: (params: VacanciesSearchRequest) =>
     ["vacancies", "list", params] as const,
+  vacancy: (id: string) => [...vacancyKeys.all, id, "detail"] as const,
 };
 
 export const applicationKeys = {
@@ -39,4 +40,5 @@ export const applicationKeys = {
     [...applicationKeys.lists(), vacancyId, params] as const,
   history: (data: ApplicationHistoryDto) =>
     [...applicationKeys.all, "history", data] as const,
+  application: (id: string) => [...applicationKeys.all, id, "detail"] as const,
 };

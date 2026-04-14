@@ -50,9 +50,6 @@ export function Header({ user }: HeaderProps) {
           <NavLink to="/stages" className="transition-colors hover:text-accent">
             Стадии
           </NavLink>
-          <NavLink to="#" className="transition-colors hover:text-accent">
-            Аналитика
-          </NavLink>
         </nav>
 
         <div className="flex items-center gap-5">

@@ -41,4 +41,5 @@ export type ApplicationHistoryItemDto = {
   comment: string;
   changedByName: string;
   isRejection: boolean;
+  isHired: boolean;
 };
