@@ -46,7 +46,7 @@ namespace ATS.WebApi.Controllers
 
             return CreatedAtAction(
                 nameof(GetById),
-                new { id = id },
+                new { vacancyId = id },
                 new { id, message = "Вакансия успешно создана" });
         }
 

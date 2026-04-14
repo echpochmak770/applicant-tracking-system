@@ -20,6 +20,7 @@ namespace ATS.Infrastructure.Persistence
         public async Task<RefreshToken?> GetByTokenAsync(string token, CancellationToken ct = default)
         {
             return await _context.RefreshTokens
+                .Include(t => t.User)
                 .FirstOrDefaultAsync(t => t.Token == token, ct);
         }
     }

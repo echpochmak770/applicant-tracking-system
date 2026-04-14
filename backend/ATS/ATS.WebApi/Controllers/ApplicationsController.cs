@@ -121,5 +121,14 @@ namespace ATS.WebApi.Controllers
             await _mediator.Send(new DeleteApplicationCommand { Id = id });
             return NoContent();
         }
+
+        [HttpPut("{id}/offer")]
+        public async Task<IActionResult> MoveToOffer(Guid id, [FromBody] OfferApplicationCommand command)
+        {
+            command.ApplicationId = id;
+
+            await _mediator.Send(command);
+            return NoContent();
+        }
     }
 }

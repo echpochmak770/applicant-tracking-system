@@ -14,5 +14,6 @@ namespace ATS.UseCases.Features.Applications.DTOs
         public string? Comment { get; set; }
         public string ChangedByName { get; set; }
         public bool IsRejection { get; set; }
+        public bool IsHired { get; set; }
     }
 }
