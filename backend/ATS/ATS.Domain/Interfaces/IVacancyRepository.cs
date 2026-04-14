@@ -14,5 +14,6 @@ namespace ATS.Domain.Interfaces
         Task<(List<Vacancy> Items, int Total)> GetAllPagedAsync(PagedQuery request, CancellationToken ct);
         Task RemoveStagesAsync(IEnumerable<Guid> stageIds, CancellationToken ct);
         Task UpdateStagesAsync(Vacancy vacancy, IEnumerable<string> stageNames, CancellationToken ct);
+        Task<Stage?> GetStageByOrderAsync(Guid vacancyId, int order, CancellationToken ct);
     }
 }

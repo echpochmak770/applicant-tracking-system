@@ -98,5 +98,11 @@ namespace ATS.Infrastructure.Persistence
                 });
             }
         }
+
+        public async Task<Stage?> GetStageByOrderAsync(Guid vacancyId, int order, CancellationToken ct)
+        {
+            return await _context.Stages
+                .FirstOrDefaultAsync(s => s.VacancyId == vacancyId && s.Order == order, ct);
+        }
     }
 }
