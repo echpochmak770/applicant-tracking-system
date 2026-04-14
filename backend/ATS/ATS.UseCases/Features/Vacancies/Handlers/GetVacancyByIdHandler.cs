@@ -19,11 +19,11 @@ namespace ATS.UseCases.Features.Vacancies.Handlers
 
         public async Task<VacancyDto> Handle(GetVacancyByIdQuery request, CancellationToken cancellationToken)
         {
-            var vacancy = await _vacancyRepository.GetWithAuthorByIdAsync(request.Id);
+            var vacancy = await _vacancyRepository.GetWithAuthorByIdAsync(request.VacancyId);
 
             if (vacancy is null)
             {
-                throw new KeyNotFoundException($"Vacancy with id {request.Id} was not found");
+                throw new KeyNotFoundException($"Vacancy with id {request.VacancyId} was not found");
             }
 
             return new VacancyDto

@@ -5,50 +5,72 @@ using MediatR;
 
 namespace ATS.UseCases.Features.Applications.Handlers
 {
-    public class RejectApplicationHandler : IRequestHandler<RejectApplicationCommand, Unit>
+    public class RejectApplicationHandler : IRequestHandler<RejectApplicationCommand>
     {
         private readonly IApplicationRepository _applicationRepository;
+        private readonly IStageRepository _stageRepository;
         private readonly IApplicationHistoryRepository _applicationHistoryRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
 
         public RejectApplicationHandler(
             IApplicationRepository applicationRepository,
+            IStageRepository stageRepository,
             IApplicationHistoryRepository applicationHistoryRepository,
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService)
         {
             _applicationRepository = applicationRepository;
+            _stageRepository = stageRepository;
             _applicationHistoryRepository = applicationHistoryRepository;
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
         }
 
-        public async Task<Unit> Handle(RejectApplicationCommand request, CancellationToken ct)
+        public async Task Handle(RejectApplicationCommand request, CancellationToken ct)
         {
-            var application = await _applicationRepository.GetWithDetailsAsync(request.ApplicationId)
+            var application = await _applicationRepository.GetForUpdateAsync(request.ApplicationId, ct)
                 ?? throw new Exception("Application not found");
 
-            application.RejectionReason = request.Comment;
+            var stages = await _stageRepository.GetByVacancyOrderedAsync(application.VacancyId);
+            var rejectionStage = stages.FirstOrDefault(s => s.Order == -1)
+                ?? throw new InvalidOperationException("Технический этап 'Отказ' не найден для этой вакансии.");
 
-            var history = new ApplicationHistory
+            var recruiterId = _currentUserService.RequiredUserId;
+
+            await _unitOfWork.BeginTransactionAsync();
+
+            try
             {
-                Id = Guid.NewGuid(),
-                ApplicationId = application.Id,
-                FromStageId = application.CurrentStageId,
-                ToStageId = application.CurrentStageId,
-                Comment = request.Comment,
-                IsRejection = true,
-                ChangedAt = DateTime.UtcNow,
-                ChangedById = _currentUserService.RequiredUserId
-            };
+                var previousStageId = application.CurrentStageId;
 
-            _applicationRepository.Update(application);
-            await _applicationHistoryRepository.AddAsync(history);
+                application.CurrentStageId = rejectionStage.Id;
+                application.RejectionReason = request.Comment;
 
-            await _unitOfWork.SaveChangesAsync(ct);
+                var history = new ApplicationHistory
+                {
+                    Id = Guid.CreateVersion7(),
+                    ApplicationId = application.Id,
+                    FromStageId = previousStageId,
+                    ToStageId = rejectionStage.Id,
+                    Comment = request.Comment,
+                    IsRejection = true,
+                    ChangedAt = DateTime.UtcNow,
+                    ChangedById = recruiterId
+                };
 
-            return Unit.Value;
+                _applicationRepository.Update(application);
+
+                await _applicationHistoryRepository.AddAsync(history);
+
+                await _unitOfWork.SaveChangesAsync(ct);
+                await _unitOfWork.CommitTransactionAsync();
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
     }
 }

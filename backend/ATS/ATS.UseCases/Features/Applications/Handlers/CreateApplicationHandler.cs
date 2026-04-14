@@ -35,6 +35,7 @@ namespace ATS.UseCases.Features.Applications.Handlers
         public async Task<Guid> Handle(CreateApplicationCommand request, CancellationToken ct)
         {
             var firstStage = await GetFirstStageAsync(request.VacancyId);
+
             var recruiterId = _currentUserService.UserId ?? throw new ArgumentNullException("Couldn't get current user");
 
             string filePath = await _fileService.SaveFileAsync(request.ResumeStream, request.ResumeFileName, "resumes");
@@ -44,7 +45,6 @@ namespace ATS.UseCases.Features.Applications.Handlers
             try
             {
                 var candidate = await GetOrCreateCandidateAsync(request);
-
                 var resume = CreateResumeObject(candidate, request, filePath);
 
                 var application = CreateApplicationObject(request, candidate, resume, firstStage.Id, recruiterId);
@@ -64,12 +64,15 @@ namespace ATS.UseCases.Features.Applications.Handlers
             }
         }
 
-
         private async Task<Stage> GetFirstStageAsync(Guid vacancyId)
         {
             var stages = await _stageRepository.GetByVacancyOrderedAsync(vacancyId);
-            return stages.FirstOrDefault()
-                ?? throw new InvalidOperationException("У вакансии не настроены этапы подбора.");
+
+            return stages
+                .Where(s => s.Order != -1)
+                .OrderBy(s => s.Order)
+                .FirstOrDefault()
+                ?? throw new InvalidOperationException("У вакансии не настроены рабочие этапы подбора.");
         }
 
         private async Task<Candidate> GetOrCreateCandidateAsync(CreateApplicationCommand request)
