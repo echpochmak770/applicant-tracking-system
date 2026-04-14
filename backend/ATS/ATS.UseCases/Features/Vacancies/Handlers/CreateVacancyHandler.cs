@@ -38,6 +38,14 @@ namespace ATS.UseCases.Features.Vacancies.Handlers
                 Stages = new List<Stage>()
             };
 
+            vacancy.Stages.Add(new Stage
+            {
+                Id = Guid.NewGuid(),
+                Name = "Отказ",
+                Order = -1,
+                VacancyId = vacancy.Id
+            });
+
             for (int i = 0; i < request.StagesNames.Count; i++)
             {
                 vacancy.Stages.Add(new Stage
@@ -47,6 +55,14 @@ namespace ATS.UseCases.Features.Vacancies.Handlers
                     Order = i + 1
                 });
             }
+
+            vacancy.Stages.Add(new Stage
+            {
+                Id = Guid.NewGuid(),
+                Name = "Оффер",
+                Order = int.MaxValue,
+                VacancyId = vacancy.Id
+            });
 
             await _vacancyRepository.AddAsync(vacancy);
             await _unitOfWork.SaveChangesAsync(ct);

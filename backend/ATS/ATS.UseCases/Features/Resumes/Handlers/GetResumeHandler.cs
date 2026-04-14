@@ -23,7 +23,8 @@ namespace ATS.UseCases.Features.Resumes.Handlers
         {
             var application = await _applicationRepository.GetByIdAsync(
                 request.ApplicationId,
-                a => a.Resume
+                ct,
+                a => a.Resume 
             );
 
             if (application?.Resume == null || string.IsNullOrEmpty(application.Resume.FileUrl))

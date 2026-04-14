@@ -41,7 +41,7 @@ namespace ATS.Infrastructure.Persistence
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<T?> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includes)
+        public async Task<T?> GetByIdAsync(Guid id, CancellationToken ct = default, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _dbSet;
 

@@ -1,11 +1,13 @@
-﻿using ATS.UseCases.Features.Applications.Commands;
+﻿using ATS.Domain.Interfaces;
+using ATS.UseCases.Features.Applications.Commands;
 using ATS.UseCases.Features.Applications.Queries;
 using ATS.UseCases.Features.Resumes.Queries;
 using ATS.UseCases.Features.Applications.DTOs;
-using ATS.WebApi.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ATS.WebApi.DTOs;
+using ATS.WebApi.Requests;
 
 namespace ATS.WebApi.Controllers
 {
@@ -15,8 +17,13 @@ namespace ATS.WebApi.Controllers
     public class ApplicationsController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IFileService _fileService;
 
-        public ApplicationsController(IMediator mediator) => _mediator = mediator;
+        public ApplicationsController(IMediator mediator, IFileService fileService)
+        {
+            _mediator = mediator;
+            _fileService = fileService;
+        }
 
         [HttpGet("{vacancyId}/{applicationId}/history")]
         public async Task<IActionResult> GetHistory(Guid vacancyId, Guid applicationId)
@@ -30,6 +37,7 @@ namespace ATS.WebApi.Controllers
         }
 
         [HttpPost]
+        [Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromForm] CreateApplicationDto request)
         {
             var command = new CreateApplicationCommand
@@ -44,6 +52,7 @@ namespace ATS.WebApi.Controllers
             };
 
             var id = await _mediator.Send(command);
+
             return CreatedAtAction(nameof(GetById), new { id }, new { id });
         }
 
@@ -61,19 +70,27 @@ namespace ATS.WebApi.Controllers
             return File(result.Content, result.ContentType, result.FileName);
         }
 
-        [HttpPut("{id}/stage")]
-        public async Task<IActionResult> UpdateStage(Guid id, [FromBody] UpdateApplicationStageDto request)
+        [HttpPut("{id}")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateApplicationDto request)
         {
-            await _mediator.Send(new UpdateApplicationStageCommand
+            var command = new UpdateApplicationCommand
             {
-                ApplicationId = id,
-                TargetStageId = request.TargetStageId,
-                Comment = request.Comment
-            });
+                Id = id,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                Phone = request.Phone,
+                ResumeStream = request.ResumeFile?.OpenReadStream(),
+                ResumeFileName = request.ResumeFile?.FileName
+            };
+
+            await _mediator.Send(command);
+
             return NoContent();
         }
 
-		[HttpPut("{id}/reject")]
+        [HttpPut("{id}/reject")]
 		public async Task<IActionResult> Reject(Guid id, [FromBody] RejectApplicationDto request)
 		{
 			await _mediator.Send(new RejectApplicationCommand
@@ -84,6 +101,19 @@ namespace ATS.WebApi.Controllers
 
 			return NoContent();
 		}
+
+        [HttpPut("{id}/stage")]
+        public async Task<IActionResult> UpdateStage(Guid id, [FromBody] UpdateApplicationStageDto request)
+        {
+            await _mediator.Send(new UpdateApplicationStageCommand
+            {
+                ApplicationId = id,
+                TargetStageId = request.TargetStageId,
+                Comment = request.Comment
+            });
+
+            return NoContent();
+        }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)

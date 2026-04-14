@@ -24,6 +24,25 @@ namespace ATS.Infrastructure.Persistence
             _ => sortBy
         };
 
+        public async Task<Application?> GetForUpdateAsync(Guid id, CancellationToken ct = default)
+        {
+            return await _context.Applications
+                .Include(a => a.Candidate)
+                .Include(a => a.Resume)
+                .FirstOrDefaultAsync(a => a.Id == id, ct);
+        }
+
+        public async Task<Application?> GetForStateChangeAsync(Guid id)
+        {
+            return await _context.Applications
+                .Select(a => new Application
+                {
+                    Id = a.Id,
+                    CurrentStageId = a.CurrentStageId
+                })
+                .FirstOrDefaultAsync(a => a.Id == id);
+        }
+
         public async Task<List<Application>> GetByCandidateAsync(Guid candidateId)
         {
             return await _dbSet
@@ -62,6 +81,12 @@ namespace ATS.Infrastructure.Persistence
             query = ApplySearch(query, request.Search);
 
             return await GetPagedDataAsync(query, request, ct);
+        }
+
+        public async Task<bool> AnyApplicationsOnStagesAsync(List<Guid> stageIds, CancellationToken ct)
+        {
+            return await _context.Applications
+                .AnyAsync(a => stageIds.Contains(a.CurrentStageId), ct);
         }
 
         private void PrepareQueryFields(PagedQuery request)

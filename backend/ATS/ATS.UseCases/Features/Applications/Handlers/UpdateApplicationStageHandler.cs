@@ -32,12 +32,12 @@ namespace ATS.UseCases.Features.Applications.Handlers
 
             var oldStageId = application.CurrentStageId;
 
-            application.CurrentStageId = request.TargetStageId;
-
             if (!string.IsNullOrEmpty(application.RejectionReason))
             {
                 application.RejectionReason = null;
             }
+
+            application.CurrentStageId = request.TargetStageId;
 
             var history = new ApplicationHistory
             {
