@@ -13,7 +13,6 @@ import { Header } from "./components/layout/header/Header";
 import { Toaster } from "./components/ui/sonner";
 import { Suspense } from "react";
 import { lazy } from "react";
-import StagesBoardPage from "./pages/stages/StagesBoardPage";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
@@ -22,6 +21,9 @@ const VacancyListPage = lazy(
 );
 const CreateVacancyPage = lazy(
   () => import("./pages/vacancies/CreateVacancyPage"),
+);
+const UpdateVacancyPage = lazy(
+  () => import("./pages/vacancies/UpdateVacancyPage"),
 );
 const ApplicationsListPage = lazy(
   () => import("./pages/applications/ApplicationsListPage"),
@@ -32,8 +34,11 @@ const ApplicationHistoryPage = lazy(
 const CreateApplicationPage = lazy(
   () => import("./pages/applications/CreateApplicationPage"),
 );
+const UpdateApplicationPage = lazy(
+  () => import("./pages/applications/UpdateApplicationPage"),
+);
 
-// const StagesBoardPage = lazy(() => import("./pages/stages/StagesBoardPage"));
+const StagesBoardPage = lazy(() => import("./pages/stages/StagesBoardPage"));
 
 const modules = [AllCommunityModule];
 
@@ -99,6 +104,10 @@ const router = createBrowserRouter([
                 element: <CreateVacancyPage />,
               },
               {
+                path: "update/:vacancyId",
+                element: <UpdateVacancyPage />,
+              },
+              {
                 path: ":vacancyId/applications",
                 children: [
                   {
@@ -108,6 +117,10 @@ const router = createBrowserRouter([
                   {
                     path: "create",
                     element: <CreateApplicationPage />,
+                  },
+                  {
+                    path: ":applicationId/update",
+                    element: <UpdateApplicationPage />,
                   },
                   {
                     path: ":applicationId/history",

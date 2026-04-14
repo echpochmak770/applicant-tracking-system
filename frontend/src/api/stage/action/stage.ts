@@ -27,4 +27,11 @@ export const stageActions = {
     );
     return response.data;
   },
+  offer: async (applicationId: string, body: RejectPayload): Promise<void> => {
+    const response = await api.put(
+      `/Applications/${applicationId}/offer`,
+      body,
+    );
+    return response.data;
+  },
 };

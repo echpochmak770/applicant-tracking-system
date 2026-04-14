@@ -73,7 +73,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Пароль */}
             <div>
               <FieldLabel htmlFor="password" className="text-xs font-medium">
                 Пароль <span className="text-red-500">*</span>
@@ -102,7 +101,7 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
-              <div className="h-4 text-[12px] text-red-500">
+              <div className="min-h-4 text-[12px] text-red-500">
                 {errors.password && <div>{errors.password.message}</div>}
                 {error && <div>{getErrorMessage(error)}</div>}
               </div>

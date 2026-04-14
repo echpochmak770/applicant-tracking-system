@@ -21,16 +21,16 @@ export type ApplicationsResponse = {
 };
 
 export interface ApplicationsParamsDto {
-  search?: string
-  page: number
-  pageSize: number
-  columnFilters?: ColumnFilter[]
+  search?: string;
+  page: number;
+  pageSize: number;
+  columnFilters?: ColumnFilter[];
 }
 
 export type ApplicationHistoryDto = {
-  applicationId: string, 
-  vacancyId: string,
-}
+  applicationId: string;
+  vacancyId: string;
+};
 
 export type ApplicationHistoryItemDto = {
   id: string;
@@ -40,4 +40,6 @@ export type ApplicationHistoryItemDto = {
   changedAt: string;
   comment: string;
   changedByName: string;
+  isRejection: boolean;
+  isHired: boolean;
 };

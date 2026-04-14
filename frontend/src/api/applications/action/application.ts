@@ -3,6 +3,8 @@ import type {
   ApplicationsParamsDto,
   ApplicationsResponse,
   ApplicationHistoryDto,
+  ApplicationHistoryItemDto,
+  ApplicationItemDto,
 } from "../model/types";
 
 export const applicationActions = {
@@ -18,7 +20,7 @@ export const applicationActions = {
   },
   getApplicationHistory: async (
     data: ApplicationHistoryDto,
-  ): Promise<ApplicationsResponse> => {
+  ): Promise<ApplicationHistoryItemDto[]> => {
     const response = await api.get(
       `/Applications/${data.vacancyId}/${data.applicationId}/history`,
       {
@@ -33,6 +35,22 @@ export const applicationActions = {
         "Content-Type": "multipart/form-data",
       },
     });
+    return data;
+  },
+  downloadResume: async (applicationId: string) => {
+    const response = await api.get(`/Applications/${applicationId}/resume`, {
+      responseType: "blob",
+    });
+    return response.data;
+  },
+
+  updateApplication: async (id: string, body: FormData): Promise<void> => {
+    const { data } = await api.put(`/Applications/${id}`, body);
+    return data;
+  },
+
+  getApplication: async (id: string): Promise<ApplicationItemDto> => {
+    const { data } = await api.get(`/Applications/${id}`);
     return data;
   },
 };

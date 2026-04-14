@@ -181,7 +181,6 @@ export default function CreateVacancyPage() {
                 </Button>
               </div>
 
-              {/* Подвал с кнопками и серверной ошибкой */}
               <div className="pt-6 border-t border-border/50">
                 <div className="h-6 mb-2 text-center text-sm text-red-500 font-medium">
                   {error && getErrorMessage(error)}

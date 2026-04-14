@@ -4,6 +4,7 @@ import { useApplicationsQuery } from "@/api/applications/model/queries";
 import {
   useUpdateStageMutation,
   useRejectMutation,
+  useOfferMutation,
 } from "@/api/stage/model/mutations";
 import { useVacanciesQuery } from "@/api/vacancies/model/queries";
 import {
@@ -32,36 +33,56 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, InboxIcon } from "lucide-react";
+import { ChevronDown, InboxIcon, GripVertical } from "lucide-react";
+import { useNavigate } from "react-router";
+
+type ColumnTagType = "reject" | "update" | "offer";
 
 function ApplicationItem({
   id,
+  vacancyId,
   children,
 }: {
   id: string;
+  vacancyId: string;
   children: React.ReactNode;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useSortable({ id });
+  const navigate = useNavigate();
 
   return (
     <div
       ref={setNodeRef}
       style={{ opacity: isDragging ? 0.4 : 1 }}
-      {...attributes}
-      {...listeners}
-      className="cursor-grab active:cursor-grabbing rounded-xl border bg-card text-card-foreground shadow-sm hover:shadow-md transition-all h-fit px-4 py-3 w-fit"
+      className="group relative flex items-center gap-2 rounded-xl border bg-card p-3 shadow-sm hover:shadow-md transition-all"
     >
-      {children}
+      <div
+        className="flex-1 cursor-pointer"
+        onClick={() =>
+          navigate(`/vacancies/${vacancyId}/applications/${id}/history`)
+        }
+      >
+        {children}
+      </div>
+      <div
+        {...attributes}
+        {...listeners}
+        className="cursor-grab active:cursor-grabbing p-1 rounded"
+      >
+        <GripVertical size={18} />
+      </div>
     </div>
   );
 }
 
 function Column({
   id,
+  vacancyId,
   title,
   items,
 }: {
   id: string;
+  vacancyId: string;
   title: string;
   items: { id: string; candidateFullName: string }[];
 }) {
@@ -81,7 +102,7 @@ function Column({
       <div
         ref={setNodeRef}
         className={cn(
-          "flex flex-row flex-wrap content-start items-start min-h-[500px] rounded-2xl border-2 border-dashed p-3 gap-3 transition-all duration-200",
+          "flex flex-row flex-wrap flex-1 content-start items-start rounded-2xl border-2 border-dashed p-3 gap-3 transition-all duration-200",
           "border-border bg-muted/20",
           isOver &&
             "border-primary ring-4 ring-primary/10 bg-primary/5 shadow-inner",
@@ -92,7 +113,7 @@ function Column({
           strategy={verticalListSortingStrategy}
         >
           {items.map((app) => (
-            <ApplicationItem key={app.id} id={app.id}>
+            <ApplicationItem key={app.id} vacancyId={vacancyId} id={app.id}>
               <div className="text-sm font-medium text-nowrap">
                 {app.candidateFullName}
               </div>
@@ -112,15 +133,17 @@ function Column({
 
 function RejectColumn({
   id,
+  vacancyId,
   items,
 }: {
   id: string;
+  vacancyId: string;
   items: { id: string; candidateFullName: string }[];
 }) {
   const { setNodeRef, isOver } = useDroppable({ id });
 
   return (
-    <div className="flex flex-col gap-3 w-full h-full">
+    <div className="flex flex-col gap-3 w-full">
       <div className="px-3 text-sm font-semibold text-destructive/80 uppercase tracking-wider flex items-center gap-2">
         Отказ
       </div>
@@ -128,7 +151,7 @@ function RejectColumn({
       <div
         ref={setNodeRef}
         className={cn(
-          "flex flex-row flex-wrap content-start items-start h-full rounded-2xl border-2 border-dashed p-3 gap-3 transition-all duration-200",
+          "flex flex-row flex-wrap flex-shrink-0 content-start items-start min-h-[70px] rounded-2xl border-2 border-dashed p-3 gap-3 transition-all duration-200",
           "border-destructive/20 bg-destructive/[0.02]",
           isOver &&
             "border-destructive ring-4 ring-destructive/10 bg-destructive/5 shadow-inner",
@@ -139,7 +162,7 @@ function RejectColumn({
           strategy={verticalListSortingStrategy}
         >
           {items.map((app) => (
-            <ApplicationItem key={app.id} id={app.id}>
+            <ApplicationItem key={app.id} vacancyId={vacancyId} id={app.id}>
               <div className="text-sm font-medium">{app.candidateFullName}</div>
             </ApplicationItem>
           ))}
@@ -155,10 +178,57 @@ function RejectColumn({
   );
 }
 
+function HireColumn({
+  id,
+  vacancyId,
+  items,
+}: {
+  id: string;
+  vacancyId: string;
+  items: { id: string; candidateFullName: string }[];
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id });
+
+  return (
+    <div className="flex flex-col gap-3 w-full">
+      <div className="px-3 text-sm font-semibold text-success uppercase tracking-wider flex items-center gap-2">
+        Оффер
+      </div>
+
+      <div
+        ref={setNodeRef}
+        className={cn(
+          "flex flex-row flex-wrap flex-shrink-0 content-start items-start min-h-[70px] rounded-2xl border-2 border-dashed p-3 gap-3 transition-all duration-200",
+          "border-success/20 bg-success/[0.02]",
+          isOver &&
+            "border-success ring-4 ring-success/10 bg-success/5 shadow-inner",
+        )}
+      >
+        <SortableContext
+          items={items.map((i) => i.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {items.map((app) => (
+            <ApplicationItem key={app.id} vacancyId={vacancyId} id={app.id}>
+              <div className="text-sm font-medium">{app.candidateFullName}</div>
+            </ApplicationItem>
+          ))}
+        </SortableContext>
+
+        {items.length === 0 && !isOver && (
+          <div className="flex-1 flex items-center justify-center text-xs text-success/40 font-medium">
+            Перетащите сюда для оффера
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export type PendingMove = {
-  type: "UPDATE" | "REJECT";
+  type: ColumnTagType;
   applicationId: string;
-  targetStage: string;
+  targetStageId: string;
 };
 
 export default function StagesBoardPage() {
@@ -178,7 +248,7 @@ export default function StagesBoardPage() {
     columnFilters: [],
   });
 
-  const { data: stages, isLoading: isStagesLoading } =
+  const { data: apiStages, isLoading: isStagesLoading } =
     useVacancyStagesQuery(vacancyId);
   const {
     data: applications,
@@ -190,9 +260,12 @@ export default function StagesBoardPage() {
     { select: (res) => res.items, enabled: !!vacancyId },
   );
 
+  const stages = apiStages?.filter((stage) => stage.name !== "Оффер");
+
   const { mutate: updateStage, isPending: isUpdateStagePending } =
     useUpdateStageMutation();
   const { mutate: reject, isPending: isRejectPending } = useRejectMutation();
+  const { mutate: offer, isPending: isOfferPending } = useOfferMutation();
 
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -210,7 +283,10 @@ export default function StagesBoardPage() {
   const getColumnForItem = (itemId: string) => {
     const app = applications?.find((a) => a.id === itemId);
     if (!app) return null;
+
     if (app.currentStageName === "Отказ") return "reject";
+    if (app.currentStageName === "Оффер") return "offer";
+
     return stages?.find((stage) => stage.name === app.currentStageName)?.id;
   };
 
@@ -221,7 +297,9 @@ export default function StagesBoardPage() {
     const overId = String(over.id);
 
     const isColumn =
-      stages?.some((s) => s.id === overId) || overId === "reject";
+      stages?.some((s) => s.id === overId) ||
+      overId === "reject" ||
+      overId === "offer";
 
     const columnId = isColumn ? overId : getColumnForItem(overId);
 
@@ -233,59 +311,71 @@ export default function StagesBoardPage() {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active } = event;
     const applicationId = String(active.id);
-    const sourceColumnId = getColumnForItem(applicationId);
-    const targetColumnId = lastOverColumnId.current;
+    const sourceStageId = getColumnForItem(applicationId);
+    const targetId = lastOverColumnId.current;
 
     lastOverColumnId.current = null;
     setActiveId(null);
 
-    console.log(targetColumnId, sourceColumnId);
+    if (!targetId || targetId === sourceStageId) return;
 
-    if (targetColumnId && targetColumnId !== sourceColumnId) {
-      setPendingMove({
-        applicationId,
-        targetStage: targetColumnId,
-        type: targetColumnId === "reject" ? "REJECT" : "UPDATE",
-      });
-    }
+    let moveType: ColumnTagType = "update";
+    if (targetId === "reject") moveType = "reject";
+    else if (targetId === "offer") moveType = "offer";
+
+    setPendingMove({
+      applicationId,
+      targetStageId: targetId,
+      type: moveType,
+    });
   };
 
   const handleConfirmMove = (comment: string) => {
     if (!pendingMove) return;
-    const type = pendingMove.type;
 
-    type === "UPDATE"
-      ? updateStage(
-          {
-            applicationId: pendingMove.applicationId,
-            body: {
-              targetStageId: pendingMove.targetStage,
-              comment: comment,
-            },
-          },
+    const { type, applicationId, targetStageId } = pendingMove;
+
+    switch (type) {
+      case "offer":
+        console.log("offer");
+        offer(
+          { applicationId, body: { comment } },
           {
             onSuccess: () => {
               refetch();
               setPendingMove(null);
             },
-            onError: (err) => console.error(err),
-          },
-        )
-      : reject(
-          {
-            applicationId: pendingMove.applicationId,
-            body: {
-              comment: comment,
-            },
-          },
-          {
-            onSuccess: () => {
-              refetch();
-              setPendingMove(null);
-            },
-            onError: (err) => console.error(err),
           },
         );
+        break;
+
+      case "reject":
+        reject(
+          { applicationId, body: { comment } },
+          {
+            onSuccess: () => {
+              refetch();
+              setPendingMove(null);
+            },
+          },
+        );
+        break;
+
+      case "update":
+        updateStage(
+          {
+            applicationId,
+            body: { targetStageId, comment },
+          },
+          {
+            onSuccess: () => {
+              refetch();
+              setPendingMove(null);
+            },
+          },
+        );
+        break;
+    }
   };
 
   if (isStagesLoading || isApplicationsLoading || !data)
@@ -346,25 +436,40 @@ export default function StagesBoardPage() {
           onDragEnd={handleDragEnd}
           onDragCancel={() => setActiveId(null)}
         >
-          <div className="space-y-6">
-            <div className="flex gap-4 overflow-x-auto pb-4">
+          <div className="flex flex-col h-[calc(100vh-160px)] gap-4">
+            <div className="shrink-0 bg-background/50 backdrop-blur pb-2">
+              <HireColumn
+                id="offer"
+                vacancyId={vacancyId}
+                items={
+                  applications?.filter(
+                    (app) => app.currentStageName === "Оффер",
+                  ) ?? []
+                }
+              />
+            </div>
+
+            <div className="flex-1 min-h-0 flex gap-4 overflow-x-auto pb-4">
               {stages?.map((stage) => (
-                <Column
-                  key={stage.id}
-                  id={stage.id}
-                  title={stage.name}
-                  items={
-                    applications?.filter(
-                      (app) => app.currentStageName === stage.name,
-                    ) ?? []
-                  }
-                />
+                <div key={stage.id} className="h-full min-w-[300px] w-full">
+                  <Column
+                    id={stage.id}
+                    vacancyId={vacancyId}
+                    title={stage.name}
+                    items={
+                      applications?.filter(
+                        (app) => app.currentStageName === stage.name,
+                      ) ?? []
+                    }
+                  />
+                </div>
               ))}
             </div>
-            <div className="flex gap-4 overflow-x-auto pb-4">
+
+            <div className="shrink-0 bg-background/50 backdrop-blur pt-2">
               <RejectColumn
-                key="reject"
                 id="reject"
+                vacancyId={vacancyId}
                 items={
                   applications?.filter(
                     (app) => app.currentStageName === "Отказ",
@@ -393,11 +498,13 @@ export default function StagesBoardPage() {
             (item) => item.id === pendingMove?.applicationId,
           )?.candidateFullName,
           targetStage: stages?.find(
-            (stage) => stage.id === pendingMove?.targetStage,
+            (stage) => stage.id === pendingMove?.targetStageId,
           )?.name,
         }}
         setPendingMove={setPendingMove}
-        isUpdateStagePending={isUpdateStagePending || isRejectPending}
+        isUpdateStagePending={
+          isUpdateStagePending || isRejectPending || isOfferPending
+        }
         handleConfirmMove={handleConfirmMove}
       />
     </>

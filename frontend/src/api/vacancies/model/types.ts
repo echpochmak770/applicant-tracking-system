@@ -1,7 +1,6 @@
-
 import type { ColumnFilter } from "@/api/types";
 
-export type VacancyStatus = 'Draft' | 'Paused' | 'Open' | 'Closed';
+export type VacancyStatus = "Draft" | "Paused" | "Open" | "Closed";
 
 export type VacancyItemDto = {
   id: string;
@@ -24,11 +23,17 @@ export type CreateVacancyBody = {
   title: string;
   description: string;
   stagesNames: string[];
-}
+};
 
 export interface VacanciesSearchRequest {
-  search?: string
-  page: number
-  pageSize: number
-  columnFilters?: ColumnFilter[]
+  search?: string;
+  page: number;
+  pageSize: number;
+  columnFilters?: ColumnFilter[];
+}
+
+export interface VacanciesUpdatePayload {
+  title: string;
+  description: string;
+  status: string;
 }

@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import type { ColumnFilter } from "@/api/types";
 import { type ApplicationItemDto } from "@/store/useApplicationStore";
 import { ColumnActions } from "@/components/tables/ColumnActions";
+import { useVacancyQuery } from "@/api/vacancies/model/queries";
 
 export default function ApplicationsListPage() {
   const navigate = useNavigate();
@@ -29,6 +30,8 @@ export default function ApplicationsListPage() {
   });
 
   const { data: stages } = useVacancyStagesQuery(vacancyId!);
+
+  const { data: vacancy } = useVacancyQuery(vacancyId!);
 
   useEffect(() => {
     if (stages && vacancyId) setStages(vacancyId, stages);
@@ -177,7 +180,9 @@ export default function ApplicationsListPage() {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-3xl font-bold tracking-tight">Отклики</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Отклики {vacancy?.title}
+          </h1>
         </div>
 
         <Button className="gap-2 shadow-sm" onClick={() => navigate(`create`)}>

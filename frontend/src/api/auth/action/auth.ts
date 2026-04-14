@@ -16,8 +16,20 @@ export const authActions = {
     const response = await api.post("/Auth/login", data);
     return response.data;
   },
+  logout: async (): Promise<void> => {
+    const response = await api.post("/Auth/logout");
+    return response.data;
+  },
   getMe: async (): Promise<UserDto> => {
     const response = await api.get("/Auth/me");
+    return response.data;
+  },
+  refresh: async (): Promise<void> => {
+    const response = await api.post(
+      "/Auth/refresh",
+      {},
+      { withCredentials: true },
+    );
     return response.data;
   },
 };

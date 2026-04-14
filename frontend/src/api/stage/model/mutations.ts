@@ -33,3 +33,18 @@ export const useRejectMutation = () => {
     },
   });
 };
+
+export const useOfferMutation = () => {
+  return useMutation({
+    mutationFn: ({
+      applicationId,
+      body,
+    }: {
+      applicationId: string;
+      body: RejectPayload;
+    }) => stageActions.offer(applicationId, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: applicationKeys.all });
+    },
+  });
+};

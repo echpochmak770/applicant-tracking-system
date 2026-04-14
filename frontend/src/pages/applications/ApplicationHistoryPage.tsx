@@ -15,9 +15,9 @@ import type { ColDef } from "ag-grid-community";
 import { useApplicationHistoryQuery } from "@/api/applications/model/queries";
 import type { ApplicationHistoryItemDto } from "@/api/applications/model/types";
 import StageVisualizer from "@/components/application/stageVisualizer";
-
 import { useApplicationStore } from "@/store/useApplicationStore";
 import { useStagesStore } from "@/store/useStagesStore";
+import { useDownloadFile } from "@/api/applications/model/mutations";
 
 export default function ApplicationHistoryPage() {
   const { vacancyId, applicationId } = useParams();
@@ -26,11 +26,13 @@ export default function ApplicationHistoryPage() {
   const currentApplication = useApplicationStore(
     (state) => state.currentApplication,
   );
+
+  const { mutate: downloadFile } = useDownloadFile();
   const stages =
     useStagesStore((state) => (vacancyId ? state.getStages(vacancyId) : [])) ||
     [];
 
-  const { data, isLoading } = useApplicationHistoryQuery(
+  const { data, isError } = useApplicationHistoryQuery(
     {
       vacancyId: vacancyId!,
       applicationId: applicationId!,
@@ -76,10 +78,13 @@ export default function ApplicationHistoryPage() {
     [],
   );
 
-  if (isLoading)
-    return <div className="p-10 text-center">Загрузка истории...</div>;
-
-  if (!currentApplication) {
+  if (
+    !currentApplication ||
+    isError ||
+    !data ||
+    data.length === 0 ||
+    !applicationId
+  ) {
     return (
       <div className="p-10 text-center flex flex-col gap-4 items-center">
         <p>Данные кандидата не найдены</p>
@@ -87,6 +92,8 @@ export default function ApplicationHistoryPage() {
       </div>
     );
   }
+
+  const currentStage = data[0];
 
   return (
     <div className="flex flex-col gap-8 animate-in fade-in duration-500">
@@ -99,21 +106,33 @@ export default function ApplicationHistoryPage() {
             <h1 className="text-2xl font-bold tracking-tight">
               {currentApplication.candidateFullName}
             </h1>
-            <p className="text-sm text-muted-foreground">
-              ID отклика: {applicationId} • Вакансия: #{vacancyId}
-            </p>
           </div>
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline">Редактировать</Button>
+          <Button
+            variant="outline"
+            onClick={() =>
+              navigate(
+                `/vacancies/${vacancyId}/applications/${applicationId}/update`,
+              )
+            }
+          >
+            Редактировать
+          </Button>
           <Button>Изменить стадию</Button>
         </div>
       </div>
 
       <StageVisualizer
         stages={stages}
-        currentStage={currentApplication.currentStageName}
+        isRejected={currentStage.isRejection}
+        isCompleted={currentStage.isHired}
+        currentStage={
+          currentStage.toStageName !== "Отказ"
+            ? currentStage.toStageName
+            : currentStage.fromStageName
+        }
       />
 
       <div className="flex flex-col lg:flex-row gap-8">
@@ -148,14 +167,18 @@ export default function ApplicationHistoryPage() {
               <h3 className="font-bold flex items-center gap-2 mb-4">
                 <FileText className="size-4" /> Документы
               </h3>
-              <a
-                href={currentApplication.resumeFileUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-between p-3 rounded-lg border border-dashed border-primary/50 bg-primary/5 hover:bg-primary/10 transition-colors group"
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={() =>
+                  downloadFile({
+                    applicationId: applicationId,
+                  })
+                }
+                className="flex items-center cursor-pointer justify-between p-3 rounded-lg border border-dashed border-primary/50 bg-primary/5 hover:bg-primary/10 transition-colors group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white rounded border shadow-sm text-primary">
+                  <div className="p-2 text-primary">
                     <FileText className="size-5" />
                   </div>
                   <div className="flex flex-col">
@@ -167,7 +190,7 @@ export default function ApplicationHistoryPage() {
                     </span>
                   </div>
                 </div>
-              </a>
+              </Button>
             </div>
           </div>
         </div>
