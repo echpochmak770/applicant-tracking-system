@@ -102,6 +102,19 @@ namespace ATS.WebApi.Controllers
 			return NoContent();
 		}
 
+        [HttpPut("{id}/stage")]
+        public async Task<IActionResult> UpdateStage(Guid id, [FromBody] UpdateApplicationStageDto request)
+        {
+            await _mediator.Send(new UpdateApplicationStageCommand
+            {
+                ApplicationId = id,
+                TargetStageId = request.TargetStageId,
+                Comment = request.Comment
+            });
+
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
