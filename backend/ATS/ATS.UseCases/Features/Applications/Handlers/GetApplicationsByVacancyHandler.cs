@@ -38,7 +38,8 @@ namespace ATS.UseCases.Features.Applications.Handlers
                 CreatorFullName = $"{a.CreatedBy.FirstName} {a.CreatedBy.LastName}",
                 ResumeFileUrl = a.Resume.FileUrl,
                 ResumeName = a.Resume.FileName,
-                IsDeleted = a.IsDeleted
+                IsDeleted = a.IsDeleted,
+                IsRejected = !string.IsNullOrEmpty(a.RejectionReason)
             }).ToList();
 
             return new PagedResult<ApplicationDto>
