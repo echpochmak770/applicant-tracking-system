@@ -6,26 +6,23 @@ namespace ATS.UseCases.Features.Auth.Exceptions
 {
     public class AuthException : Exception
     {
-        public AuthException() : base("Authentication error occurred") { }
+        public int StatusCode { get; }
 
-        public AuthException(string message) : base(message) { }
+        public AuthException(string message, int statusCode = 401) : base(message)
+        {
+            StatusCode = statusCode;
+        }
 
-        public AuthException(string message, Exception innerException)
-            : base(message, innerException) { }
-        
         public static AuthException InvalidCredentials() =>
-            new AuthException("Invalid email or password");
+            new AuthException("Invalid email or password", 400);
 
         public static AuthException EmailAlreadyExists(string email) =>
-            new AuthException($"User with email {email} already exists");
-
-        public static AuthException UserNotFound(string email) =>
-            new AuthException($"User with email {email} not found");
+            new AuthException($"User with email {email} already exists", 400);
 
         public static AuthException TokenExpired() =>
-            new AuthException("Token has expired");
+            new AuthException("Token has expired", 401);
 
         public static AuthException InvalidToken() =>
-            new AuthException("Invalid token");
+            new AuthException("Invalid token", 401);
     }
 }
