@@ -35,7 +35,7 @@ export const useLogoutMutation = () => {
     mutationFn: authActions.logout,
     onSuccess: () => {
       queryClient.clear();
-      // navigate("/auth");
+      navigate("/auth");
     },
   });
 };

@@ -97,12 +97,6 @@ export default function UpdateApplicationPage() {
     );
   };
 
-  const getFileName = () => {
-    if (resume instanceof File) return resume.name;
-    if (resume instanceof Blob) return "Текущее резюме.pdf";
-    return "Загрузить новую версию";
-  };
-
   return (
     <div className="max-w-2xl mx-auto px-4 pb-10">
       <Button
