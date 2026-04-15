@@ -40,10 +40,18 @@ namespace ATS.Infrastructure.Authentication
         public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
         {
             var user = await _userRepository.GetByEmailAsync(dto.Email);
-            if (user is null) throw AuthException.InvalidCredentials();
+
+            if (user is null)
+            {
+                throw AuthException.InvalidCredentials();
+            }
 
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
-            if (result == PasswordVerificationResult.Failed) throw AuthException.InvalidCredentials();
+
+            if (result == PasswordVerificationResult.Failed)
+            {
+                throw AuthException.InvalidCredentials();
+            }
 
             var response = GenerateTokens(user);
 
