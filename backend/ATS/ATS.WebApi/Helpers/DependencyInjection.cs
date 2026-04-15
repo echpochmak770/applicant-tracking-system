@@ -6,6 +6,7 @@ using ATS.Infrastructure.Authentication;
 using ATS.UseCases.Features.Auth.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using ATS.Infrastructure.Persistence;
+using ATS.Domain.Interfaces;
 
 namespace ATS.WebApi.Helpers
 {
@@ -17,27 +18,48 @@ namespace ATS.WebApi.Helpers
             AddJwtAuthentication(services, configuration);
             services.AddAuthorization();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             return services;
         }
 
         public static void ApplyMigrations(this IApplicationBuilder app)
         {
-            using (var scope = app.ApplicationServices.CreateScope())
+            using var scope = app.ApplicationServices.CreateScope();
+            var services = scope.ServiceProvider;
+            var context = services.GetRequiredService<AppDbContext>();
+
+            int retries = 10;
+            while (retries > 0)
             {
-                var services = scope.ServiceProvider;
                 try
                 {
-                    var context = services.GetRequiredService<AppDbContext>();
-
-                    if (context.Database.GetPendingMigrations().Any() || !context.Database.CanConnect())
+                    if (context.Database.CanConnect())
                     {
-                        context.Database.Migrate();
-                        Console.WriteLine("--> Database migration applied successfully.");
+                        var pendingMigrations = context.Database.GetPendingMigrations();
+                        if (pendingMigrations.Any())
+                        {
+                            context.Database.Migrate();
+                            Console.WriteLine("--> Database migration applied successfully.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("--> No pending migrations found.");
+                        }
+                        break;
                     }
+                    throw new Exception("Database is not reachable");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"--> Could not run migrations: {ex.Message}");
+                    retries--;
+                    Console.WriteLine($"--> Database not ready yet, retrying... ({retries} left).");
+                    Task.Delay(5000);
+
+                    if (retries == 0)
+                    {
+                        Console.WriteLine($"--> Could not connect to database after several attempts: {ex.Message}");
+                        throw;
+                    }
                 }
             }
         }
@@ -82,7 +104,7 @@ namespace ATS.WebApi.Helpers
                         IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.UTF8.GetBytes(jwtSettings.Secret)),
 
-                        ClockSkew = TimeSpan.Zero
+                        ClockSkew = TimeSpan.FromSeconds(30)
                     };
 
                     options.Events = new JwtBearerEvents

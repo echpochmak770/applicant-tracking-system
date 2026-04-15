@@ -1,7 +1,4 @@
 ﻿using ATS.Domain.Common;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ATS.Domain.Entities
 {
@@ -9,6 +6,7 @@ namespace ATS.Domain.Entities
     {
         public DateTime ChangedAt { get; set; }
         public string? Comment { get; set; }
+        public bool IsRejection { get; set; }
 
         public Guid ApplicationId { get; set; }
         public Guid? FromStageId { get; set; }

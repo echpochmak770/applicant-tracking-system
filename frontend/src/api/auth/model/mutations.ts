@@ -8,7 +8,7 @@ export const useRegisterMutation = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: authActions.register, 
+    mutationFn: authActions.register,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authKeys.me });
       navigate("/vacancies");
@@ -25,6 +25,17 @@ export const useLoginMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authKeys.me });
       navigate("/vacancies");
+    },
+  });
+};
+
+export const useLogoutMutation = () => {
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: authActions.logout,
+    onSuccess: () => {
+      queryClient.clear();
+      navigate("/auth");
     },
   });
 };

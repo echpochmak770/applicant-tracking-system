@@ -1,7 +1,13 @@
-﻿using ATS.UseCases.Features.Applications.Queries;
+﻿using ATS.Domain.Interfaces;
+using ATS.UseCases.Features.Applications.Commands;
+using ATS.UseCases.Features.Applications.Queries;
+using ATS.UseCases.Features.Resumes.Queries;
+using ATS.UseCases.Features.Applications.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ATS.WebApi.DTOs;
+using ATS.WebApi.Requests;
 
 namespace ATS.WebApi.Controllers
 {
@@ -11,23 +17,118 @@ namespace ATS.WebApi.Controllers
     public class ApplicationsController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IFileService _fileService;
 
-        public ApplicationsController(IMediator mediator)
+        public ApplicationsController(IMediator mediator, IFileService fileService)
         {
             _mediator = mediator;
+            _fileService = fileService;
         }
 
         [HttpGet("{vacancyId}/{applicationId}/history")]
-        public async Task<IActionResult> GetHistory(
-            Guid vacancyId,
-            Guid applicationId,
-            [FromQuery] GetApplicationStageHistoryQuery query)
+        public async Task<IActionResult> GetHistory(Guid vacancyId, Guid applicationId)
         {
-            query.VacancyId = vacancyId;
-            query.ApplicationId = applicationId;
-
-            var result = await _mediator.Send(query);
+            var result = await _mediator.Send(new GetApplicationStageHistoryQuery
+            {
+                VacancyId = vacancyId,
+                ApplicationId = applicationId
+            });
             return Ok(result);
+        }
+
+        [HttpPost]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Create([FromForm] CreateApplicationDto request)
+        {
+            var command = new CreateApplicationCommand
+            {
+                VacancyId = request.VacancyId,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                Phone = request.Phone,
+                ResumeStream = request.ResumeFile.OpenReadStream(),
+                ResumeFileName = request.ResumeFile.FileName
+            };
+
+            var id = await _mediator.Send(command);
+
+            return CreatedAtAction(nameof(GetById), new { id }, new { id });
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var result = await _mediator.Send(new GetApplicationByIdQuery { Id = id });
+            return Ok(result);
+        }
+
+        [HttpGet("{applicationId}/resume")]
+        public async Task<IActionResult> DownloadResume(Guid applicationId)
+        {
+            var result = await _mediator.Send(new GetResumeQuery { ApplicationId = applicationId });
+            return File(result.Content, result.ContentType, result.FileName);
+        }
+
+        [HttpPut("{id}")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateApplicationDto request)
+        {
+            var command = new UpdateApplicationCommand
+            {
+                Id = id,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                Phone = request.Phone,
+                ResumeStream = request.ResumeFile?.OpenReadStream(),
+                ResumeFileName = request.ResumeFile?.FileName
+            };
+
+            await _mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpPut("{id}/reject")]
+		public async Task<IActionResult> Reject(Guid id, [FromBody] RejectApplicationDto request)
+		{
+			await _mediator.Send(new RejectApplicationCommand
+			{
+				ApplicationId = id,
+				Comment = request.Comment
+			});
+
+			return NoContent();
+		}
+
+        [HttpPut("{id}/stage")]
+        public async Task<IActionResult> UpdateStage(Guid id, [FromBody] UpdateApplicationStageDto request)
+        {
+            await _mediator.Send(new UpdateApplicationStageCommand
+            {
+                ApplicationId = id,
+                TargetStageId = request.TargetStageId,
+                Comment = request.Comment
+            });
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await _mediator.Send(new DeleteApplicationCommand { Id = id });
+            return NoContent();
+        }
+
+        [HttpPut("{id}/offer")]
+        public async Task<IActionResult> MoveToOffer(Guid id, [FromBody] OfferApplicationCommand command)
+        {
+            command.ApplicationId = id;
+
+            await _mediator.Send(command);
+            return NoContent();
         }
     }
 }

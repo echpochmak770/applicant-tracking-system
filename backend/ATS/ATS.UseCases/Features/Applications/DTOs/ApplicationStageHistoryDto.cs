@@ -13,5 +13,7 @@ namespace ATS.UseCases.Features.Applications.DTOs
         public DateTime ChangedAt { get; set; }
         public string? Comment { get; set; }
         public string ChangedByName { get; set; }
+        public bool IsRejection { get; set; }
+        public bool IsHired { get; set; }
     }
 }

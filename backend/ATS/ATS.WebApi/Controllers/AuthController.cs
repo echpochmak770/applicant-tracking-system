@@ -1,6 +1,8 @@
-﻿using ATS.UseCases.Features.Auth.DTOs;
+﻿using ATS.Domain.Interfaces;
+using ATS.UseCases.Features.Auth.Commands;
+using ATS.UseCases.Features.Auth.DTOs;
 using ATS.UseCases.Features.Auth.Interfaces;
-using ATS.Domain.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,18 +14,25 @@ namespace ATS.WebApi.Controllers
     {
         private readonly IAuthService _authService;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IMediator _mediator;
 
-        public AuthController(IAuthService authService, ICurrentUserService currentUserService)
+        public AuthController(
+            IAuthService authService,
+            ICurrentUserService currentUserService,
+            IMediator mediator)
         {
             _authService = authService;
             _currentUserService = currentUserService;
+            _mediator = mediator;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
             var authResult = await _authService.RegisterAsync(dto);
-            SetTokenCookie(authResult.AccessToken, authResult.ExpiresAt);
+
+            SetTokenCookie("accessToken", authResult.AccessToken, authResult.ExpiresAt);
+            SetTokenCookie("refreshToken", authResult.RefreshToken, DateTime.UtcNow.AddDays(7));
 
             return Ok(new { message = "User registered and logged in successfully" });
         }
@@ -32,14 +41,16 @@ namespace ATS.WebApi.Controllers
         public async Task<IActionResult> Login(LoginDto dto)
         {
             var authResult = await _authService.LoginAsync(dto);
-            SetTokenCookie(authResult.AccessToken, authResult.ExpiresAt);
+
+            SetTokenCookie("accessToken", authResult.AccessToken, authResult.ExpiresAt);
+            SetTokenCookie("refreshToken", authResult.RefreshToken, DateTime.UtcNow.AddDays(7));
 
             return Ok(new { message = "Logged in successfully" });
         }
 
         [HttpGet("me")]
         [Authorize]
-        public ActionResult<UserMeDto> GetMe()
+        public IActionResult GetMe()
         {
             var result = new UserMeDto
             {
@@ -52,7 +63,42 @@ namespace ATS.WebApi.Controllers
             return Ok(result);
         }
 
-        private void SetTokenCookie(string token, DateTime expiresAt)
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            var result = await _mediator.Send(new RefreshTokenCommand
+            {
+                RefreshToken = refreshToken
+            });
+
+            SetTokenCookie("accessToken", result.AccessToken, result.ExpiresAt);
+            SetTokenCookie("refreshToken", result.RefreshToken, DateTime.UtcNow.AddDays(7));
+
+            return Ok(new { message = "Token refreshed successfully" });
+        }
+
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                await _mediator.Send(new LogoutCommand
+                {
+                    RefreshToken = refreshToken
+                });
+            }
+
+            Response.Cookies.Delete("accessToken");
+            Response.Cookies.Delete("refreshToken");
+
+            return Ok();
+        }
+
+        private void SetTokenCookie(string name, string token, DateTime expiresAt)
         {
             var cookieOptions = new CookieOptions
             {
@@ -62,7 +108,7 @@ namespace ATS.WebApi.Controllers
                 Expires = expiresAt
             };
 
-            Response.Cookies.Append("accessToken", token, cookieOptions);
+            Response.Cookies.Append(name, token, cookieOptions);
         }
     }
 }

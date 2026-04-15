@@ -1,7 +1,5 @@
-﻿using ATS.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using ATS.Domain.Common;
+using ATS.Domain.Entities;
 
 namespace ATS.Domain.Interfaces
 {
@@ -10,22 +8,18 @@ namespace ATS.Domain.Interfaces
         Task<Application?> GetWithDetailsAsync(Guid id);
         Task<List<Application>> GetByVacancyAsync(Guid vacancyId);
         Task<List<Application>> GetByCandidateAsync(Guid candidateId);
-        Task<(List<Application> Items, int TotalCount)> GetByVacancyPagedAsync(
-        Guid vacancyId,
-        string? search,
-        string? sortBy,
-        string? sortDirection,
-        int page,
-        int pageSize,
-        CancellationToken ct);
+        Task<(List<Application> Items, int Total)> GetByVacancyPagedAsync(
+            Guid vacancyId,
+            PagedQuery request,
+            CancellationToken ct);
 
-        Task<(List<ApplicationHistory> Items, int TotalCount)> GetStageHistoryPagedAsync(
+        Task<(List<ApplicationHistory> Items, int Total)> GetStageHistoryPagedAsync(
             Guid vacancyId,
             Guid applicationId,
-            string? sortBy,
-            string? sortDirection,
-            int page,
-            int pageSize,
+            PagedQuery request,
             CancellationToken ct);
+        Task<Application?> GetForUpdateAsync(Guid id, CancellationToken ct = default);
+        Task<Application?> GetForStateChangeAsync(Guid id);
+        Task<bool> AnyApplicationsOnStagesAsync(List<Guid> stageIds, CancellationToken ct);
     }
 }

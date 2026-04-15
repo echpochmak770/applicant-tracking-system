@@ -18,11 +18,10 @@ namespace ATS.Infrastructure.Helpers
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
             AddRepositories(services);
-
             services.AddHttpContextAccessor();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IFileService, FileService>();
 
             return services;
         }

@@ -1,4 +1,4 @@
-﻿using ATS.UseCases.Common.Models;
+﻿using ATS.Domain.Common;
 using ATS.UseCases.Features.Applications.DTOs;
 using ATS.UseCases.Features.Applications.Queries;
 using ATS.Domain.Interfaces;
@@ -9,45 +9,36 @@ using System.Text;
 
 namespace ATS.UseCases.Features.Applications.Handlers
 {
-    internal class GetApplicationStageHistoryHandler
-        : IRequestHandler<GetApplicationStageHistoryQuery, PagedResult<ApplicationStageHistoryDto>>
+    public class GetApplicationStageHistoryHandler
+    : IRequestHandler<GetApplicationStageHistoryQuery, List<ApplicationStageHistoryDto>>
     {
-        private readonly IApplicationRepository _applicationRepository;
+        private readonly IApplicationHistoryRepository _historyRepository;
 
-        public GetApplicationStageHistoryHandler(IApplicationRepository applicationRepository)
+        public GetApplicationStageHistoryHandler(IApplicationHistoryRepository historyRepository)
         {
-            _applicationRepository = applicationRepository;
+            _historyRepository = historyRepository;
         }
 
-        public async Task<PagedResult<ApplicationStageHistoryDto>> Handle(GetApplicationStageHistoryQuery request, CancellationToken ct)
+        public async Task<List<ApplicationStageHistoryDto>> Handle(
+            GetApplicationStageHistoryQuery request,
+            CancellationToken ct)
         {
-            var (items, total) = await _applicationRepository.GetStageHistoryPagedAsync(
+            var history = await _historyRepository.GetByApplicationAsync(
                 request.VacancyId,
                 request.ApplicationId,
-                request.SortBy,
-                request.SortDirection,
-                request.Page,
-                request.PageSize,
                 ct);
 
-            var dtos = items.Select(h => new ApplicationStageHistoryDto
+            return history.Select(h => new ApplicationStageHistoryDto
             {
                 Id = h.Id,
-                FromStageName = h.FromStage?.Name,
-                ToStageName = h.ToStage.Name,
-                Order = h.ToStage.Order,
+                FromStageName = h.FromStage?.Name ?? "Начало",
+                ToStageName = h.ToStage?.Name,
                 ChangedAt = h.ChangedAt,
                 Comment = h.Comment,
-                ChangedByName = $"{h.ChangedBy.FirstName} {h.ChangedBy.LastName}"
+                ChangedByName = $"{h.ChangedBy?.FirstName} {h.ChangedBy?.LastName}".Trim(),
+                IsRejection = h.IsRejection,
+                IsHired = h.ToStage?.Name == "Оффер"
             }).ToList();
-
-            return new PagedResult<ApplicationStageHistoryDto>
-            {
-                Items = dtos,
-                TotalCount = total,
-                Page = request.Page,
-                PageSize = request.PageSize
-            };
         }
     }
 }

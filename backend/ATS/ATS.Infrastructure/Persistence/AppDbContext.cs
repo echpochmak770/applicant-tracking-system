@@ -3,11 +3,6 @@ using ATS.Domain.Entities;
 using ATS.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
 
 namespace ATS.Infrastructure.Persistence
 {
@@ -27,6 +22,7 @@ namespace ATS.Infrastructure.Persistence
         public DbSet<ApplicationHistory> ApplicationHistories { get; set; }
         public DbSet<Candidate> Candidates { get; set; }
         public DbSet<Communication> Communications { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Resume> Resumes { get; set; }
         public DbSet<Stage> Stages { get; set; }
         public DbSet<User> Users { get; set; }
@@ -163,6 +159,23 @@ namespace ATS.Infrastructure.Persistence
                     .IsRequired(true);
             });
 
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasKey(t => t.Id);
+
+                entity.Property(t => t.Token)
+                    .IsRequired()
+                    .HasMaxLength(512);
+
+                entity.HasIndex(t => t.Token)
+                    .IsUnique();
+
+                entity.HasOne(t => t.User)
+                    .WithMany()
+                    .HasForeignKey(t => t.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
             modelBuilder.Entity<Resume>(entity =>
             {
                 entity.HasKey(r => r.Id);
@@ -244,6 +257,11 @@ namespace ATS.Infrastructure.Persistence
                     .HasMaxLength(512)
                     .IsRequired();
 
+                entity.Property(v => v.Status)
+                    .HasConversion<string>()
+                    .HasMaxLength(64)
+                    .IsRequired();
+
                 entity.HasOne(v => v.CreatedBy)
                     .WithMany(u => u.Vacancies)
                     .HasForeignKey(v => v.CreatedById)
@@ -270,19 +288,20 @@ namespace ATS.Infrastructure.Persistence
 
             foreach (var entry in entries)
             {
-                switch (entry.State)
+                if (entry.State == EntityState.Added)
                 {
-                    case EntityState.Added:
-                        HandleAddedEntity(entry);
-                        break;
+                    HandleAddedEntity(entry);
+                }
 
-                    case EntityState.Modified:
-                        HandleModifiedEntity(entry);
-                        break;
+                if (entry.State == EntityState.Modified)
+                {
+                    HandleModifiedEntity(entry);
+                }
 
-                    case EntityState.Deleted:
-                        HandleSoftDelete(entry);
-                        break;
+                if (entry.State == EntityState.Deleted)
+                {
+                    entry.State = EntityState.Modified;
+                    entry.Entity.IsDeleted = true;
                 }
             }
         }
@@ -299,16 +318,6 @@ namespace ATS.Infrastructure.Persistence
 
         private void HandleModifiedEntity(EntityEntry<BaseEntity> entry)
         {
-            if (entry.Entity.IsDeleted)
-            {
-                entry.State = EntityState.Unchanged;
-            }
-        }
-
-        private void HandleSoftDelete(EntityEntry<BaseEntity> entry)
-        {
-            entry.State = EntityState.Modified;
-            entry.Entity.IsDeleted = true;
         }
 
         private void ApplySoftDeleteFilter(ModelBuilder modelBuilder)

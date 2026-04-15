@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ATS.Domain.Entities;
+﻿using ATS.Domain.Entities;
 
 namespace ATS.Domain.Interfaces
 {

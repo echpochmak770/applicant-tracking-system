@@ -1,16 +1,45 @@
-import { createBrowserRouter, RouterProvider, Outlet, Navigate } from "react-router";
-import Home from "./pages/Home";
-import Applications from "./pages/Applications";
-import LoginPage from "./pages/landing/Auth";
-import RegisterPage from "./pages/landing/Register";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+  Navigate,
+} from "react-router";
 import { AllCommunityModule } from "ag-grid-community";
 import { AgGridProvider } from "ag-grid-react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./api/query";
 import { useMeQuery } from "./api/auth/model/queries";
 import { Header } from "./components/layout/header/Header";
-import CreateVacancy from "./pages/MutateForms/CreateVacancy";
 import { Toaster } from "./components/ui/sonner";
+import { Suspense } from "react";
+import { lazy } from "react";
+import Loader from "./components/ui/loader";
+
+const RegisterPage = lazy(() => import("./pages/auth/RegisterPage"));
+const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
+const VacancyListPage = lazy(
+  () => import("./pages/vacancies/VacanciesListPage"),
+);
+const CreateVacancyPage = lazy(
+  () => import("./pages/vacancies/CreateVacancyPage"),
+);
+const UpdateVacancyPage = lazy(
+  () => import("./pages/vacancies/UpdateVacancyPage"),
+);
+const ApplicationsListPage = lazy(
+  () => import("./pages/applications/ApplicationsListPage"),
+);
+const ApplicationHistoryPage = lazy(
+  () => import("./pages/applications/ApplicationHistoryPage"),
+);
+const CreateApplicationPage = lazy(
+  () => import("./pages/applications/CreateApplicationPage"),
+);
+const UpdateApplicationPage = lazy(
+  () => import("./pages/applications/UpdateApplicationPage"),
+);
+
+const StagesBoardPage = lazy(() => import("./pages/stages/StagesBoardPage"));
 
 const modules = [AllCommunityModule];
 
@@ -35,22 +64,14 @@ const RootLayout = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <Header user={user}/>
-      <main className="w-full max-w-[1440px] mx-auto p-6"> 
+      <Header user={user} />
+      <main className="w-full max-w-[1440px] mx-auto p-6">
         <Outlet />
       </main>
       <Toaster />
     </div>
   );
 };
-
-// const authLoader = async () => {
-//   try {
-//     return await queryClient.ensureQueryData(useMeQuery.getOptions());
-//   } catch (e) {
-//     return null;
-//   }
-// };
 
 const router = createBrowserRouter([
   {
@@ -74,23 +95,49 @@ const router = createBrowserRouter([
           },
           {
             path: "vacancies",
-            element: <Home />,
+            children: [
+              {
+                index: true,
+                element: <VacancyListPage />,
+              },
+              {
+                path: "create",
+                element: <CreateVacancyPage />,
+              },
+              {
+                path: "update/:vacancyId",
+                element: <UpdateVacancyPage />,
+              },
+              {
+                path: ":vacancyId/applications",
+                children: [
+                  {
+                    index: true,
+                    element: <ApplicationsListPage />,
+                  },
+                  {
+                    path: "create",
+                    element: <CreateApplicationPage />,
+                  },
+                  {
+                    path: ":applicationId/update",
+                    element: <UpdateApplicationPage />,
+                  },
+                  {
+                    path: ":applicationId/history",
+                    element: <ApplicationHistoryPage />,
+                  },
+                ],
+              },
+            ],
           },
           {
-            path: "add-vacancy",
-            element: <CreateVacancy />,
-          },
-          {
-            path: "applications/:id",
-            element: <Applications />,
+            path: "stages",
+            element: <StagesBoardPage />,
           },
         ],
       },
     ],
-  },
-  {
-    path: "*",
-    element: <Navigate to="/" replace />,
   },
 ]);
 
@@ -98,7 +145,22 @@ export default function App() {
   return (
     <AgGridProvider modules={modules}>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <Suspense
+          fallback={
+            <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+              <div className="flex flex-col items-center gap-6">
+                <Loader />
+                <div className="flex flex-col items-center gap-2">
+                  <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                    Загрузка ATS...
+                  </h2>
+                </div>
+              </div>
+            </div>
+          }
+        >
+          <RouterProvider router={router} />
+        </Suspense>
       </QueryClientProvider>
     </AgGridProvider>
   );

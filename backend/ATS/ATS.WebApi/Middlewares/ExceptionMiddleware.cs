@@ -29,9 +29,10 @@ namespace ATS.WebApi.Middlewares
         {
             var statusCode = exception switch
             {
-                AuthException => HttpStatusCode.Unauthorized,
+                AuthException authEx => (HttpStatusCode)authEx.StatusCode,
                 KeyNotFoundException => HttpStatusCode.NotFound,
                 ArgumentException => HttpStatusCode.BadRequest,
+                InvalidOperationException => HttpStatusCode.BadRequest,
                 _ => HttpStatusCode.InternalServerError
             };
 
@@ -41,12 +42,10 @@ namespace ATS.WebApi.Middlewares
                 statusCode = (int)statusCode
             };
 
-            var json = JsonSerializer.Serialize(response);
-
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)statusCode;
 
-            return context.Response.WriteAsync(json);
+            return context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
     }
 }

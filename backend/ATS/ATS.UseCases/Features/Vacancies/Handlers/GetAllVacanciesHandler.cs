@@ -1,4 +1,4 @@
-﻿using ATS.UseCases.Common.Models;
+﻿using ATS.Domain.Common;
 using ATS.UseCases.Features.Vacancies.DTOs;
 using ATS.UseCases.Features.Vacancies.Queries;
 using ATS.Domain.Entities;
@@ -22,13 +22,7 @@ namespace ATS.UseCases.Features.Vacancies.Handlers
             GetAllVacanciesQuery request,
             CancellationToken cancellationToken)
         {
-            var (items, total) = await _vacancyRepository.GetAllPagedAsync(
-                request.Search,
-                request.SortBy,
-                request.SortDirection,
-                request.Page,
-                request.PageSize,
-                cancellationToken);
+            var (items, total) = await _vacancyRepository.GetAllPagedAsync(request, cancellationToken);
 
             var dtos = items.Select(v => new VacancyDto
             {
@@ -36,7 +30,7 @@ namespace ATS.UseCases.Features.Vacancies.Handlers
                 Title = v.Title,
                 Description = v.Description,
                 Status = v.Status.ToString(),
-                CreatedByName = v.CreatedBy.FirstName + " " + v.CreatedBy.LastName,
+                CreatedByName = $"{v.CreatedBy.FirstName} {v.CreatedBy.LastName}",
                 CreatedAt = v.CreatedAt
             }).ToList();
 

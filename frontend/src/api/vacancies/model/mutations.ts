@@ -1,18 +1,23 @@
 import { useMutation } from "@tanstack/react-query";
 import { vacanciesActions } from "../action/vacancy";
-import { useNavigate } from "react-router";
-import { toast } from "sonner";
 import { queryClient, vacancyKeys } from "@/api/query";
+import type { VacanciesUpdatePayload } from "./types";
 
 export const useCreateVacancyMutation = () => {
-  const navigate = useNavigate();
-
   return useMutation({
-    mutationFn: vacanciesActions.createVacancy, 
+    mutationFn: vacanciesActions.createVacancy,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: vacancyKeys.all });
-      toast("Вакансия создана!")
-      navigate("/vacancies");
+    },
+  });
+};
+
+export const useUpdateVacancyMutation = () => {
+  return useMutation({
+    mutationFn: ({ id, body }: { id: string; body: VacanciesUpdatePayload }) =>
+      vacanciesActions.updateVacancy(id, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: vacancyKeys.all });
     },
   });
 };

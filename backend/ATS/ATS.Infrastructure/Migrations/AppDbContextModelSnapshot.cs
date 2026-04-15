@@ -47,7 +47,7 @@ namespace ATS.Infrastructure.Migrations
                         .HasMaxLength(2048)
                         .HasColumnType("nvarchar(2048)");
 
-                    b.Property<Guid>("ResumeId")
+                    b.Property<Guid?>("ResumeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("VacancyId")
@@ -94,6 +94,9 @@ namespace ATS.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRejection")
                         .HasColumnType("bit");
 
                     b.Property<Guid?>("ToStageId")
@@ -195,6 +198,39 @@ namespace ATS.Infrastructure.Migrations
                     b.ToTable("Communications");
                 });
 
+            modelBuilder.Entity("ATS.Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("ATS.Domain.Entities.Resume", b =>
                 {
                     b.Property<Guid>("Id")
@@ -247,8 +283,8 @@ namespace ATS.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int>("Order")
                         .HasColumnType("int");
@@ -333,8 +369,10 @@ namespace ATS.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -371,8 +409,7 @@ namespace ATS.Infrastructure.Migrations
                     b.HasOne("ATS.Domain.Entities.Resume", "Resume")
                         .WithMany("Applications")
                         .HasForeignKey("ResumeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ATS.Domain.Entities.Vacancy", "Vacancy")
                         .WithMany("Applications")
@@ -441,6 +478,17 @@ namespace ATS.Infrastructure.Migrations
                     b.Navigation("Application");
 
                     b.Navigation("CreatedBy");
+                });
+
+            modelBuilder.Entity("ATS.Domain.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("ATS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ATS.Domain.Entities.Resume", b =>

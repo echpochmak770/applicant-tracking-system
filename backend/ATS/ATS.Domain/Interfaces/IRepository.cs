@@ -8,7 +8,7 @@ namespace ATS.Domain.Interfaces
 {
     public interface IRepository<T> where T : BaseEntity
     {
-        Task<T> GetByIdAsync(Guid id);
+        Task<T?> GetByIdAsync(Guid id, CancellationToken ct = default, params Expression<Func<T, object>>[] includes);
         Task<List<T>> GetAllAsync();
         Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate);
         Task AddAsync(T entity);

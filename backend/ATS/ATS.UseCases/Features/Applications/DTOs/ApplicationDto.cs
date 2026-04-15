@@ -15,5 +15,6 @@ namespace ATS.UseCases.Features.Applications.DTOs
         public string ResumeFileUrl { get; set; }
         public string ResumeName { get; set; }
         public bool IsDeleted { get; set; }
+        public bool IsRejected { get; set; }
     }
 }

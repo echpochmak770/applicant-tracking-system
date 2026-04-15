@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Features\Новая папка\**" />
-    <EmbeddedResource Remove="Features\Новая папка\**" />
-    <None Remove="Features\Новая папка\**" />
+    <Compile Remove="Common\**" />
+    <EmbeddedResource Remove="Common\**" />
+    <None Remove="Common\**" />
   </ItemGroup>
-
+	
   <ItemGroup>
     <ProjectReference Include="..\ATS.Domain\ATS.Domain.csproj" />
   </ItemGroup>

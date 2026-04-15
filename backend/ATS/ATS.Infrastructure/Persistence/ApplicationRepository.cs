@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
+﻿using ATS.Domain.Common;
 using ATS.Domain.Entities;
 using ATS.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Text;
 
 namespace ATS.Infrastructure.Persistence
 {
@@ -16,10 +17,31 @@ namespace ATS.Infrastructure.Persistence
         {
             "name" => "Candidate.FirstName",
             "email" => "Candidate.Email",
+            "currentStageName" => "CurrentStage.Name",
             "stage" => "CurrentStage.Order",
             "order" => "ToStage.Order",
+            "author" => "CreatedBy.FirstName",
             _ => sortBy
         };
+
+        public async Task<Application?> GetForUpdateAsync(Guid id, CancellationToken ct = default)
+        {
+            return await _context.Applications
+                .Include(a => a.Candidate)
+                .Include(a => a.Resume)
+                .FirstOrDefaultAsync(a => a.Id == id, ct);
+        }
+
+        public async Task<Application?> GetForStateChangeAsync(Guid id)
+        {
+            return await _context.Applications
+                .Select(a => new Application
+                {
+                    Id = a.Id,
+                    CurrentStageId = a.CurrentStageId
+                })
+                .FirstOrDefaultAsync(a => a.Id == id);
+        }
 
         public async Task<List<Application>> GetByCandidateAsync(Guid candidateId)
         {
@@ -39,13 +61,9 @@ namespace ATS.Infrastructure.Persistence
                 .ToListAsync();
         }
 
-        public async Task<(List<Application> Items, int TotalCount)> GetByVacancyPagedAsync(
+        public async Task<(List<Application> Items, int Total)> GetByVacancyPagedAsync(
             Guid vacancyId,
-            string? search,
-            string? sortBy,
-            string? sortDirection,
-            int page,
-            int pageSize,
+            PagedQuery request,
             CancellationToken ct)
         {
             var query = _dbSet
@@ -56,38 +74,76 @@ namespace ATS.Infrastructure.Persistence
                 .Where(a => a.VacancyId == vacancyId && !a.IsDeleted)
                 .AsNoTracking();
 
-            if (!string.IsNullOrWhiteSpace(search))
+            query = ApplyStageSorting(query, request);
+
+            PrepareQueryFields(request);
+            query = ApplyManualFilters(query, request.ColumnFilters);
+            query = ApplySearch(query, request.Search);
+
+            return await GetPagedDataAsync(query, request, ct);
+        }
+
+        public async Task<bool> AnyApplicationsOnStagesAsync(List<Guid> stageIds, CancellationToken ct)
+        {
+            return await _context.Applications
+                .AnyAsync(a => stageIds.Contains(a.CurrentStageId), ct);
+        }
+
+        private void PrepareQueryFields(PagedQuery request)
+        {
+            if (request.ColumnFilters == null) return;
+
+            foreach (var filter in request.ColumnFilters)
             {
-                query = query.Where(a =>
-                    EF.Functions.Like(a.Candidate.FirstName, $"%{search}%") ||
-                    EF.Functions.Like(a.Candidate.LastName, $"%{search}%") ||
-                    EF.Functions.Like(a.Candidate.Email, $"%{search}%"));
+                filter.Field = MapSortField(filter.Field);
+            }
+        }
+
+        private IQueryable<Application> ApplyManualFilters(IQueryable<Application> query, List<ColumnFilter>? filters)
+        {
+            if (filters == null || !filters.Any()) return query;
+
+            foreach (var filter in filters)
+            {
+                if (string.IsNullOrWhiteSpace(filter.Filter)) continue;
+
+                query = filter.Field switch
+                {
+                    "currentStageName" => query.Where(a => a.CurrentStage.Name.Contains(filter.Filter)),
+                    "isDeleted" => query.Where(a => a.IsDeleted == bool.Parse(filter.Filter)),
+                    "candidateFullName" => query.Where(a => (a.Candidate.FirstName + " " + a.Candidate.LastName).Contains(filter.Filter)),
+                    _ => query
+                };
             }
 
-            query = ApplyUniversalSorting(query, sortBy, sortDirection, "CreatedAt");
+            return query;
+        }
 
-            return await GetPagedDataAsync(query, page, pageSize, ct);
+        private IQueryable<Application> ApplySearch(IQueryable<Application> query, string? search)
+        {
+            if (string.IsNullOrWhiteSpace(search)) return query;
+
+            return query.Where(a =>
+                a.Candidate.FirstName.Contains(search) ||
+                a.Candidate.LastName.Contains(search) ||
+                a.Candidate.Email.Contains(search));
         }
 
         public async Task<Application?> GetWithDetailsAsync(Guid id)
         {
-            return await _dbSet
+            return await _context.Applications
                 .Include(a => a.Candidate)
-                .Include(a => a.Vacancy)
                 .Include(a => a.CurrentStage)
+                .Include(a => a.CreatedBy)
                 .Include(a => a.Resume)
                 .Include(a => a.Histories)
-                .Include(a => a.Communications)
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task<(List<ApplicationHistory> Items, int TotalCount)> GetStageHistoryPagedAsync(
+        public async Task<(List<ApplicationHistory> Items, int Total)> GetStageHistoryPagedAsync(
             Guid vacancyId,
             Guid applicationId,
-            string? sortBy,
-            string? sortDirection,
-            int page,
-            int pageSize,
+            PagedQuery request,
             CancellationToken ct)
         {
             var historyQuery = _dbSet
@@ -98,9 +154,31 @@ namespace ATS.Infrastructure.Persistence
                 .Include(h => h.ChangedBy)
                 .AsNoTracking();
 
-            historyQuery = ApplyUniversalSorting(historyQuery, sortBy, sortDirection, "ChangedAt");
+            return await GetPagedDataAsync(historyQuery, request, ct);
+        }
 
-            return await GetPagedDataAsync(historyQuery, page, pageSize, ct);
+        private IQueryable<Application> ApplyStageSorting(IQueryable<Application> query, PagedQuery request)
+        {
+            var stageFilter = request.ColumnFilters
+                .FirstOrDefault(f => f.Field.Equals("status", StringComparison.OrdinalIgnoreCase) ||
+                                     f.Field.Equals("currentStageName", StringComparison.OrdinalIgnoreCase));
+
+            if (stageFilter != null && !string.IsNullOrEmpty(stageFilter.Sort))
+            {
+                bool isDescending = stageFilter.Sort.Equals("desc", StringComparison.OrdinalIgnoreCase);
+
+                query = isDescending
+                    ? query.OrderByDescending(a => a.CurrentStage.Order)
+                    : query.OrderBy(a => a.CurrentStage.Order);
+
+                stageFilter.Sort = null;
+            }
+            else
+            {
+                query = query.OrderBy(a => a.CurrentStage.Order);
+            }
+
+            return query;
         }
     }
 }

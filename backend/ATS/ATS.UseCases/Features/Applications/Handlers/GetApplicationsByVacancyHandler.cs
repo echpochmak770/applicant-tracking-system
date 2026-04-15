@@ -1,4 +1,4 @@
-﻿using ATS.UseCases.Common.Models;
+﻿using ATS.Domain.Common;
 using ATS.UseCases.Features.Applications.DTOs;
 using ATS.UseCases.Features.Applications.Queries;
 using ATS.Domain.Interfaces;
@@ -25,24 +25,21 @@ namespace ATS.UseCases.Features.Applications.Handlers
         {
             var (items, total) = await _applicationRepository.GetByVacancyPagedAsync(
                 request.VacancyId,
-                request.Search,
-                request.SortBy,
-                request.SortDirection,
-                request.Page,
-                request.PageSize,
+                request,
                 cancellationToken);
 
             var dtos = items.Select(a => new ApplicationDto
             {
                 Id = a.Id,
-                CandidateFullName = a.Candidate.FirstName + " " + a.Candidate.LastName,
+                CandidateFullName = $"{a.Candidate.FirstName} {a.Candidate.LastName}",
                 Email = a.Candidate.Email,
                 Phone = a.Candidate.Phone,
                 CurrentStageName = a.CurrentStage.Name,
-                CreatorFullName = a.CreatedBy.FirstName + " " + a.CreatedBy.LastName,
+                CreatorFullName = $"{a.CreatedBy.FirstName} {a.CreatedBy.LastName}",
                 ResumeFileUrl = a.Resume.FileUrl,
                 ResumeName = a.Resume.FileName,
-                IsDeleted = a.IsDeleted
+                IsDeleted = a.IsDeleted,
+                IsRejected = !string.IsNullOrEmpty(a.RejectionReason)
             }).ToList();
 
             return new PagedResult<ApplicationDto>
