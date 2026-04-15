@@ -15,22 +15,18 @@ import type { ColDef } from "ag-grid-community";
 import { useApplicationHistoryQuery } from "@/api/applications/model/queries";
 import type { ApplicationHistoryItemDto } from "@/api/applications/model/types";
 import StageVisualizer from "@/components/application/stageVisualizer";
-import { useApplicationStore } from "@/store/useApplicationStore";
-import { useStagesStore } from "@/store/useStagesStore";
 import { useDownloadFile } from "@/api/applications/model/mutations";
+import { useApplicationQuery } from "@/api/applications/model/queries";
+import { useVacancyStagesQuery } from "@/api/stage/model/queries";
 
 export default function ApplicationHistoryPage() {
   const { vacancyId, applicationId } = useParams();
   const navigate = useNavigate();
 
-  const currentApplication = useApplicationStore(
-    (state) => state.currentApplication,
-  );
+  const { data: currentApplication } = useApplicationQuery(applicationId!);
 
   const { mutate: downloadFile } = useDownloadFile();
-  const stages =
-    useStagesStore((state) => (vacancyId ? state.getStages(vacancyId) : [])) ||
-    [];
+  const { data: stages = [] } = useVacancyStagesQuery(vacancyId!);
 
   const { data, isError } = useApplicationHistoryQuery(
     {
@@ -171,9 +167,23 @@ export default function ApplicationHistoryPage() {
                 variant="ghost"
                 size="lg"
                 onClick={() =>
-                  downloadFile({
-                    applicationId: applicationId,
-                  })
+                  downloadFile(
+                    {
+                      applicationId: applicationId,
+                    },
+                    {
+                      onSuccess: (data) => {
+                        const url = window.URL.createObjectURL(data);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = currentApplication.resumeName;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        window.URL.revokeObjectURL(url);
+                      },
+                    },
+                  )
                 }
                 className="flex items-center cursor-pointer justify-between p-3 rounded-lg border border-dashed border-primary/50 bg-primary/5 hover:bg-primary/10 transition-colors group"
               >

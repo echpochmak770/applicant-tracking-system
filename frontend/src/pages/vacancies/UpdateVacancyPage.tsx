@@ -36,14 +36,15 @@ export default function UpdateVacancyPage() {
   const navigate = useNavigate();
 
   const { data, isLoading } = useVacancyQuery(vacancyId!);
-  const { data: stages } = useVacancyStagesQuery(vacancyId!);
+  const { data: apiStages } = useVacancyStagesQuery(vacancyId!);
+  const stages = apiStages?.filter((stage) => stage.name !== "Оффер");
   const { mutate: update } = useUpdateVacancyMutation();
 
   const {
     register,
     handleSubmit,
-    getValues,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<UpdateVacancyFormValues>({
     resolver: zodResolver(updateVacancySchema),
@@ -53,6 +54,8 @@ export default function UpdateVacancyPage() {
       status: data?.status || "",
     },
   });
+
+  const currentStatus = watch("status");
 
   const onSubmit = (data: UpdateVacancyFormValues) => {
     update(
@@ -108,9 +111,9 @@ export default function UpdateVacancyPage() {
               <Field>
                 <FieldLabel>Статус вакансии</FieldLabel>
                 <Select
-                  value={getValues("status")}
+                  value={currentStatus}
                   onValueChange={(status) => {
-                    setValue("status", status);
+                    setValue("status", status, { shouldValidate: true });
                   }}
                 >
                   <SelectTrigger

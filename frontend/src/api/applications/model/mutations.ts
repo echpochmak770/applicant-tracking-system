@@ -16,16 +16,6 @@ export const useDownloadFile = () => {
   return useMutation({
     mutationFn: ({ applicationId }: { applicationId: string }) =>
       applicationActions.downloadResume(applicationId),
-    onSuccess: (data) => {
-      const url = window.URL.createObjectURL(data);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "file.pdf";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    },
   });
 };
 

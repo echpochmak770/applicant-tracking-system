@@ -138,4 +138,27 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .ag-theme-quartz .ag-row {
+    border-bottom: 1px solid var(--border) !important;
+  }
+
+  .ag-theme-quartz .ag-cell {
+    border-right: 1px solid var(--border) !important;
+    display: flex;
+    align-items: center;
+  }
+
+  .ag-theme-quartz .ag-header {
+    border-bottom: 1px solid var(--border) !important;
+    background-color: var(--muted) / 0.2;
+  }
+
+  .ag-theme-quartz .ag-header-cell {
+    border-right: 1px solid var(--border) !important;
+  }
+
+  .ag-root-wrapper {
+    border: none !important;
+  }
 }

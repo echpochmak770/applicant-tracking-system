@@ -220,10 +220,8 @@ export default function RegisterPage() {
                   )}
                 </button>
               </div>
-              <div className="h-4 text-[12px] text-red-500">
+              <div className="min-h-4 text-[12px] text-red-500">
                 {errors.password && <div>{errors.password.message}</div>}
-              </div>
-              <div className="h-1 text-[12px] text-red-500">
                 {error && <div>{getErrorMessage(error)}</div>}
               </div>
             </div>

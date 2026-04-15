@@ -13,6 +13,7 @@ import { Header } from "./components/layout/header/Header";
 import { Toaster } from "./components/ui/sonner";
 import { Suspense } from "react";
 import { lazy } from "react";
+import Loader from "./components/ui/loader";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
@@ -144,7 +145,7 @@ export default function App() {
   return (
     <AgGridProvider modules={modules}>
       <QueryClientProvider client={queryClient}>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Loader />}>
           <RouterProvider router={router} />
         </Suspense>
       </QueryClientProvider>

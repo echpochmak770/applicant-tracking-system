@@ -193,7 +193,12 @@ export default function ApplicationsListPage() {
       <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
         <div
           className="ag-theme-quartz w-full"
-          style={{ height: `${43 * filters.pageSize + 52}px` }}
+          style={
+            {
+              height: `468px`,
+              "--ag-border-color": "transparent",
+            } as React.CSSProperties
+          }
         >
           <AgGridReact<ApplicationItemDto>
             rowData={data?.items ?? []}

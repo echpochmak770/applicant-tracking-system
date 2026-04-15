@@ -163,7 +163,12 @@ export default function VacanciesListPage() {
       <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
         <div
           className="ag-theme-quartz w-full"
-          style={{ minHeight: `${43 * filters.pageSize + 52}px` }}
+          style={
+            {
+              minHeight: `468px`,
+              "--ag-border-color": "transparent",
+            } as React.CSSProperties
+          }
         >
           <AgGridReact<VacancyItemDto>
             rowData={data?.items ?? []}
