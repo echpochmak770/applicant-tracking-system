@@ -24,22 +24,42 @@ namespace ATS.WebApi.Helpers
 
         public static void ApplyMigrations(this IApplicationBuilder app)
         {
-            using (var scope = app.ApplicationServices.CreateScope())
+            using var scope = app.ApplicationServices.CreateScope();
+            var services = scope.ServiceProvider;
+            var context = services.GetRequiredService<AppDbContext>();
+
+            int retries = 10;
+            while (retries > 0)
             {
-                var services = scope.ServiceProvider;
                 try
                 {
-                    var context = services.GetRequiredService<AppDbContext>();
-
-                    if (context.Database.GetPendingMigrations().Any() || !context.Database.CanConnect())
+                    if (context.Database.CanConnect())
                     {
-                        context.Database.Migrate();
-                        Console.WriteLine("--> Database migration applied successfully.");
+                        var pendingMigrations = context.Database.GetPendingMigrations();
+                        if (pendingMigrations.Any())
+                        {
+                            context.Database.Migrate();
+                            Console.WriteLine("--> Database migration applied successfully.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("--> No pending migrations found.");
+                        }
+                        break;
                     }
+                    throw new Exception("Database is not reachable");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"--> Could not run migrations: {ex.Message}");
+                    retries--;
+                    Console.WriteLine($"--> Database not ready yet, retrying... ({retries} left).");
+                    Task.Delay(5000);
+
+                    if (retries == 0)
+                    {
+                        Console.WriteLine($"--> Could not connect to database after several attempts: {ex.Message}");
+                        throw;
+                    }
                 }
             }
         }

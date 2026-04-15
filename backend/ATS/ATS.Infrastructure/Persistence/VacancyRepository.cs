@@ -27,13 +27,30 @@ namespace ATS.Infrastructure.Persistence
         {
             var query = _context.Vacancies.AsNoTracking();
 
+            if (request.ColumnFilters != null)
+            {
+                foreach (var filter in request.ColumnFilters)
+                {
+                    filter.Field = MapSortField(filter.Field);
+                }
+            }
+
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
                 query = query.Where(v => v.Title.Contains(request.Search) ||
                                          v.Description.Contains(request.Search));
             }
 
-            query = query.ApplyDynamicQuery(request);
+            bool hasSort = request.ColumnFilters?.Any(f => !string.IsNullOrEmpty(f.Sort)) ?? false;
+
+            if (!hasSort)
+            {
+                query = query.OrderBy(v => v.Status);
+            }
+            else
+            {
+                query = query.ApplyDynamicQuery(request);
+            }
 
             var total = await query.CountAsync(ct);
 
