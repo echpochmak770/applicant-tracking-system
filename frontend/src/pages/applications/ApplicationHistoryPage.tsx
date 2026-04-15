@@ -18,17 +18,24 @@ import StageVisualizer from "@/components/application/stageVisualizer";
 import { useDownloadFile } from "@/api/applications/model/mutations";
 import { useApplicationQuery } from "@/api/applications/model/queries";
 import { useVacancyStagesQuery } from "@/api/stage/model/queries";
+import Loader from "@/components/ui/loader";
 
 export default function ApplicationHistoryPage() {
   const { vacancyId, applicationId } = useParams();
   const navigate = useNavigate();
 
-  const { data: currentApplication } = useApplicationQuery(applicationId!);
+  const { data: currentApplication, isLoading: isApplicationLoading } =
+    useApplicationQuery(applicationId!);
 
   const { mutate: downloadFile } = useDownloadFile();
-  const { data: stages = [] } = useVacancyStagesQuery(vacancyId!);
+  const { data: stages = [], isLoading: isStagesLoading } =
+    useVacancyStagesQuery(vacancyId!);
 
-  const { data, isError } = useApplicationHistoryQuery(
+  const {
+    data,
+    isError,
+    isLoading: isHistoryLoading,
+  } = useApplicationHistoryQuery(
     {
       vacancyId: vacancyId!,
       applicationId: applicationId!,
@@ -74,6 +81,21 @@ export default function ApplicationHistoryPage() {
     [],
   );
 
+  if (isApplicationLoading || isStagesLoading || isHistoryLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center bg-background p-4">
+        <div className="flex flex-col items-center gap-6">
+          <Loader />
+          <div className="flex flex-col items-center gap-2">
+            <h2 className="text-xl font-semibold tracking-tight text-foreground">
+              Загрузка информации об отклике...
+            </h2>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (
     !currentApplication ||
     isError ||
@@ -116,7 +138,14 @@ export default function ApplicationHistoryPage() {
           >
             Редактировать
           </Button>
-          <Button>Изменить стадию</Button>
+          <Button
+            onClick={() => {
+              localStorage.setItem("vacancyId", vacancyId || "");
+              navigate(`/stages`);
+            }}
+          >
+            Изменить стадию
+          </Button>
         </div>
       </div>
 

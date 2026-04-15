@@ -145,7 +145,20 @@ export default function App() {
   return (
     <AgGridProvider modules={modules}>
       <QueryClientProvider client={queryClient}>
-        <Suspense fallback={<Loader />}>
+        <Suspense
+          fallback={
+            <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+              <div className="flex flex-col items-center gap-6">
+                <Loader />
+                <div className="flex flex-col items-center gap-2">
+                  <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                    Загрузка ATS...
+                  </h2>
+                </div>
+              </div>
+            </div>
+          }
+        >
           <RouterProvider router={router} />
         </Suspense>
       </QueryClientProvider>

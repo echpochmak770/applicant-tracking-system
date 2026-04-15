@@ -13,6 +13,7 @@ import type { ColumnFilter } from "@/api/types";
 import { type ApplicationItemDto } from "@/store/useApplicationStore";
 import { ColumnActions } from "@/components/tables/ColumnActions";
 import { useVacancyQuery } from "@/api/vacancies/model/queries";
+import { useDownloadFile } from "@/api/applications/model/mutations";
 
 export default function ApplicationsListPage() {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export default function ApplicationsListPage() {
 
   const { filters, setFilters, setApplication } = useApplicationStore();
   const { setStages } = useStagesStore();
+  const { mutate: downloadFile } = useDownloadFile();
 
   const [pageSizeDraft, setPageSizeDraft] = useState(
     filters.pageSize.toString(),
@@ -151,16 +153,31 @@ export default function ApplicationsListPage() {
           if (!params.value)
             return <span className="text-muted-foreground">—</span>;
           return (
-            <a
-              href={params.data?.resumeFileUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 hover:underline transition-colors font-medium"
-              onClick={(e) => e.stopPropagation()}
+            <Button
+              variant="link"
+              onClick={(e) => {
+                e.stopPropagation();
+                downloadFile(
+                  {
+                    applicationId: params.data?.id || "",
+                  },
+                  {
+                    onSuccess: (data) => {
+                      const url = window.URL.createObjectURL(data);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = params.data?.resumeName || "file.pdf";
+                      document.body.appendChild(a);
+                      a.click();
+                      a.remove();
+                      window.URL.revokeObjectURL(url);
+                    },
+                  },
+                );
+              }}
             >
-              <Plus className="rotate-45 h-3.5 w-3.5" />
               {params.value}
-            </a>
+            </Button>
           );
         },
       },
@@ -209,6 +226,12 @@ export default function ApplicationsListPage() {
             suppressMenuHide={true}
             overlayNoRowsTemplate="Откликов не найдено"
             onRowClicked={(e) => {
+              // Check if the actual click target is a button or inside a button
+              const target = e.event?.target as HTMLElement;
+              if (target?.closest("button") || target?.closest("a")) {
+                return; // Don't navigate if we clicked the download button
+              }
+
               if (e.data) {
                 setApplication(e.data);
                 navigate(`${e.data.id}/history`);
