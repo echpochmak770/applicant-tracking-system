@@ -84,11 +84,11 @@ cd ats-project
 
 В корне проекта создайте файл `.env` и добавьте в него следующие переменные:
 
-DB_PASSWORD=AReallyStrongPasswordForMySuperMegaAtsProject!@#
-DB_NAME=ATS_DB
-DB_USER=sa
-JWT_SECRET=SUPER_MEGA_SECRET_KEY_FOR_MY_TMS_PET-PROJECT123456789012345678900987654321
-BACKEND_URL=http://host.docker.internal:5179
+- DB_PASSWORD=your_strong_password_here
+- DB_NAME=ATS_DB
+- DB_USER=sa
+- JWT_SECRET=your_super_secret_key_here
+- BACKEND_URL=http://host.docker.internal:5179
 
 ### Шаг 3: Запуск приложения
 
