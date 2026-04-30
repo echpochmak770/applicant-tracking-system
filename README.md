@@ -80,29 +80,23 @@ git clone https://github.com/your-username/ats-project.git
 cd ats-project
 ```
 
-### Шаг 2: Запуск базы данных
-docker-compose up -d
+### Шаг 2: Создание файла окружения
 
-### Шаг 3: Настройка конфигурации backend
-"JwtSettings": {
-  "Secret": "your-very-strong-secret-key-32-chars-minimum",
-  "Issuer": "ATS.Backend",
-  "Audience": "ATS.Frontend",
-  "ExpirationMinutes": 15,
-  "RefreshTokenExpirationDays": 7
-}
+В корне проекта создайте файл `.env` и добавьте в него следующие переменные:
 
-### Шаг 4: Применение миграций
-dotnet ef database update
+DB_PASSWORD=AReallyStrongPasswordForMySuperMegaAtsProject!@#
+DB_NAME=ATS_DB
+DB_USER=sa
+JWT_SECRET=SUPER_MEGA_SECRET_KEY_FOR_MY_TMS_PET-PROJECT123456789012345678900987654321
+BACKEND_URL=http://host.docker.internal:5179
 
-### Шаг 5: Запуск backend
-dotnet run
+### Шаг 3: Запуск приложения
 
-### Шаг 6: Запуск frontend
-Перейдите в папку фронтенда:
-cd client
-npm install
-npm run dev
+Запустите все сервисы (backend, frontend и база данных) с помощью Docker Compose:
+
+```bash
+docker-compose up --build -d
+```
 
 Приложение будет доступно по адресу:
 http://localhost:5173
